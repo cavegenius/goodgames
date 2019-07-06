@@ -1,0 +1,2 @@
+@extends('templates.main')
+<?php
