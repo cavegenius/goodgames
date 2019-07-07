@@ -14,9 +14,16 @@ class Steam extends Model {
 
     public function import( $user ) {
         $client = new \GuzzleHttp\Client();
+        $gamesList = [];
 
         $response = $client->get($this->api_url.'IPlayerService/GetOwnedGames/v0001/?key='.$this->api_key.'&steamid='.$user.'&include_appinfo=1&format=json');
-        return $response;
+        $games = json_decode($response->getBody()->getContents());
+        $games = $games->response->games;
+
+        foreach( $games as $game ) {
+            $gamesList[] = $game->name;
+        }
+        return $gamesList;
     }
     
 }

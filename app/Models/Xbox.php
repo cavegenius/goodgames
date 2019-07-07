@@ -21,7 +21,8 @@ class Xbox extends Model {
     }
 
     public function import( $gamerTag ) {
-        $gamesList = [];
+        $games['xbox360'] = [];
+        $gamesList['xboxOne'] = [];
         $uid = $this->getUid( $gamerTag );
         $client = new \GuzzleHttp\Client();
         $header = ['X-AUTH' => $this->api_key , 'Content-Type'=>'text/plain'];

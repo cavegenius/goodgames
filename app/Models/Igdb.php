@@ -15,11 +15,11 @@ class Igdb extends Model {
     public function search( $search ) {
         $client = new \GuzzleHttp\Client();
         
-        $data = 'fields *; search "'.$search.'"; limit 50;';
+        $data = 'fields name,cover,genres,platforms,release_dates,summary,url; search "'.$search.'"; limit 50;';
         $header = ['user-key' => $this->api_key , 'Content-Type'=>'text/plain'];
-        $response = $client->post($this->api_url.'search', ['headers' => $header, 'body'=>$data]);
+        $response = $client->post($this->api_url.'games', ['headers' => $header, 'body'=>$data]);
         
-        return $response;
+        return json_decode($response->getBody()->getContents());
     }
     
 }

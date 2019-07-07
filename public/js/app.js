@@ -49394,8 +49394,7 @@ $(document).ready(function () {
     $('#steps').append(contents);
   });
   $('#search').click(function () {
-    name = $('#searchBar').val(); //name = 'witcher';
-
+    name = $('#searchBar').val();
     $.ajax({
       method: 'POST',
       // Type of response and matches what we said in the route
