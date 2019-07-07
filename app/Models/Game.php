@@ -6,18 +6,39 @@ use Illuminate\Database\Eloquent\Model;
 use \GuzzleHttp\Client;
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Psr7\Request;
+use App\Models\Igdb;
+use app\Models\Steam;
+use app\Models\Psn;
+use app\Models\Xbox;
 
 class Game extends Model {
     
-    public function search( $search ) {
-        $client = new \GuzzleHttp\Client();
-
-        $url = 'https://api-v3.igdb.com/search';
-        $data = 'fields *; search "'.$search.'"; limit 50;';
-        $header = ['user-key' => '0d5c13224126d70a2eb7a941bfa26161', 'Content-Type'=>'text/plain'];
-        $response = $client->post($url, ['headers' => $header, 'body'=>$data]);
+    public function searchIGDB( $search ) {
         
-        //$response = $client->request( 'POST', $url, $header, $data );
+        $igdb = new Igdb;
+        $response = $igdb->search( $search );
+        
+        return $response;
+    }
+
+    public function importSteam( $user ) {
+        $steam = new Steam;
+
+        $response = $steam->import( $user );
+        return $response;
+    }
+
+    public function importPSN( $user ) {
+        $psn = new Psn;
+
+        $response = $psn->import( $user );
+        return $response;
+    }
+
+    public function importXbox( $user ) {
+        $xbox = new Xbox;
+
+        $response = $xbox->import( $user );
         return $response;
     }
 }

@@ -29,9 +29,19 @@ class GamesController extends Controller {
         $name = $request->all('name'); // This will get all the request data.
 
         $game = new Game;
-        $games = $game->search($name['name']);
+        $games = $game->searchIGDB($name['name']);
         
-        return $games; // This will dump and die
+        return $games; 
+        //return view('games.results')->with('games', $games);
+    }
+
+    public function importSteam(Request $request) {
+        $name = $request->all('user'); // This will get all the request data.
+
+        $game = new Game;
+        $games = $game->importSteam($user['user']);
+        
+        return $games; 
         //return view('games.results')->with('games', $games);
     }
 

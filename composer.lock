@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "905aa413bea0a85fbdc5163f53598131",
+    "content-hash": "22d6bb6e9c34dcd505c2b6b004891bf1",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -3164,6 +3164,43 @@
             "description": "CssToInlineStyles is a class that enables you to convert HTML-pages/files into HTML-pages/files with inline styles. This is very useful when you're sending emails.",
             "homepage": "https://github.com/tijsverkoyen/CssToInlineStyles",
             "time": "2017-11-27T11:13:29+00:00"
+        },
+        {
+            "name": "tustin/psn-php",
+            "version": "2.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Tustin/psn-php.git",
+                "reference": "573ea61fd3330861e494f9b1381ed7311d2bb5a1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Tustin/psn-php/zipball/573ea61fd3330861e494f9b1381ed7311d2bb5a1",
+                "reference": "573ea61fd3330861e494f9b1381ed7311d2bb5a1",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.3",
+                "php": "^7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PlayStation\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP wrapper for the PlayStation API.",
+            "homepage": "https://github.com/Tustin/psn-php",
+            "keywords": [
+                "api",
+                "php",
+                "playstation"
+            ],
+            "time": "2019-05-22T09:22:59+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
