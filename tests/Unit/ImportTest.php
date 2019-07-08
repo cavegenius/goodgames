@@ -10,7 +10,7 @@ use App\Models\Steam;
 
 class ImportTest extends TestCase
 {
-/*
+
     public function testImportPSNTest() {
         $psn = new Psn;
         $games = $psn->import( 'cavegenius' );
@@ -25,7 +25,7 @@ class ImportTest extends TestCase
         $this->assertArrayHasKey('xbox360', $games);
         $this->assertArrayHasKey('xboxOne', $games);
     }
-*/
+
     public function testImportSteamTest() {
         $steam = new Steam;
         $games = $steam->import('76561198166200918');

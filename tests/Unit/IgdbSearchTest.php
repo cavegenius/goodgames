@@ -12,7 +12,7 @@ class IgdbTest extends TestCase
     public function testIgdbSearchTest() {
         $igdb = new Igdb;
         $games = $igdb->search( 'Horizon Zero Dawn' );
-        var_dump($games);
+        
         $this->assertArrayHasKey(3, $games);
     }
 
