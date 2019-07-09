@@ -10,8 +10,6 @@ use PlayStation\Client;
 
 class Psn extends Model {
 
-    public $psnRefreshToken = '35ead7ed-5859-4a18-9f68-92e752b0ac01';
-
     public function firstLogin($uuid,$token) {
         // Full directions at https://tusticles.com/psn-php/first_login.html
         $client = new Client();
@@ -25,7 +23,7 @@ class Psn extends Model {
     public function login() {
         $client = new Client();
 
-        $client->login( $this->psnRefreshToken );
+        $client->login( config('keys.psnKey') );
 
         $refreshToken = $client->refreshToken();
         return $client;

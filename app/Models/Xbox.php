@@ -9,12 +9,11 @@ use \GuzzleHttp\Psr7\Request;
 
 class Xbox extends Model {
 
-    private $api_key = '21182f8cd53a0fd2e82d4061f6eeabfa7b3138fa';
     private $api_url = 'https://xboxapi.com/v2/';
 
     public function getUid( $gamerTag ) {
         $client = new \GuzzleHttp\Client();
-        $header = ['X-AUTH' => $this->api_key , 'Content-Type'=>'text/plain'];
+        $header = ['X-AUTH' => config('keys.xboxKey') , 'Content-Type'=>'text/plain'];
         $response = $client->get($this->api_url.'xuid/'.$gamerTag, ['headers' => $header]);
 
         return $response->getBody()->getContents();
@@ -25,7 +24,7 @@ class Xbox extends Model {
         $gamesList['xboxOne'] = [];
         $uid = $this->getUid( $gamerTag );
         $client = new \GuzzleHttp\Client();
-        $header = ['X-AUTH' => $this->api_key , 'Content-Type'=>'text/plain'];
+        $header = ['X-AUTH' => config('keys.xboxKey') , 'Content-Type'=>'text/plain'];
 
         $response = $client->get($this->api_url.$uid.'/xbox360games', ['headers' => $header]);
         $games['xbox360'] = $response->getBody()->getContents();
