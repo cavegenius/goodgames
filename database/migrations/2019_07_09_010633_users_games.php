@@ -20,6 +20,7 @@ class UsersGames extends Migration
             $table->integer('gameId')->unsigned();
             $table->foreign('gameId')->references('id')->on('games');
             $table->enum('status', ['completed', 'playing', 'backlog', 'owned', 'wishlist']);
+            $table->string('system',20);
         });
     }
 
