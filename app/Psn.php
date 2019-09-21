@@ -25,7 +25,8 @@ class Psn extends Model {
 
         $client->login( config('keys.psnKey') );
 
-        $refreshToken = $client->refreshToken();
+        // May need the following in the future to check if token has changed
+        //$refreshToken = $client->refreshToken();
         return $client;
     }
     
