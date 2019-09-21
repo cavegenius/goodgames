@@ -14,7 +14,7 @@ class Games extends Migration
     public function up()
     {
         Schema::create('games', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->string('name', 45);
             $table->string('summary', 255);
             $table->string('cover',20);

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use \GuzzleHttp\Client;
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Psr7\Request;
-use App\Models\Igdb;
-use app\Models\Steam;
-use app\Models\Psn;
-use app\Models\Xbox;
+use App\Igdb;
+use App\Steam;
+use App\Psn;
+use App\Xbox;
 
 class Game extends Model {
     

@@ -14,10 +14,10 @@ class UsersGames extends Migration
     public function up()
     {
         Schema::create('users_games', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('userId')->unsigned();
+            $table->bigIncrements('id');
+            $table->bigInteger('userId')->unsigned();
             $table->foreign('userId')->references('id')->on('users');
-            $table->integer('gameId')->unsigned();
+            $table->bigInteger('gameId')->unsigned();
             $table->foreign('gameId')->references('id')->on('games');
             $table->enum('status', ['completed', 'playing', 'backlog', 'owned', 'wishlist']);
             $table->string('system',20);

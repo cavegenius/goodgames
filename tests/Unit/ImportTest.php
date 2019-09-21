@@ -4,9 +4,9 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\PSN;
-use App\Models\Xbox;
-use App\Models\Steam;
+use App\PSN;
+use App\Xbox;
+use App\Steam;
 
 class ImportTest extends TestCase
 {

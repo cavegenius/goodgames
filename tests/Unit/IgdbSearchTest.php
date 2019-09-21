@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\Igdb;
+use App\Igdb;
 
 class IgdbTest extends TestCase
 {
