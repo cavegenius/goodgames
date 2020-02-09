@@ -49373,7 +49373,7 @@ $(document).one('focus.textarea', '.autogrow', function () {
       this.rows = rows;
     }
   });
-}); // Add a new row to ingredients section of the form.
+}); // Document ready Actions
 
 $(document).ready(function () {
   var ctoken = $('meta[name="csrf-token"]').attr('content');
@@ -49393,7 +49393,8 @@ $(document).ready(function () {
     var contents = '<div class="form-row"><div class="col-12"><textarea class="form-control autogrow" min-rows="1" max-rows="5" rows="1" placeholder="Step Details" name="step' + counts + '" cols="50"></textarea></div></div>';
     $('#steps').append(contents);
   });
-  $('#search').click(function () {
+  $('#searchBar').keyup(function () {
+    //$( '#search' ).click(function() {
     name = $('#searchBar').val();
     $.ajax({
       method: 'POST',
@@ -49407,7 +49408,7 @@ $(document).ready(function () {
       // a JSON object to send back
       success: function success(response) {
         // What to do if we succeed
-        console.log(response);
+        showSearchResults(response);
       },
       error: function error(jqXHR, textStatus, errorThrown) {
         // What to do if we fail
@@ -49416,7 +49417,11 @@ $(document).ready(function () {
       }
     });
   });
-});
+}); //Function Definitions
+
+function showSearchResults(obj) {
+  console.log(obj);
+}
 
 /***/ }),
 

@@ -23,7 +23,7 @@ $(document)
     });
 
 
-// Add a new row to ingredients section of the form.
+// Document ready Actions
 $(document).ready( function() {
     let ctoken = $('meta[name="csrf-token"]').attr('content');
     $( 'body' ).on( 'click', '#addIngredient', function(e) {
@@ -46,7 +46,8 @@ $(document).ready( function() {
         $('#steps').append( contents );
     });
 
-    $( '#search' ).click(function() {
+    $( '#searchBar' ).keyup(function() {
+    //$( '#search' ).click(function() {
         name = $( '#searchBar' ).val();
 
         $.ajax({
@@ -57,7 +58,7 @@ $(document).ready( function() {
                 'name' : name
             }, // a JSON object to send back
             success: function(response){ // What to do if we succeed
-                console.log(response); 
+                showSearchResults(response);
             },
             error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
                 console.log(JSON.stringify(jqXHR));
@@ -66,3 +67,8 @@ $(document).ready( function() {
         });
     });
 });
+
+//Function Definitions
+function showSearchResults(obj) {
+    console.log(obj);
+}
