@@ -20,3 +20,4 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/games', 'GamesController@index');
 Route::post('/games/search', 'GamesController@search');
+Route::post('/games/add', 'GamesController@addGame');

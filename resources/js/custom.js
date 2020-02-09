@@ -47,7 +47,6 @@ $(document).ready( function() {
     });
 
     $( '#searchBar' ).keyup(function() {
-    //$( '#search' ).click(function() {
         name = $( '#searchBar' ).val();
 
         $.ajax({
@@ -66,6 +65,40 @@ $(document).ready( function() {
             }
         });
     });
+
+    //TODO: Use this code as base when saving the added game
+    /*$( '#searchBar' ).keyup(function() {
+        //$( '#search' ).click(function() {
+            name = $( '#searchBar' ).val();
+
+            $.ajax({
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/games/add', // This is the url we gave in the route
+                data: {
+                    "_token": ctoken,
+                    'name' : name,
+                    'userId' : 1,
+                    'igdbId' : 0,
+                    'status' : 'None',
+                    'platform' : 'Playstation 4',
+                    'platformType' : 'Console',
+                    'favorite' : 'No',
+                    'rating' : '0',
+                    'format' : 'Physical',
+                    'notes' : 'kkl',
+                    'owned' : 1,
+                    'wishlist' : 0,
+                    'backlog' : 0
+                }, // a JSON object to send back
+                success: function(response){ // What to do if we succeed
+                    showSearchResults(response);
+                },
+                error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        });*/
 });
 
 //Function Definitions

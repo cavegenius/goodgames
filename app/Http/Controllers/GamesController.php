@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Game;
+use App\Igdb;
+use App\Steam;
 
 class GamesController extends Controller {
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     *
      */
     public function index() {
         if (!Auth::check()) {
@@ -19,27 +21,58 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        //$recipes = Recipe::index($user);
-        // TODO: get the units to send to the form for options and send to view
+        //$games = Game::index($user);
+
         return view('games');
         //return view('games')->with('games', $games);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     *
+     */
+    public function addGame(Request $request) {
+        $this->validate($request, [
+            'name' => 'required',
+            'platform' => 'required',
+            'platformType' => 'required',
+            'format' => 'required',
+            'owned' => 'required',
+            'wishlist' => 'required',
+            'backlog' => 'required',
+        ]);
+
+        $user = Auth::id();
+        $game = new Game;
+        foreach( (array)$request->all() as $key=>$value ) {
+            if( $key == '_token') { continue; }
+            $game->$key = $value;
+        }
+
+        if($game->save()) {
+            $result = json_encode(['Status' => 'Success', 'Message' => 'Game Added Successfully']);
+        } else {
+            $result = json_encode(['Status' => 'Error', 'Message' => 'An Error has Occurred']);
+        }
+
+        return $result;
     }
 
     public function search(Request $request) {
         $name = $request->all('name'); // This will get all the request data.
 
-        $game = new Game;
-        $games = $game->searchIGDB($name['name']);
+        $game = new Igdb;
+        $games = $game->search($name['name']);
         
         return $games; 
-        //return view('games.results')->with('games', $games);
     }
 
     public function importSteam(Request $request) {
         $name = $request->all('user'); // This will get all the request data.
 
-        $game = new Game;
-        $games = $game->importSteam($user['user']);
+        $game = new Steam;
+        $games = $game->import($user['user']);
         
         return $games; 
         //return view('games.results')->with('games', $games);

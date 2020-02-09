@@ -3,42 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use \GuzzleHttp\Client;
-use \GuzzleHttp\Exception\RequestException;
-use \GuzzleHttp\Psr7\Request;
-use App\Igdb;
-use App\Steam;
-use App\Psn;
-use App\Xbox;
 
 class Game extends Model {
-    
-    public function searchIGDB( $search ) {
+    public static function index( $user ) {
+        $games = DB::table('games')
+            ->where('userId', $user )
+            ->get();
         
-        $igdb = new Igdb;
-        $response = $igdb->search( $search );
-        
-        return $response;
-    }
-
-    public function importSteam( $user ) {
-        $steam = new Steam;
-
-        $response = $steam->import( $user );
-        return $response;
-    }
-
-    public function importPSN( $user ) {
-        $psn = new Psn;
-
-        $response = $psn->import( $user );
-        return $response;
-    }
-
-    public function importXbox( $user ) {
-        $xbox = new Xbox;
-
-        $response = $xbox->import( $user );
-        return $response;
+        return $games;
     }
 }
