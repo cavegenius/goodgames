@@ -17,7 +17,7 @@ class GameTest extends TestCase {
     }
 
     public function testAddGameTest() {
-        $this->json('POST', '/games/add', [
+        $data = [
             'userId' => 1,
             'name' => 'horizon zero dawn',
             'igdbId' => 0,
@@ -31,10 +31,12 @@ class GameTest extends TestCase {
             'owned' => 1,
             'wishlist' => 0,
             'backlog' => 0
-        ])
-        ->assertJsonStructure([
-           // Verify Success Message
-            'Status', 'Message'
+        ];
+        $response = $this->post('/games/add', $data, []);
+        $response->assertJsonStructure([
+            'Status', 
+            'Message'
        ]);
     }
 }
+
