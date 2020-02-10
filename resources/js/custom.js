@@ -46,7 +46,8 @@ $(document).ready( function() {
         $('#steps').append( contents );
     });
 
-    $( '#searchBar' ).keyup(function() {
+    //$( '#searchBar' ).keyup(function() {
+    $( '#search' ).click(function() {
         name = $( '#searchBar' ).val();
 
         $.ajax({
