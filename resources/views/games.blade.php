@@ -25,10 +25,10 @@
                 <th>Name</th>
                 <th>Prep Time</th>
                 <th>Cook Time</th>
-                <th>Have in Inventory</th>
+                <th>Have in Inventory <div class="float-right"><i class="fa fa-plus addGame"></i></div></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="gamesTableBody">
                 <tr>
                         <td></td>
                         <td></td>
@@ -47,3 +47,15 @@
         </table>
     </div>
 @endsection
+
+
+<script type="text/x-handlebars-template" id="addGameRowTemplate">
+    <tr id="addGameRow">
+            <td>@{{ namething }}</td>
+            <td>b</td>
+            <td>c</td>
+            <td>d</td>
+            <td>e</td>
+    </tr>
+  </script>
+  
