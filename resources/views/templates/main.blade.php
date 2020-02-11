@@ -7,7 +7,7 @@
     <script src="/js/app.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
   </head>
-  <body>
+  <body id="gamesBody">
     <!--Header-->
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Good Games</a>

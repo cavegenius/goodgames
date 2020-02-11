@@ -1,3 +1,4 @@
+const Handlebars = require("handlebars");
 // Expand text are on enter click
 $(document)
     .one('focus.textarea', '.autogrow', function(){
@@ -65,6 +66,25 @@ $(document).ready( function() {
                 console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
             }
         });
+    });
+
+    $( '.addGame' ).click(function() {
+        // Grab the template script
+        var theTemplateScript = $("#addGameRowTemplate").html();
+              
+        // Compile the template
+        var theTemplate = Handlebars.compile(theTemplateScript);
+      
+        // Define our data object
+        var context={
+          "namething": "tis but a name"
+        };
+      
+        // Pass our data to the template
+        var theCompiledHtml = theTemplate(context);
+      
+        // Add the compiled html to the page
+        $( '#gamesTableBody').prepend(theCompiledHtml);
     });
 
     //TODO: Use this code as base when saving the added game
