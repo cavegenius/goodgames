@@ -50,5 +50,9 @@
         </div>
       </div>
     </div>
+
+    <div id="big_loader" class="hide-on-load">
+      <div id="big_loader_html"></div>
+    </div>
   </body>
 </html>

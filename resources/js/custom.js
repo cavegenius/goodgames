@@ -106,3 +106,63 @@ $(document).ready( function() {
 function showSearchResults(obj) {
     console.log(obj);
 }
+
+
+// TODO: Updated this function to be laravel compatible specifically the csrf token code
+function run_ajax( url, data_obj, return_function, loader_message = false ) {
+    if ( url != '' )
+    {
+        show_big_loader( loader_message );
+
+        data_obj.csrf_token = $( '.csrf_token' ).val();
+
+        $.ajax({
+            type:       "POST"
+            , url:      site_url + url
+            , data:     data_obj
+            , dataType: "json"
+            , success:  function( response )
+                {
+                    if ( response.logout == true )
+                    {
+                        window.location.href = site_url + '/login/';
+                        return true;
+                    }
+
+                    update_csrf_token( response.csrf_token );
+
+                    if ( return_function != '' && return_function !== null && return_function !== undefined )
+                    {
+                        var obj          = {};
+                            obj.data     = data_obj;
+                            obj.response = response;
+
+                            return_function( obj );
+                    }
+
+                    hide_big_loader();
+                }
+        });
+    }
+
+    return true;
+}
+
+function show_big_loader( extra_note = false ) {
+    jQuery( 'document' ).ready( function() {
+        jQuery( '#big_loader' ).fadeIn( 250 );
+        let html = loader();
+        if ( extra_note )
+        {
+            html += '<span class="big_loader_note">' + extra_note + '</span>';
+        }
+        jQuery( '#big_loader_html' ).html( html );
+    });
+}
+
+function hide_big_loader() {
+    jQuery( 'document' ).ready( function() {
+        jQuery( '#big_loader' ).fadeOut( 250 );
+        jQuery( '#big_loader_html' ).html( '' );
+    });
+}
