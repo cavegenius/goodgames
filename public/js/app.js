@@ -21984,7 +21984,7 @@ return jQuery;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.13';
+  var VERSION = '4.17.15';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -54601,26 +54601,12 @@ $(document).ready(function () {
 
   $('#search').click(function () {
     name = $('#searchBar').val();
-    $.ajax({
-      method: 'POST',
-      // Type of response and matches what we said in the route
-      url: '/games/search',
-      // This is the url we gave in the route
-      data: {
-        "_token": ctoken,
-        'name': name
-      },
-      // a JSON object to send back
-      success: function success(response) {
-        // What to do if we succeed
-        showSearchResults(response);
-      },
-      error: function error(jqXHR, textStatus, errorThrown) {
-        // What to do if we fail
-        console.log(JSON.stringify(jqXHR));
-        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-      }
-    });
+    url = '/games/search';
+    post_data = {
+      "_token": ctoken,
+      'name': name
+    };
+    run_ajax(url, post_data, showSearchResults);
   });
   $('.addGame').click(function () {
     // Grab the template script
@@ -54672,6 +54658,70 @@ $(document).ready(function () {
 
 function showSearchResults(obj) {
   console.log(obj);
+} // Global Functions
+
+
+function run_ajax(url, data_obj, return_function) {
+  var loader_message = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+  if (url != '') {
+    show_big_loader(loader_message);
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: data_obj,
+      dataType: "json",
+      success: function success(response) {
+        if (return_function != '' && return_function !== null && return_function !== undefined) {
+          var obj = {};
+          obj.data = data_obj;
+          obj.response = response;
+          return_function(obj);
+        }
+
+        hide_big_loader();
+      }
+    });
+  }
+
+  return true;
+}
+
+function show_big_loader() {
+  var extra_note = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  jQuery('document').ready(function () {
+    jQuery('#big_loader').fadeIn(250);
+    var html = loader();
+
+    if (extra_note) {
+      html += '<span class="big_loader_note">' + extra_note + '</span>';
+    }
+
+    jQuery('#big_loader_html').html(html);
+  });
+}
+
+function hide_big_loader() {
+  jQuery('document').ready(function () {
+    jQuery('#big_loader').fadeOut(250);
+    jQuery('#big_loader_html').html('');
+  });
+}
+
+function loader() {
+  var html = '<div class="cssload-container">';
+  html += '<div class="cssload-shaft1"></div>';
+  html += '<div class="cssload-shaft2"></div>';
+  html += '<div class="cssload-shaft3"></div>';
+  html += '<div class="cssload-shaft4"></div>';
+  html += '<div class="cssload-shaft5"></div>';
+  html += '<div class="cssload-shaft6"></div>';
+  html += '<div class="cssload-shaft7"></div>';
+  html += '<div class="cssload-shaft8"></div>';
+  html += '<div class="cssload-shaft9"></div>'; // html += '<div class="cssload-shaft10"></div>';
+
+  html += '</div>';
+  return html;
 }
 
 /***/ }),
@@ -54694,8 +54744,8 @@ function showSearchResults(obj) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

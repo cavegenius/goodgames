@@ -50,22 +50,17 @@ $(document).ready( function() {
     //$( '#searchBar' ).keyup(function() {
     $( '#search' ).click(function() {
         name = $( '#searchBar' ).val();
+        url = '/games/search';
+        post_data = {
+            "_token": ctoken,
+            'name' : name
+        }
 
-        $.ajax({
-            method: 'POST', // Type of response and matches what we said in the route
-            url: '/games/search', // This is the url we gave in the route
-            data: {
-                "_token": ctoken,
-                'name' : name
-            }, // a JSON object to send back
-            success: function(response){ // What to do if we succeed
-                showSearchResults(response);
-            },
-            error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
-                console.log(JSON.stringify(jqXHR));
-                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-            }
-        });
+        run_ajax(
+            url,
+            post_data,
+            showSearchResults
+        );
     });
 
     $( '.addGame' ).click(function() {
@@ -128,29 +123,18 @@ function showSearchResults(obj) {
 }
 
 
-// TODO: Updated this function to be laravel compatible specifically the csrf token code
+// Global Functions
 function run_ajax( url, data_obj, return_function, loader_message = false ) {
     if ( url != '' )
     {
         show_big_loader( loader_message );
 
-        data_obj.csrf_token = $( '.csrf_token' ).val();
-
         $.ajax({
             type:       "POST"
-            , url:      site_url + url
+            , url:      url
             , data:     data_obj
             , dataType: "json"
-            , success:  function( response )
-                {
-                    if ( response.logout == true )
-                    {
-                        window.location.href = site_url + '/login/';
-                        return true;
-                    }
-
-                    update_csrf_token( response.csrf_token );
-
+            , success:  function( response ) {
                     if ( return_function != '' && return_function !== null && return_function !== undefined )
                     {
                         var obj          = {};
@@ -185,4 +169,21 @@ function hide_big_loader() {
         jQuery( '#big_loader' ).fadeOut( 250 );
         jQuery( '#big_loader_html' ).html( '' );
     });
+}
+
+function loader() {
+    var html  = '<div class="cssload-container">';
+        html += '<div class="cssload-shaft1"></div>';
+        html += '<div class="cssload-shaft2"></div>';
+        html += '<div class="cssload-shaft3"></div>';
+        html += '<div class="cssload-shaft4"></div>';
+        html += '<div class="cssload-shaft5"></div>';
+        html += '<div class="cssload-shaft6"></div>';
+        html += '<div class="cssload-shaft7"></div>';
+        html += '<div class="cssload-shaft8"></div>';
+        html += '<div class="cssload-shaft9"></div>';
+        // html += '<div class="cssload-shaft10"></div>';
+        html += '</div>';
+
+    return html;
 }

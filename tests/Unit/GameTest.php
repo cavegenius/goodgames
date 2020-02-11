@@ -4,6 +4,9 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Http\Controllers\Game;
+use App\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class GameTest extends TestCase {
     public function testSearchTest() {
@@ -17,8 +20,9 @@ class GameTest extends TestCase {
     }
 
     public function testAddGameTest() {
+        $user = User::find(1);
+
         $data = [
-            'userId' => 1,
             'name' => 'horizon zero dawn',
             'igdbId' => 0,
             'status' => 'None',
@@ -32,7 +36,8 @@ class GameTest extends TestCase {
             'wishlist' => 0,
             'backlog' => 0
         ];
-        $response = $this->post('/games/add', $data, []);
+
+        $response = $this->actingAs($user)->post('/games/add', $data, []);
         $response->assertJsonStructure([
             'Status', 
             'Message'

@@ -45,6 +45,7 @@ class GamesController extends Controller {
 
         $user = Auth::id();
         $game = new Game;
+        $game->userId = $user;
         foreach( (array)$request->all() as $key=>$value ) {
             if( $key == '_token') { continue; }
             $game->$key = $value;
@@ -69,7 +70,7 @@ class GamesController extends Controller {
     }
 
     public function importSteam(Request $request) {
-        $name = $request->all('user'); // This will get all the request data.
+        $user = $request->all('user'); // This will get all the request data.
 
         $game = new Steam;
         $games = $game->import($user['user']);
