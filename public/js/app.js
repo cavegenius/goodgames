@@ -21984,7 +21984,7 @@ return jQuery;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.15';
+  var VERSION = '4.17.13';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -54744,8 +54744,8 @@ function loader() {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
