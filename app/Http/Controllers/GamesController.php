@@ -21,10 +21,8 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        //$games = Game::index($user);
 
         return view('games');
-        //return view('games')->with('games', $games);
     }
 
     /**
@@ -32,7 +30,7 @@ class GamesController extends Controller {
      *
      *
      */
-    public function addGame(Request $request) {
+    public function store(Request $request) {
         $this->validate($request, [
             'name' => 'required',
             'platform' => 'required',
@@ -77,6 +75,107 @@ class GamesController extends Controller {
         
         return $games; 
         //return view('games.results')->with('games', $games);
+    }
+
+    /**
+     * Return all games for a user.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showAll() {
+        if (!Auth::check()) {
+            return json_encode(['Status'=>'Error','Message'=>'User Not Logged In', 'Logout'=> true]);
+        }
+
+        $user = Auth::id();
+        $model = new Game;
+        $games = $model->allGamesByUser($user);
+
+        return count($games) > 0 ? json_encode($games) : json_encode(['Status'=> 'Error', 'Message'=>'No Games Found']);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showOne(Request $request) {
+        if (!Auth::check()) {
+            return json_encode(['Status'=>'Error','Message'=>'User Not Logged In', 'Logout'=> true]);
+        }
+
+        $user = Auth::id();
+        $id = $request->all('id');
+        $id = $id['id'];
+
+        $game = Game::find($id);
+
+        // If the game does not belong to this user
+        if( $game && $user != $game['userId'] ){
+            $game=false;
+        }
+        return $game ? json_encode($game) : json_encode(['Status'=> 'Error', 'Message'=>'Game Not Found']);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request) {
+        if (!Auth::check()) {
+            return json_encode(['Status'=>'Error','Message'=>'User Not Logged In', 'Logout'=> true]);
+        }
+
+        $user = Auth::id();
+        $id = $request->all('id');
+        $id = $id['id'];
+
+        $game = Game::find($id);
+        // If the game does not belong to this user
+        if( $game && $user != $game['userId'] ){
+            return json_encode(['Status' => 'Error', 'Message' => 'Invalid Game']);
+        }
+
+        foreach( (array)$request->all() as $key=>$value ) {
+            if( $key == '_token') { continue; }
+            $game->$key = $value;
+        }
+
+        if($game->save()) {
+            $result = json_encode(['Status' => 'Success', 'Message' => 'Game Updated Successfully']);
+        } else {
+            $result = json_encode(['Status' => 'Error', 'Message' => 'An Error has Occurred']);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request) {
+        //
+    }
+
+    /**
+     *  Import Games from CSV File
+     */
+    public function importCSV() {
+
+    }
+
+    /**
+     * Export to a CSV
+     */
+    public function exportCSV() {
+
     }
 
 }

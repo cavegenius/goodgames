@@ -4,8 +4,8 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Http\Controllers\Game;
 use App\User;
+use App\Game;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -25,5 +25,13 @@ abstract class TestCase extends BaseTestCase
         ]);
 
         return $user;
+    }
+
+    public function addGameForUser($user) {
+        $game = factory(Game::class)->create([
+            'userId' => $user->id
+        ]);
+
+        return $game->id;
     }
 }

@@ -19,7 +19,7 @@ class GameTest extends TestCase {
     }
 
     public function testAddGameFullTest() {
-        $user=$this->createUserAndLogin();
+        $user = $this->createUserAndLogin();
 
         $data = [
             'name' => 'horizon zero dawn',
@@ -41,7 +41,7 @@ class GameTest extends TestCase {
     }
 
     public function testAddGamepartialTest() {
-        $user = $user=$this->createUserAndLogin();
+        $user = $this->createUserAndLogin();
 
         $data = [
             'name' => 'horizon zero dawn',
@@ -58,7 +58,7 @@ class GameTest extends TestCase {
     }
 
     public function testAddGameMissingRequiredTest() {
-        $user = $user=$this->createUserAndLogin();
+        $user = $this->createUserAndLogin();
         $data = [
             'name' => 'horizon zero dawn',
             'igdbId' => 0,
@@ -78,5 +78,70 @@ class GameTest extends TestCase {
             'platformType' => 'The platform type field is required.'
         ]);
     }
-}
 
+    public function testShowGameTest() {
+        $user = $this->createUserAndLogin();
+        $id = $this->addGameForUser($user);
+
+        $data = [
+            'id' => $id,
+        ];
+        $response = $this->actingAs($user)->post('/games/showOne', $data, []);
+        $response->assertJsonStructure(['name','igdbId','status','favorite','rating','format','notes','owned','wishlist','backlog']);
+    }
+
+    public function testShowGameNotFoundTest() {
+        $user = $this->createUserAndLogin();
+
+        $data = [
+            'id' => 100000000,
+        ];
+        $response = $this->actingAs($user)->post('/games/showOne', $data, []);
+        $response->assertJson(['Status'=>'Error','Message'=>'Game Not Found']);
+    }
+
+    public function testShowAllTest() {
+        $user = $this->createUserAndLogin();
+
+        // Add multiple games for the user
+        $this->addGameForUser($user);
+        $this->addGameForUser($user);
+        $this->addGameForUser($user);
+
+        $response = $this->actingAs($user)->post('/games/showAll', [], []);
+        $response->assertJsonStructure(['*' => ['name','igdbId','status','favorite','rating','format','notes','owned','wishlist','backlog']]);
+    }
+
+    public function testShowAllNoGamesTest() {
+        $user = $this->createUserAndLogin();
+
+        $response = $this->actingAs($user)->post('/games/showAll', [], []);
+        $response->assertJson(['Status'=>'Error','Message'=>'No Games Found']);
+    }
+
+    public function testUpdateGameTest() {
+        $user = $this->createUserAndLogin();
+        $id = $this->addGameForUser($user);
+
+        $data = [
+            'id' => $id,
+            'name' => 'new name'
+        ];
+        $response = $this->actingAs($user)->post('/games/edit', $data, []);
+        $response->assertJson(['Status' => 'Success', 'Message' => 'Game Updated Successfully']);
+    }
+
+    public function testUpdateGameInavalidUserTest() {
+        $user = $this->createUserAndLogin();
+        $id = $this->addGameForUser($user);
+        $response = $this->get('/logout');
+        $user2 = $this->createUserAndLogin();
+        $data = [
+            'id' => $id,
+            'name' => 'new name'
+        ];
+        $response = $this->actingAs($user2)->post('/games/edit', $data, []);
+        $response->assertJson(['Status' => 'Error', 'Message' => 'Invalid Game']);
+    }
+
+}

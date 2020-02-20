@@ -135,6 +135,9 @@ function run_ajax( url, data_obj, return_function, loader_message = false ) {
             , data:     data_obj
             , dataType: "json"
             , success:  function( response ) {
+                    if( response.Logout == true ) {
+                        window.location.replace("/login");
+                    }
                     if ( return_function != '' && return_function !== null && return_function !== undefined )
                     {
                         var obj          = {};
