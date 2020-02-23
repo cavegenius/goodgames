@@ -24,3 +24,4 @@ Route::post('/games/add', 'GamesController@store');
 Route::post('/games/showOne', 'GamesController@showOne');
 Route::post('/games/showAll', 'GamesController@showAll');
 Route::post('/games/edit', 'GamesController@update');
+Route::post('/games/importCSV', 'GamesController@importCSV');

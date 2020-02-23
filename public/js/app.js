@@ -54672,6 +54672,10 @@ function run_ajax(url, data_obj, return_function) {
       data: data_obj,
       dataType: "json",
       success: function success(response) {
+        if (response.Logout == true) {
+          window.location.replace("/login");
+        }
+
         if (return_function != '' && return_function !== null && return_function !== undefined) {
           var obj = {};
           obj.data = data_obj;

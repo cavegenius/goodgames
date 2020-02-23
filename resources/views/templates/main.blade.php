@@ -44,6 +44,13 @@
                 <input id="search" class="btn btn-dark" type="button" name="submit" value="Submit">
               </span>
           </div>
+          <div id="testImport">
+            <form name="importCSV" action="games/importCSV" method="POST" enctype="multipart/form-data">
+              @csrf
+              CSV File: <input type="file" name="csvFile"/><br />
+              <input id="importCSVSubmit" class="btn btn-dark" type="submit" name="submit" value="Import">
+            </form>
+          </div>
           <div class="sidebar-sticky">
               @include('inc.sidebarright')
           </div>

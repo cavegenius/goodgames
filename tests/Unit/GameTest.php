@@ -129,6 +129,7 @@ class GameTest extends TestCase {
         ];
         $response = $this->actingAs($user)->post('/games/edit', $data, []);
         $response->assertJson(['Status' => 'Success', 'Message' => 'Game Updated Successfully']);
+        $this->markTestIncomplete('Add assertion to check the game has the new data.');
     }
 
     public function testUpdateGameInavalidUserTest() {

@@ -125,6 +125,7 @@ class GamesController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    // TODO: Add fields that can not be edited and also required fields?
     public function update(Request $request) {
         if (!Auth::check()) {
             return json_encode(['Status'=>'Error','Message'=>'User Not Logged In', 'Logout'=> true]);
@@ -167,8 +168,25 @@ class GamesController extends Controller {
     /**
      *  Import Games from CSV File
      */
-    public function importCSV() {
+    public function importCSV(Request $request) {
+        $file = $request->file('csvFile');
 
+        $gamesArray = $this->csvToArray($file);
+
+        for ($i = 0; $i < count($gamesArray); $i++) {
+            $game = new Game;
+            $game->userId = Auth::id();
+            $game->owned = true;
+            $game->backlog = false;
+            $game->wishlist = false;
+            foreach( $gamesArray[$i] as $key=>$value ) {
+                $key = strtolower($key );
+                $game->$key  = $value;
+                $game->save();
+            }
+        }
+
+        return 'Games Successfully Imported';
     }
 
     /**
@@ -176,6 +194,28 @@ class GamesController extends Controller {
      */
     public function exportCSV() {
 
+    }
+
+    private function csvToArray($filename = '', $delimiter = ',')
+    {
+        if (!file_exists($filename) || !is_readable($filename))
+            return false;
+
+        $header = null;
+        $data = array();
+        if (($handle = fopen($filename, 'r')) !== false)
+        {
+            while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
+            {
+                if (!$header)
+                    $header = $row;
+                else
+                    $data[] = array_combine($header, $row);
+            }
+            fclose($handle);
+        }
+
+        return $data;
     }
 
 }
