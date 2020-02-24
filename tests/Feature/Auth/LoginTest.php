@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Auth\Notifications\ResetPassword;
 
 class LoginTest extends TestCase {
-
     use RefreshDatabase;
 
     // TODO: Move this to a more appropriate location when finished debugging

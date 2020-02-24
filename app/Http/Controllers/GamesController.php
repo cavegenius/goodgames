@@ -186,7 +186,8 @@ class GamesController extends Controller {
             }
         }
 
-        return 'Games Successfully Imported';
+        $result = json_encode(['Status' => 'Success', 'Message' => 'Games Successfully Imported']);
+        return $result;
     }
 
     /**

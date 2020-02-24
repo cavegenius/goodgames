@@ -3,6 +3,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use App\Http\Controllers\Game;
 
 class GameTest extends TestCase {
@@ -143,6 +144,31 @@ class GameTest extends TestCase {
         ];
         $response = $this->actingAs($user2)->post('/games/edit', $data, []);
         $response->assertJson(['Status' => 'Error', 'Message' => 'Invalid Game']);
+    }
+
+    public function testImportCSVSuccessfulTest() {
+        $user = $this->createUserAndLogin();
+        $stub = __DIR__.'/files/importFile.csv';
+        $name = str_random(8).'.csv';
+        $path = sys_get_temp_dir().'/'.$name;
+
+        copy($stub, $path);
+
+        $file = new UploadedFile(
+            $path,
+            $name,
+            'text/csv',
+            filesize($path),
+            null,
+            TRUE
+        );
+        $response = $this->actingAs($user)->call('POST', '/games/importCSV', [], [], ['csvFile' => $file], ['Accept' => 'application/json']);
+        $response->assertExactJson(['Status'=>'Success','Message'=>'Games Successfully Imported']);
+
+        // Remove the file
+        $content = json_decode($response->getContent());
+        $uploaded = 'uploads'.DIRECTORY_SEPARATOR.$name;
+        @unlink($uploaded);
     }
 
 }
