@@ -15,6 +15,7 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary addGame">Add Game</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary">Import</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
             </div>
@@ -32,7 +33,7 @@
                 <th>Platform Type</th>
                 <th>Format</th>
                 <th>Genre</th>
-                <th>Rating</th>
+                <th>Rating <div class="float-right"><i class="fa fa-plus addGame"></i></div></th>
             </tr>
             </thead>
             <tbody id="gamesTableBody">
