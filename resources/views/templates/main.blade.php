@@ -61,5 +61,10 @@
     <div id="big_loader" class="hide-on-load">
       <div id="big_loader_html"></div>
     </div>
+    <?php
+      $route = Route::current();
+      $route = $route->uri;
+    ?>
+    <input type="hidden" value="<?php echo $route; ?>" id="currentRoute" />
   </body>
 </html>

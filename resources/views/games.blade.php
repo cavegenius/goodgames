@@ -4,16 +4,12 @@
 <?php //print_r($games); ?>
 
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-        <h1 class="h2">Games</h1>
+        <h1 id="mainHeading" class="h2">Games</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Import</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-            </button>
         </div>
     </div>
 
@@ -49,13 +45,4 @@
 @endsection
 
 
-<script type="text/x-handlebars-template" id="addGameRowTemplate">
-    <tr id="addGameRow">
-            <td>@{{ namething }}</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-    </tr>
-  </script>
-  
+@include('handlebars.addGameRowTemplate')

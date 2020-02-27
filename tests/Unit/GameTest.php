@@ -166,7 +166,6 @@ class GameTest extends TestCase {
         $response->assertExactJson(['Status'=>'Success','Message'=>'Games Successfully Imported']);
 
         // Remove the file
-        $content = json_decode($response->getContent());
         $uploaded = 'uploads'.DIRECTORY_SEPARATOR.$name;
         @unlink($uploaded);
     }
