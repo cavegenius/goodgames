@@ -59,19 +59,19 @@ class GamesController extends Controller {
     }
 
     public function search(Request $request) {
-        $name = $request->all('name'); // This will get all the request data.
+        $name = $request->all('name')['name']; // This will get all the request data.
 
         $game = new Igdb;
-        $games = $game->search($name['name']);
+        $games = $game->search($name);
         
         return $games; 
     }
 
     public function importSteam(Request $request) {
-        $user = $request->all('user'); // This will get all the request data.
+        $user = $request->all('user')['user']; // This will get all the request data.
 
         $game = new Steam;
-        $games = $game->import($user['user']);
+        $games = $game->import($user);
         
         return $games; 
         //return view('games.results')->with('games', $games);
@@ -82,14 +82,15 @@ class GamesController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function showAll() {
+    public function showList(Request $request) {
         if (!Auth::check()) {
             return json_encode(['Status'=>'Error','Message'=>'User Not Logged In', 'Logout'=> true]);
         }
 
         $user = Auth::id();
+        $list = $request->all('list')['list'];
         $model = new Game;
-        $games = $model->allGamesByUser($user);
+        $games = $model->allGamesForListByUser($user, $list);
 
         return count($games) > 0 ? json_encode($games) : json_encode(['Status'=> 'Error', 'Message'=>'No Games Found']);
     }
@@ -106,8 +107,7 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id');
-        $id = $id['id'];
+        $id = $request->all('id')['id'];
 
         $game = Game::find($id);
 
@@ -132,8 +132,7 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id');
-        $id = $id['id'];
+        $id = $request->all('id')['id'];
 
         $game = Game::find($id);
         // If the game does not belong to this user

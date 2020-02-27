@@ -7,6 +7,14 @@
         <h1 id="mainHeading" class="h2">Games</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
+                <button type="button" value="owned" class="btn btn-sm btn-outline-primary listType">Owned</button>
+                <button type="button" value="wishlist" class="btn btn-sm btn-outline-secondary listType">Wishlist</button>
+                <button type="button"  value="backlog"class="btn btn-sm btn-outline-secondary listType">Backlog</button>
+                <input type="hidden" value="owned" id="selectedList" />
+            </div>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary">Import</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
             </div>
@@ -17,28 +25,18 @@
         <table class="table table-striped table-sm">
             <thead>
             <tr>
-                <th>ID</th>
+                <th>Favorite</th>
                 <th>Name</th>
-                <th>Prep Time</th>
-                <th>Cook Time</th>
-                <th>Have in Inventory <div class="float-right"><i class="fa fa-plus addGame"></i></div></th>
+                <th>Status</th>
+                <th>Platform</th>
+                <th>Platform Type</th>
+                <th>Format</th>
+                <th>Genre</th>
+                <th>Rating</th>
             </tr>
             </thead>
             <tbody id="gamesTableBody">
-                <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                </tr>
-                <tr>
-                    <td>1,001</td>
-                    <td>Lorem</td>
-                    <td>ipsum</td>
-                    <td>dolor</td>
-                    <td>sit</td>
-                </tr>
+
             </tbody>
         </table>
     </div>
@@ -46,3 +44,4 @@
 
 
 @include('handlebars.addGameRowTemplate')
+@include('handlebars.showGameRowTemplate')

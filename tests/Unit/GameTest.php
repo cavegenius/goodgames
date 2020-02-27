@@ -101,22 +101,28 @@ class GameTest extends TestCase {
         $response->assertJson(['Status'=>'Error','Message'=>'Game Not Found']);
     }
 
-    public function testShowAllTest() {
+    public function testShowListTest() {
         $user = $this->createUserAndLogin();
 
         // Add multiple games for the user
         $this->addGameForUser($user);
         $this->addGameForUser($user);
         $this->addGameForUser($user);
+        $data = [
+            'list' => 'owned',
+        ];
 
-        $response = $this->actingAs($user)->post('/games/showAll', [], []);
+        $response = $this->actingAs($user)->post('/games/showList', $data, []);
         $response->assertJsonStructure(['*' => ['name','igdbId','status','favorite','rating','format','notes','owned','wishlist','backlog']]);
     }
 
-    public function testShowAllNoGamesTest() {
+    public function testShowListNoGamesTest() {
         $user = $this->createUserAndLogin();
+        $data = [
+            'list' => 'owned',
+        ];
 
-        $response = $this->actingAs($user)->post('/games/showAll', [], []);
+        $response = $this->actingAs($user)->post('/games/showList', $data, []);
         $response->assertJson(['Status'=>'Error','Message'=>'No Games Found']);
     }
 

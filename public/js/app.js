@@ -54424,6 +54424,19 @@ $(document).ready(function () {
     var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
 
     $('#gamesTableBody').prepend(theCompiledHtml);
+  });
+  $('.listType').click(function () {
+    // Change the disgn of the buttons to highlight the correct list
+    $('#selectedList').val($(this).val());
+    $('.listType').each(function () {
+      $(this).removeClass('btn-outline-primary');
+      $(this).addClass('btn-outline-secondary');
+    });
+    $(this).removeClass('btn-outline-secondary');
+    $(this).addClass('btn-outline-primary');
+    $(this).blur(); // Now we load the new games list
+
+    loadGames();
   }); //TODO: Use this code as base when saving the added game
 
   /*$( '#searchBar' ).keyup(function() {
@@ -54537,30 +54550,37 @@ function showSearchResults(obj) {
 }
 
 function loadGames() {
-  url = '/games/showAll';
-  post_data = {};
+  url = '/games/showList';
+  post_data = {
+    list: $('#selectedList').val()
+  };
   run_ajax(url, post_data, showGameList);
 }
 
-function showGameList(obj) {}
-/*
+function showGameList(obj) {
+  $('#gamesTableBody').html('');
+  $.each(obj.response, function (key, value) {
     // Grab the template script
-    var theTemplateScript = $("#addGameRowTemplate").html();
-            
-    // Compile the template
-    var theTemplate = Handlebars.compile(theTemplateScript);
-    
-    // Define our data object
-    var context={
-        "namething": "tis but a name"
-    };
-    
-    // Pass our data to the template
-    var theCompiledHtml = theTemplate(context);
-    
-    // Add the compiled html to the page
-    $( '#gamesTableBody').append(theCompiledHtml);*/
-// End Games Functions
+    var theTemplateScript = $("#showGameRowTemplate").html(); // Compile the template
+
+    var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+
+    var context = {
+      "favorite": value.favorite,
+      "name": value.name,
+      "status": value.status,
+      "platform": value.platform,
+      "platformType": value.platformType,
+      "format": value.format,
+      "genre": value.genre,
+      "rating": value.rating
+    }; // Pass our data to the template
+
+    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+
+    $('#gamesTableBody').append(theCompiledHtml);
+  });
+} // End Games Functions
 
 /***/ }),
 
