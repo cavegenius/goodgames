@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.12.1",
+        "font-awesome": "^4.7.0",
         "handlebars": "^4.7.3"
     }
 }

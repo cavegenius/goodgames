@@ -33,7 +33,8 @@
                 <th>Platform Type</th>
                 <th>Format</th>
                 <th>Genre</th>
-                <th>Rating <div class="float-right"><i class="fa fa-plus addGame"></i></div></th>
+                <th>Rating</th>
+                <th>Actions <div class="float-right"><i class="fa fa-plus addGame"></i></div></th>
             </tr>
             </thead>
             <tbody id="gamesTableBody">

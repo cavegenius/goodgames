@@ -54559,27 +54559,32 @@ function loadGames() {
 
 function showGameList(obj) {
   $('#gamesTableBody').html('');
-  $.each(obj.response, function (key, value) {
-    // Grab the template script
-    var theTemplateScript = $("#showGameRowTemplate").html(); // Compile the template
 
-    var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+  if (obj.response.Status == 'Success') {
+    $.each(obj.response['Games'], function (key, value) {
+      // Grab the template script
+      var theTemplateScript = $("#showGameRowTemplate").html(); // Compile the template
 
-    var context = {
-      "favorite": value.favorite,
-      "name": value.name,
-      "status": value.status,
-      "platform": value.platform,
-      "platformType": value.platformType,
-      "format": value.format,
-      "genre": value.genre,
-      "rating": value.rating
-    }; // Pass our data to the template
+      var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
 
-    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+      var context = {
+        "favorite": value.favorite,
+        "name": value.name,
+        "status": value.status,
+        "platform": value.platform,
+        "platformType": value.platformType,
+        "format": value.format,
+        "genre": value.genre,
+        "rating": value.rating
+      }; // Pass our data to the template
 
-    $('#gamesTableBody').append(theCompiledHtml);
-  });
+      var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+
+      $('#gamesTableBody').append(theCompiledHtml);
+    });
+  } else if (obj.response.Status == 'Error') {
+    $('#gamesTableBody').append('<tr><td colspan="9" class="text-center">' + obj.response.Message + '</td></tr>');
+  }
 } // End Games Functions
 
 /***/ }),

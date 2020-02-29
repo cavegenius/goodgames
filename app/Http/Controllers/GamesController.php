@@ -50,12 +50,12 @@ class GamesController extends Controller {
         }
 
         if($game->save()) {
-            $result = json_encode(['Status' => 'Success', 'Message' => 'Game Added Successfully']);
+            $response = json_encode(['Status' => 'Success', 'Message' => 'Game Added Successfully']);
         } else {
-            $result = json_encode(['Status' => 'Error', 'Message' => 'An Error has Occurred']);
+            $response = json_encode(['Status' => 'Error', 'Message' => 'An Error has Occurred']);
         }
 
-        return $result;
+        return $response;
     }
 
     public function search(Request $request) {
@@ -63,8 +63,11 @@ class GamesController extends Controller {
 
         $game = new Igdb;
         $games = $game->search($name);
-        
-        return $games; 
+
+        $response['Games'] = $games;
+        $response['Status'] = 'Success';
+
+        return json_encode($response); 
     }
 
     public function importSteam(Request $request) {
@@ -73,8 +76,10 @@ class GamesController extends Controller {
         $game = new Steam;
         $games = $game->import($user);
         
-        return $games; 
-        //return view('games.results')->with('games', $games);
+        $response['Games'] = $games;
+        $response['Status'] = 'Success';
+
+        return json_encode($response);
     }
 
     /**
@@ -92,7 +97,15 @@ class GamesController extends Controller {
         $model = new Game;
         $games = $model->allGamesForListByUser($user, $list);
 
-        return count($games) > 0 ? json_encode($games) : json_encode(['Status'=> 'Error', 'Message'=>'No Games Found']);
+        if(count($games) > 0) {
+            $response['Games'] = $games;
+            $response['Status'] = 'Success';
+        } else {
+            $response['Status'] = 'Error';
+            $response['Message'] ='No Games Found';
+        }
+
+        return json_encode($response);
     }
 
     /**
@@ -113,9 +126,17 @@ class GamesController extends Controller {
 
         // If the game does not belong to this user
         if( $game && $user != $game['userId'] ){
-            $game=false;
+            $response['Status'] = 'Error';
+            $response['Message'] ='Game Not Found For This User';
+        } else if( $game && $user == $game['userId'] ) {
+            $response['Game'] = $game;
+            $response['Status'] = 'Success';
+        } else { 
+            $response['Status'] = 'Error';
+            $response['Message'] ='Game Not Found';
         }
-        return $game ? json_encode($game) : json_encode(['Status'=> 'Error', 'Message'=>'Game Not Found']);
+
+        return json_encode($response);
     }
 
     /**

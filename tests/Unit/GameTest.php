@@ -13,8 +13,10 @@ class GameTest extends TestCase {
         $this->json('POST', '/games/search', ['name' => 'horizon zero dawn'])
              ->assertJsonStructure([
                 // Verify all elements have an id and name
-                '*' => [
-                    'id', 'name'
+                'Games' => [
+                    '*' => [
+                        'id', 'name'
+                    ]
                 ]
             ]);
     }
@@ -24,11 +26,10 @@ class GameTest extends TestCase {
 
         $data = [
             'name' => 'horizon zero dawn',
-            'igdbId' => 0,
             'status' => 'None',
             'platform' => 'Playstation 4',
             'platformType' => 'Console',
-            'favorite' => 'No',
+            'favorite' => false,
             'rating' => '0',
             'format' => 'Physical',
             'notes' => 'This is a test Note',
@@ -62,9 +63,8 @@ class GameTest extends TestCase {
         $user = $this->createUserAndLogin();
         $data = [
             'name' => 'horizon zero dawn',
-            'igdbId' => 0,
             'status' => 'None',
-            'favorite' => 'No',
+            'favorite' => false,
             'rating' => '0',
             'format' => 'Physical',
             'notes' => 'This is a test Note',
@@ -88,7 +88,7 @@ class GameTest extends TestCase {
             'id' => $id,
         ];
         $response = $this->actingAs($user)->post('/games/showOne', $data, []);
-        $response->assertJsonStructure(['name','igdbId','status','favorite','rating','format','notes','owned','wishlist','backlog']);
+        $response->assertJsonStructure(['Game' => ['name','status','favorite','rating','format','notes','owned','wishlist','backlog']]);
     }
 
     public function testShowGameNotFoundTest() {
@@ -113,7 +113,7 @@ class GameTest extends TestCase {
         ];
 
         $response = $this->actingAs($user)->post('/games/showList', $data, []);
-        $response->assertJsonStructure(['*' => ['name','igdbId','status','favorite','rating','format','notes','owned','wishlist','backlog']]);
+        $response->assertJsonStructure([ 'Games'=> [ '*' => ['name','status','favorite','rating','format','notes','owned','wishlist','backlog']]]);
     }
 
     public function testShowListNoGamesTest() {
