@@ -61,6 +61,36 @@ const Handlebars = require("handlebars");
                     loadGames();
                 });
 
+                $(document).on('dblclick', '#gamerow', function() {
+
+                    let name = $(this).find('.name').text();
+
+                    //$(this).find('.name').html('changed');
+                    var theTemplateScript = $("#editGameRowTemplate").html();
+                        
+                    // Compile the template
+                    var theTemplate = Handlebars.compile(theTemplateScript);
+
+                    // Define our data object
+                    var context={
+                        "id": 1,
+                        //"favorite": value.favorite,
+                        "name": name,
+                        //"status": value.status,
+                        //"platform": value.platform,
+                        //"platformType": value.platformType,
+                        //"format": value.format,
+                        //"genre": value.genre,
+                        //"rating": value.rating,
+                    };
+                    
+                    // Pass our data to the template
+                    var theCompiledHtml = theTemplate(context);
+                    
+                    // Add the compiled html to the page
+                    $( this ).html(theCompiledHtml);
+                });
+
                 //TODO: Use this code as base when saving the added game
                 /*$( '#searchBar' ).keyup(function() {
                 //$( '#search' ).click(function() {

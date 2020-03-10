@@ -228,10 +228,14 @@ class GamesController extends Controller {
         {
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
             {
-                if (!$header)
+                if (!$header){
+                    // Remove the byte order mark some applications add to the beginning
+                    $bom = pack('H*','EFBBBF');
+                    $row[0] = preg_replace("/^$bom/", '', $row[0]);
                     $header = $row;
-                else
+                } else {
                     $data[] = array_combine($header, $row);
+                }
             }
             fclose($handle);
         }

@@ -1,13 +1,13 @@
 <script type="text/x-handlebars-template" id="showGameRowTemplate">
         <tr id="gamerow@{{gameID}}">
-                <td>
+                <td class="favorite">
                 @{{#if favorite}}
                         <i class="fa fa-heart favoriteIcon"></i>
                 @{{else}}
                         <i class="far fa-heart favoriteIcon"></i>
                 @{{/if}}
                 </td>
-                <td>@{{ name }}</td>
+                <td class="name">@{{ name }}</td>
                 <td>@{{ status }}</td>
                 <td>@{{ platform }}</td>
                 <td>@{{ platformType }}</td>

@@ -47,3 +47,4 @@
 
 @include('handlebars.addGameRowTemplate')
 @include('handlebars.showGameRowTemplate')
+@include('handlebars.editGameRowTemplate')
