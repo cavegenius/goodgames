@@ -13,7 +13,7 @@
                 <td>@{{ platformType }}</td>
                 <td>@{{ format }}</td>
                 <td>@{{ genre }}</td>
-                <td>@{{ rating }}</td>
+                <td>@{{{ rating }}}</td>
                 <td></td>
         </tr>
 </script>

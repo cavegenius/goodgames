@@ -36,12 +36,10 @@ const Handlebars = require("handlebars");
                     var theTemplate = Handlebars.compile(theTemplateScript);
                 
                     // Define our data object
-                    var context={
-                    "namething": "tis but a name"
-                    };
+                    //var context={};
                 
                     // Pass our data to the template
-                    var theCompiledHtml = theTemplate(context);
+                    var theCompiledHtml = theTemplate();
                 
                     // Add the compiled html to the page
                     $( '#gamesTableBody').prepend(theCompiledHtml);
@@ -62,33 +60,7 @@ const Handlebars = require("handlebars");
                 });
 
                 $(document).on('dblclick', '#gamerow', function() {
-
-                    let name = $(this).find('.name').text();
-
-                    //$(this).find('.name').html('changed');
-                    var theTemplateScript = $("#editGameRowTemplate").html();
-                        
-                    // Compile the template
-                    var theTemplate = Handlebars.compile(theTemplateScript);
-
-                    // Define our data object
-                    var context={
-                        "id": 1,
-                        //"favorite": value.favorite,
-                        "name": name,
-                        //"status": value.status,
-                        //"platform": value.platform,
-                        //"platformType": value.platformType,
-                        //"format": value.format,
-                        //"genre": value.genre,
-                        //"rating": value.rating,
-                    };
-                    
-                    // Pass our data to the template
-                    var theCompiledHtml = theTemplate(context);
-                    
-                    // Add the compiled html to the page
-                    $( this ).html(theCompiledHtml);
+                    showEditGameFields(this);
                 });
 
                 //TODO: Use this code as base when saving the added game
@@ -226,7 +198,14 @@ const Handlebars = require("handlebars");
                         
                 // Compile the template
                 var theTemplate = Handlebars.compile(theTemplateScript);
-
+                let rating = '';
+                for (let step = 1; step <= 5; step++) {
+                    if(value.rating >= step) {
+                        rating += '<i class="fas fa-star" data-value="'+step+'"></i>';
+                    } else {
+                        rating += '<i class="far fa-star" data-value="'+step+'"></i>';
+                    }
+                }
                 // Define our data object
                 var context={
                     "favorite": value.favorite,
@@ -236,7 +215,7 @@ const Handlebars = require("handlebars");
                     "platformType": value.platformType,
                     "format": value.format,
                     "genre": value.genre,
-                    "rating": value.rating,
+                    "rating": rating,
                 };
                 
                 // Pass our data to the template
@@ -248,5 +227,48 @@ const Handlebars = require("handlebars");
         } else if(obj.response.Status == 'Error') {
             $( '#gamesTableBody').append('<tr><td colspan="9" class="text-center">'+obj.response.Message+'</td></tr>');
         }
+    }
+
+    function showEditGameFields( row ) {
+        let favorite = $(row).find('.favorite').text();
+        let name = $(row).find('.name').text();
+        let status = $(row).find('.status').text();
+        let platform = $(row).find('.platform').text();
+        let platformType = $(row).find('.platformType').text();
+        let format = $(row).find('.format').text();
+        let genre = $(row).find('.genre').text();
+        let rating = $(row).find('.rating').text();
+        let ratingHTML = '';
+        for (let step = 1; step <= 5; step++) {
+            if(value.rating >= step) {
+                rating += '<i class="fas fa-star"></i>';
+            } else {
+                rating += '<i class="far fa-star"></i>';
+            }
+        }
+        //$(this).find('.name').html('changed');
+        var theTemplateScript = $("#editGameRowTemplate").html();
+
+        // Compile the template
+        var theTemplate = Handlebars.compile(theTemplateScript);
+
+        // Define our data object
+        var context={
+            "id": 1,
+            "favorite": favorite,
+            "name": name,
+            "status": status,
+            "platform": platform,
+            "platformType": platformType,
+            "format": format,
+            "genre": genre,
+            "rating": ratingHTML,
+        };
+
+        // Pass our data to the template
+        var theCompiledHtml = theTemplate(context);
+
+        // Add the compiled html to the page
+        $( row ).html(theCompiledHtml);
     }
 // End Games Functions

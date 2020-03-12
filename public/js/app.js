@@ -21984,7 +21984,7 @@ return jQuery;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.15';
+  var VERSION = '4.17.13';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -54416,12 +54416,10 @@ $(document).ready(function () {
     var theTemplateScript = $("#addGameRowTemplate").html(); // Compile the template
 
     var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+    //var context={};
+    // Pass our data to the template
 
-    var context = {
-      "namething": "tis but a name"
-    }; // Pass our data to the template
-
-    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+    var theCompiledHtml = theTemplate(); // Add the compiled html to the page
 
     $('#gamesTableBody').prepend(theCompiledHtml);
   });
@@ -54439,27 +54437,7 @@ $(document).ready(function () {
     loadGames();
   });
   $(document).on('dblclick', '#gamerow', function () {
-    var name = $(this).find('.name').text(); //$(this).find('.name').html('changed');
-
-    var theTemplateScript = $("#editGameRowTemplate").html(); // Compile the template
-
-    var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
-
-    var context = {
-      "id": 1,
-      //"favorite": value.favorite,
-      "name": name //"status": value.status,
-      //"platform": value.platform,
-      //"platformType": value.platformType,
-      //"format": value.format,
-      //"genre": value.genre,
-      //"rating": value.rating,
-
-    }; // Pass our data to the template
-
-    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
-
-    $(this).html(theCompiledHtml);
+    showEditGameFields(this);
   }); //TODO: Use this code as base when saving the added game
 
   /*$( '#searchBar' ).keyup(function() {
@@ -54588,7 +54566,17 @@ function showGameList(obj) {
       // Grab the template script
       var theTemplateScript = $("#showGameRowTemplate").html(); // Compile the template
 
-      var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+      var theTemplate = Handlebars.compile(theTemplateScript);
+      var rating = '';
+
+      for (var step = 1; step <= 5; step++) {
+        if (value.rating >= step) {
+          rating += '<i class="fas fa-star" data-value="' + step + '"></i>';
+        } else {
+          rating += '<i class="far fa-star" data-value="' + step + '"></i>';
+        }
+      } // Define our data object
+
 
       var context = {
         "favorite": value.favorite,
@@ -54598,7 +54586,7 @@ function showGameList(obj) {
         "platformType": value.platformType,
         "format": value.format,
         "genre": value.genre,
-        "rating": value.rating
+        "rating": rating
       }; // Pass our data to the template
 
       var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
@@ -54608,6 +54596,47 @@ function showGameList(obj) {
   } else if (obj.response.Status == 'Error') {
     $('#gamesTableBody').append('<tr><td colspan="9" class="text-center">' + obj.response.Message + '</td></tr>');
   }
+}
+
+function showEditGameFields(row) {
+  var favorite = $(row).find('.favorite').text();
+  var name = $(row).find('.name').text();
+  var status = $(row).find('.status').text();
+  var platform = $(row).find('.platform').text();
+  var platformType = $(row).find('.platformType').text();
+  var format = $(row).find('.format').text();
+  var genre = $(row).find('.genre').text();
+  var rating = $(row).find('.rating').text();
+  var ratingHTML = '';
+
+  for (var step = 1; step <= 5; step++) {
+    if (value.rating >= step) {
+      rating += '<i class="fas fa-star"></i>';
+    } else {
+      rating += '<i class="far fa-star"></i>';
+    }
+  } //$(this).find('.name').html('changed');
+
+
+  var theTemplateScript = $("#editGameRowTemplate").html(); // Compile the template
+
+  var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+
+  var context = {
+    "id": 1,
+    "favorite": favorite,
+    "name": name,
+    "status": status,
+    "platform": platform,
+    "platformType": platformType,
+    "format": format,
+    "genre": genre,
+    "rating": ratingHTML
+  }; // Pass our data to the template
+
+  var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+
+  $(row).html(theCompiledHtml);
 } // End Games Functions
 
 /***/ }),
@@ -54799,8 +54828,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
