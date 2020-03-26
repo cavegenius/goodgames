@@ -33,9 +33,7 @@ class GameTest extends TestCase {
             'rating' => '0',
             'format' => 'Physical',
             'notes' => 'This is a test Note',
-            'owned' => 1,
-            'wishlist' => 0,
-            'backlog' => 0
+            'owned' => 1
         ];
 
         $response = $this->actingAs($user)->post('/games/add', $data, []);
@@ -50,9 +48,7 @@ class GameTest extends TestCase {
             'platform' => 'Playstation 4',
             'platformType' => 'Console',
             'format' => 'Physical',
-            'owned' => 1,
-            'wishlist' => 0,
-            'backlog' => 0
+            'owned' => 1
         ];
 
         $response = $this->actingAs($user)->post('/games/add', $data, []);
@@ -68,9 +64,7 @@ class GameTest extends TestCase {
             'rating' => '0',
             'format' => 'Physical',
             'notes' => 'This is a test Note',
-            'owned' => 1,
-            'wishlist' => 0,
-            'backlog' => 0
+            'owned' => 1
         ];
         $response = $this->actingAs($user)->post('/games/add', $data, []);
         $response->assertStatus(302);
@@ -88,7 +82,7 @@ class GameTest extends TestCase {
             'id' => $id,
         ];
         $response = $this->actingAs($user)->post('/games/showOne', $data, []);
-        $response->assertJsonStructure(['Game' => ['name','status','favorite','rating','format','notes','owned','wishlist','backlog']]);
+        $response->assertJsonStructure(['Game' => ['name','status','favorite','rating','format','notes','owned']]);
     }
 
     public function testShowGameNotFoundTest() {
@@ -113,7 +107,7 @@ class GameTest extends TestCase {
         ];
 
         $response = $this->actingAs($user)->post('/games/showList', $data, []);
-        $response->assertJsonStructure([ 'Games'=> [ '*' => ['name','status','favorite','rating','format','notes','owned','wishlist','backlog']]]);
+        $response->assertJsonStructure([ 'Games'=> [ '*' => ['name','status','favorite','rating','format','notes','owned',]]]);
     }
 
     public function testShowListNoGamesTest() {
@@ -134,7 +128,7 @@ class GameTest extends TestCase {
             'id' => $id,
             'name' => 'new name'
         ];
-        $response = $this->actingAs($user)->post('/games/edit', $data, []);
+        $response = $this->actingAs($user)->post('/games/update', $data, []);
         $response->assertJson(['Status' => 'Success', 'Message' => 'Game Updated Successfully']);
         $this->markTestIncomplete('Add assertion to check the game has the new data.');
     }
@@ -148,7 +142,7 @@ class GameTest extends TestCase {
             'id' => $id,
             'name' => 'new name'
         ];
-        $response = $this->actingAs($user2)->post('/games/edit', $data, []);
+        $response = $this->actingAs($user2)->post('/games/update', $data, []);
         $response->assertJson(['Status' => 'Error', 'Message' => 'Invalid Game']);
     }
 

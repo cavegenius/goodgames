@@ -35,14 +35,21 @@ const Handlebars = require("handlebars");
                     // Compile the template
                     var theTemplate = Handlebars.compile(theTemplateScript);
                 
+                    var isWishlist = $('#selectedList').val() == 'wishlist' ? true : false;
+
                     // Define our data object
-                    //var context={};
+                    var context={
+                        "wishlist": isWishlist
+                    };
                 
                     // Pass our data to the template
-                    var theCompiledHtml = theTemplate();
+                    var theCompiledHtml = theTemplate(context);
                 
                     // Add the compiled html to the page
                     $( '#gamesTableBody').prepend(theCompiledHtml);
+
+                    // Show the bulk options
+                    $( '.add-edit-options' ).removeClass('hide-on-load');
                 });
 
                 $( '.listType' ).click(function() {
@@ -60,42 +67,159 @@ const Handlebars = require("handlebars");
                 });
 
                 $(document).on('dblclick', '#gamerow', function() {
+                    // Show the bulk options
+                    $( '.add-edit-options' ).removeClass('hide-on-load');
+
                     showEditGameFields(this);
                 });
 
-                //TODO: Use this code as base when saving the added game
-                /*$( '#searchBar' ).keyup(function() {
-                //$( '#search' ).click(function() {
-                    name = $( '#searchBar' ).val();
+                $(document).on('click', '.editSingleGame', function() {
+                    // Show the bulk options
+                    $( '.add-edit-options' ).removeClass('hide-on-load');
 
-                    $.ajax({
-                        method: 'POST', // Type of response and matches what we said in the route
-                        url: '/games/add', // This is the url we gave in the route
-                        data: {
-                            "_token": ctoken,
-                            'name' : name,
-                            'userId' : 1,
-                            'igdbId' : 0,
-                            'status' : 'None',
-                            'platform' : 'Playstation 4',
-                            'platformType' : 'Console',
-                            'favorite' : 'No',
-                            'rating' : '0',
-                            'format' : 'Physical',
-                            'notes' : 'kkl',
-                            'owned' : 1,
-                            'wishlist' : 0,
-                            'backlog' : 0
-                        }, // a JSON object to send back
-                        success: function(response){ // What to do if we succeed
-                            showSearchResults(response);
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
-                            console.log(JSON.stringify(jqXHR));
-                            console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                    showEditGameFields($(this).closest('tr'));
+                });
+
+                $( document ).on( 'click', '.cancelSingleAddGame, .cancelSingleEditGame', function(){
+                    $(this).closest('tr').remove();
+                });
+
+                $( document ).on( 'click', '.saveSingleAddGame', function(){
+                    var name;
+                    var status;
+                    var platform;
+                    var platformType;
+                    var favorite;
+                    var rating = 0;
+                    var format;
+                    var notes = '';
+                    var owned;
+
+                    $(this).closest('tr').find('input, select').each(function() {
+                        switch($(this).attr('name')) {
+                            case 'favorite':
+                                favorite = $(this).is(':checked') == true ? 1 : 0;
+                                break;
+                            case 'rating':
+                                if ( $(this).is(':checked') ) {
+                                    rating = $( this ).val();
+                                }
+                                break;
+                            case 'name':
+                                name = $( this ).val();
+                                break;
+                            case 'status':
+                                owned = $(this).val() != 'wishlist' ? 1 : 0;
+                                status = $(this).val();
+                                break;
+                            case 'platformType':
+                                platformType = $(this).val();
+                                break;
+                            case 'format':
+                                format = $(this).val();
+                                break;
+                            case 'platform':
+                                platform = $( this ).val();
+                                break;
+                            case 'genre':
+                                genre = $( this ).val();
+                                break;
                         }
                     });
-                });*/
+
+                    url = '/games/add';
+                    post_data = {
+                        'name' : name,
+                        'status' : status,
+                        'platform' : platform,
+                        'platformType' : platformType,
+                        'favorite' : favorite,
+                        'rating' : rating,
+                        'format' : format,
+                        'notes' : notes,
+                        'owned' : owned
+                    };
+
+                    run_ajax(
+                        url,
+                        post_data,
+                        function(obj) {
+                            loadGames();
+                        }
+                    );
+                    $(this).closest('tr').remove();
+                });
+
+                $( document ).on( 'click', '.saveSingleEditGame', function(){
+                    var id;
+                    var name;
+                    var status;
+                    var platform;
+                    var platformType;
+                    var favorite;
+                    var rating = 0;
+                    var format;
+                    var notes = '';
+                    var owned;
+
+                    $(this).closest('tr').find('input, select').each(function() {
+                        switch($(this).attr('name')) {
+                            case 'id':
+                                id = $( this ).val();
+                                break;
+                            case 'favorite':
+                                favorite = $(this).is(':checked') == true ? 1 : 0;
+                                break;
+                            case 'rating':
+                                if ( $(this).is(':checked') ) {
+                                    rating = $( this ).val();
+                                }
+                                break;
+                            case 'name':
+                                name = $( this ).val();
+                                break;
+                            case 'status':
+                                owned = $(this).val() != 'wishlist' ? 1 : 0;
+                                status = $(this).val();
+                                break;
+                            case 'platformType':
+                                platformType = $(this).val();
+                                break;
+                            case 'format':
+                                format = $(this).val();
+                                break;
+                            case 'platform':
+                                platform = $( this ).val();
+                                break;
+                            case 'genre':
+                                genre = $( this ).val();
+                                break;
+                        }
+                    });
+
+                    url = '/games/update';
+                    post_data = {
+                        'id' : id,
+                        'name' : name,
+                        'status' : status,
+                        'platform' : platform,
+                        'platformType' : platformType,
+                        'favorite' : favorite,
+                        'rating' : rating,
+                        'format' : format,
+                        'notes' : notes,
+                        'owned' : owned
+                    };
+
+                    run_ajax(
+                        url,
+                        post_data,
+                        function(obj) {
+                            loadGames();
+                        }
+                    );
+                    $(this).closest('tr').remove();
+                });
             // End Games Actions
         // End Event Actions
     });
@@ -173,7 +297,7 @@ const Handlebars = require("handlebars");
 
 // Games Functions
     function showSearchResults(obj) {
-        console.log(obj);
+        
     }
 
     function loadGames() {
@@ -190,6 +314,9 @@ const Handlebars = require("handlebars");
     }
 
     function showGameList(obj) {
+        // Need to leave any rows that have input fields open. Remove the rest
+        // May need a flag that skips that check
+        // If no rows or that flag is set then contiue with just blank html
         $( '#gamesTableBody').html('');
         if (obj.response.Status == 'Success') {
             $.each(obj.response['Games'], function( key, value ) {
@@ -201,13 +328,14 @@ const Handlebars = require("handlebars");
                 let rating = '';
                 for (let step = 1; step <= 5; step++) {
                     if(value.rating >= step) {
-                        rating += '<i class="fas fa-star" data-value="'+step+'"></i>';
+                        rating += '<label class="ratingStar"><input type="checkbox" checked value="'+step+'" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
                     } else {
-                        rating += '<i class="far fa-star" data-value="'+step+'"></i>';
+                        rating += '<label class="ratingStar"><input type="checkbox" value="'+step+'" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
                     }
                 }
                 // Define our data object
                 var context={
+                    "gameID": value.id,
                     "favorite": value.favorite,
                     "name": value.name,
                     "status": value.status,
@@ -230,20 +358,50 @@ const Handlebars = require("handlebars");
     }
 
     function showEditGameFields( row ) {
-        let favorite = $(row).find('.favorite').text();
+        let id = $(row).data('id');
         let name = $(row).find('.name').text();
         let status = $(row).find('.status').text();
         let platform = $(row).find('.platform').text();
         let platformType = $(row).find('.platformType').text();
         let format = $(row).find('.format').text();
         let genre = $(row).find('.genre').text();
-        let rating = $(row).find('.rating').text();
+        var rating = 0;
+
+        // Need to handle the select sections differently. Creating the option html to pass through
+        let statusHTML = '';
+        statusHTML +='<option value="None" '+(status == 'None'? 'selected' : '')+'>None</option>';
+        statusHTML += '<option value="Might Play" '+(status == 'Might Play' ? 'selected' : '')+'>Might Play</option>';
+        statusHTML += '<option value="Backlog" '+(status == 'Backlog' ? 'selected' : '')+'>Backlog</option>';
+        statusHTML += '<option value="In Progress" '+(status == 'In Progress' ? 'selected' : '')+'>In Progress</option>';
+        statusHTML += '<option value="Completed" '+(status == 'Completed' ? 'selected' : '')+'>Completed</option>';
+        statusHTML += '<option value="Wishlist" '+(status == 'Wishlist' ? 'selected' : '')+'>Wishlist</option>';
+        statusHTML += '<option value="Paused" '+(status == 'Paused' ? 'selected' : '')+'>Paused</option>';
+        statusHTML += '<option value="Unbeatable" '+(status == 'Unbeatable' ? 'selected' : '')+'>Unbeatable</option>';
+        statusHTML += '<option value="Abandoned" '+(status == 'Abandoned' ? 'selected' : '')+'>Abandoned</option>';
+        statusHTML += '<option value="Wont Play" '+(status == 'Wont Play' ? 'selected' : '')+'>Wont Play</option>';
+        
+        let platformTypeHTML = '';
+        platformTypeHTML += '<option value="Other" '+(platformType == 'Other'? 'selected' : '')+'>Other</option>';
+        platformTypeHTML += '<option value="PC" '+(platformType == 'PC'? 'selected' : '')+'>PC</option>';
+        platformTypeHTML += '<option value="Console" '+(platformType == 'Console'? 'selected' : '')+'>Console</option>';
+
+        let formatHTML = '';
+        formatHTML += '<option value="Not Set" '+(format == 'Not Set'? 'selected' : '')+'>Not Set</option>';
+        formatHTML += '<option value="Physical" '+(format == 'Physical'? 'selected' : '')+'>Physical</option>';
+        formatHTML += '<option value="Digital" '+(format == 'Digital'? 'selected' : '')+'>Digital</option>';
+
+        $(row).find('.ratingStar').each(function() {
+            if( $(this).children('input[type=checkbox]').is(':checked') ) {
+                rating = $(this).children('input[type=checkbox]').val();
+            }
+        });
+
         let ratingHTML = '';
         for (let step = 1; step <= 5; step++) {
-            if(value.rating >= step) {
-                rating += '<i class="fas fa-star"></i>';
+            if(rating >= step) {
+                ratingHTML += '<label class="ratingStar"><input type="checkbox" name="rating" checked value="'+step+'" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
             } else {
-                rating += '<i class="far fa-star"></i>';
+                ratingHTML += '<label class="ratingStar"><input type="checkbox" name="rating" value="'+step+'" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
             }
         }
         //$(this).find('.name').html('changed');
@@ -254,16 +412,19 @@ const Handlebars = require("handlebars");
 
         // Define our data object
         var context={
-            "id": 1,
-            "favorite": favorite,
+            "id": id,
             "name": name,
-            "status": status,
+            "status": statusHTML,
             "platform": platform,
-            "platformType": platformType,
-            "format": format,
+            "platformType": platformTypeHTML,
+            "format": formatHTML,
             "genre": genre,
             "rating": ratingHTML,
         };
+
+        if($(row).find('.favoriteIcon').children('input[type=checkbox]').is(':checked') ){
+            context.favorite = true;
+        }
 
         // Pass our data to the template
         var theCompiledHtml = theTemplate(context);

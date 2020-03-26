@@ -30,15 +30,13 @@ class GamesController extends Controller {
      *
      *
      */
-    public function store(Request $request) {
+    public function add(Request $request) {
         $this->validate($request, [
             'name' => 'required',
             'platform' => 'required',
             'platformType' => 'required',
             'format' => 'required',
-            'owned' => 'required',
-            'wishlist' => 'required',
-            'backlog' => 'required',
+            'owned' => 'required'
         ]);
 
         $user = Auth::id();
@@ -46,6 +44,7 @@ class GamesController extends Controller {
         $game->userId = $user;
         foreach( (array)$request->all() as $key=>$value ) {
             if( $key == '_token') { continue; }
+            if( $key == 'notes' && !$value ) { $value='';}
             $game->$key = $value;
         }
 
@@ -163,6 +162,7 @@ class GamesController extends Controller {
 
         foreach( (array)$request->all() as $key=>$value ) {
             if( $key == '_token') { continue; }
+            if( $key == 'notes' && !$value ) { $value='';}
             $game->$key = $value;
         }
 
@@ -196,9 +196,7 @@ class GamesController extends Controller {
         for ($i = 0; $i < count($gamesArray); $i++) {
             $game = new Game;
             $game->userId = Auth::id();
-            $game->owned = true;
-            $game->backlog = false;
-            $game->wishlist = false;
+            $game->owned = strtolower($gamesArray[$i]['Status']) != 'wishlist' ? true : false;
             foreach( $gamesArray[$i] as $key=>$value ) {
                 $key = strtolower($key );
                 $game->$key  = $value;

@@ -21,14 +21,12 @@ class Games extends Migration
             $table->enum('status', ['Might Play','Backlog','In Progress','Completed','Wont Play','Abandoned','Unbeatable','Paused','Wishlist','None'])->default('None');
             $table->string('platform',20)->default('');
             $table->enum('platformType', ['PC', 'Console', 'Other']);
-            $table->boolean('favorite')->default(false);;
+            $table->boolean('favorite')->default(false);
             $table->enum('format', ['Physical', 'Digital', 'Not Set']);
             $table->string('genre',255)->default('');
             $table->enum('rating', ['0','1','2','3','4','5'])->default('0');
             $table->string('notes',255)->default('');
             $table->boolean('owned');
-            $table->boolean('wishlist');
-            $table->boolean('backlog');
             $table->timestamps();
         });
     }

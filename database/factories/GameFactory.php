@@ -11,8 +11,6 @@ $factory->define(Game::class, function (Faker $faker) {
         'name' => $faker->name,
         'platformType' => 'Console',
         'format' => 'Physical',
-        'owned' => 1,
-        'wishlist' => 0,
-        'backlog' => 0,
+        'owned' => 1
     ];
 });

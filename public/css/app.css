@@ -11188,6 +11188,32 @@ body {
   }
 }
 
+.favoriteIcon input[type=checkbox],
+.favoriteIcon .checked {
+  display: none;
+}
+
+.favoriteIcon input[type=checkbox]:checked ~ .checked {
+  display: inline-block;
+}
+
+.favoriteIcon input[type=checkbox]:checked ~ .unchecked {
+  display: none;
+}
+
+.ratingStar input[type=checkbox],
+.ratingStar .checked {
+  display: none;
+}
+
+.ratingStar input[type=checkbox]:checked ~ .checked {
+  display: inline-block;
+}
+
+.ratingStar input[type=checkbox]:checked ~ .unchecked {
+  display: none;
+}
+
 /*!
  * Font Awesome Free 5.12.1 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)

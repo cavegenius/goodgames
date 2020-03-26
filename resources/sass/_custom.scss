@@ -283,3 +283,34 @@ body {
       -moz-transform: translateY"("35px")";
   }
 }
+
+// Favorite selection
+.favoriteIcon input[type="checkbox"],
+.favoriteIcon .checked {
+    display: none;
+}
+ 
+.favoriteIcon input[type="checkbox"]:checked ~ .checked
+{
+    display: inline-block;
+}
+ 
+.favoriteIcon input[type="checkbox"]:checked ~ .unchecked
+{
+    display: none;
+}
+
+.ratingStar input[type="checkbox"],
+.ratingStar .checked {
+    display: none;
+}
+ 
+.ratingStar input[type="checkbox"]:checked ~ .checked
+{
+    display: inline-block;
+}
+ 
+.ratingStar input[type="checkbox"]:checked ~ .unchecked
+{
+    display: none;
+}

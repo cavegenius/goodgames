@@ -19,6 +19,10 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary">Import</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
             </div>
+            <div class="btn-group mr-2 add-edit-options hide-on-load">
+                <button type="button" class="btn btn-sm btn-outline-secondary saveAll">Save All</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary cancelAll">Cancel All</button>
+            </div>
         </div>
     </div>
 
@@ -34,7 +38,7 @@
                 <th>Format</th>
                 <th>Genre</th>
                 <th>Rating</th>
-                <th>Actions <div class="float-right"><i class="fa fa-plus addGame"></i></div></th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody id="gamesTableBody">
