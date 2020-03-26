@@ -220,6 +220,18 @@ const Handlebars = require("handlebars");
                     );
                     $(this).closest('tr').remove();
                 });
+
+                $(document).on('click', '.cancelAll', function() {
+                    $( '#gamesTableBody').find('.cancelSingleEditGame, .cancelSingleAddGame').each(function() {
+                        $(this).click();
+                    });
+                });
+
+                $(document).on('click', '.saveAll', function() {
+                    $( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame').each(function() {
+                        $(this).click();
+                    });
+                });
             // End Games Actions
         // End Event Actions
     });
@@ -314,10 +326,26 @@ const Handlebars = require("handlebars");
     }
 
     function showGameList(obj) {
-        // Need to leave any rows that have input fields open. Remove the rest
+        // TODO: Need to leave any rows that have input fields open. Remove the rest
         // May need a flag that skips that check
         // If no rows or that flag is set then contiue with just blank html
-        $( '#gamesTableBody').html('');
+        let savedRows = [];
+        $( '#gamesTableBody').find('tr').each(function() {
+            if(!$(this).find('.saveSingleAddGame, .saveSingleEditGame').length) {
+                $(this).remove();
+            } else {
+                // Check if it is editing a game if so:
+                // Save the HTML of this row with an identified based on the id 
+                // Then during the loop later writing the rows write this code instead of the template 
+                if($(this).find('.saveSingleEditGame').length) {
+                    savedRows[$(this).data('id')] = $(this).html();
+
+                    $(this).html(''); 
+                }
+            }
+        });
+
+        //$( '#gamesTableBody').html('');
         if (obj.response.Status == 'Success') {
             $.each(obj.response['Games'], function( key, value ) {
                 // Grab the template script
@@ -350,7 +378,11 @@ const Handlebars = require("handlebars");
                 var theCompiledHtml = theTemplate(context);
                 
                 // Add the compiled html to the page
-                $( '#gamesTableBody').append(theCompiledHtml);
+                if(savedRows.hasOwnProperty(value.id) ) {
+                    $( '#gamesTableBody').append(savedRows[value.id]);
+                } else {
+                    $( '#gamesTableBody').append(theCompiledHtml);
+                }
             });
         } else if(obj.response.Status == 'Error') {
             $( '#gamesTableBody').append('<tr><td colspan="9" class="text-center">'+obj.response.Message+'</td></tr>');

@@ -1,5 +1,5 @@
 <script type="text/x-handlebars-template" id="addGameRowTemplate">
-    <tr id="addGameRow">
+    <tr id="addGameRow" class="changeActive">
         <td>
                 <label class="favoriteIcon">
                         <input type="checkbox" name="favorite" />
