@@ -74,21 +74,20 @@ const Handlebars = require("handlebars");
                 });
 
                 $(document).on('dblclick', '#gamerow', function() {
-                    // Show the bulk options
-                    $( '.add-edit-options' ).removeClass('hide-on-load');
+                    showUnsavedChanges();
 
                     showEditGameFields(this);
                 });
 
                 $(document).on('click', '.editSingleGame', function() {
-                    // Show the bulk options
-                    $( '.add-edit-options' ).removeClass('hide-on-load');
+                    showUnsavedChanges();
 
                     showEditGameFields($(this).closest('tr'));
                 });
 
                 $( document ).on( 'click', '.cancelSingleAddGame, .cancelSingleEditGame', function(){
                     $(this).closest('tr').remove();
+                    loadGames();
                 });
 
                 $( document ).on( 'click', '.saveSingleAddGame', function(){
@@ -229,15 +228,45 @@ const Handlebars = require("handlebars");
                 });
 
                 $(document).on('click', '.cancelAll', function() {
-                    $( '#gamesTableBody').find('.cancelSingleEditGame, .cancelSingleAddGame').each(function() {
+                    $( '#gamesTableBody').find('.cancelSingleEditGame, .cancelSingleAddGame, .cancelSingleDeleteGame').each(function() {
                         $(this).click();
                     });
                 });
 
                 $(document).on('click', '.saveAll', function() {
-                    $( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame').each(function() {
+                    $( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').each(function() {
                         $(this).click();
                     });
+                });
+
+                $(document).on('click', '.deleteSingleGame', function() {
+                    showUnsavedChanges();
+
+                    $(this).closest('tr').css('text-decoration','line-through');
+                    $(this).closest('td').html('<i class="fas fa-check saveSingleDeleteGame"></i> <i class="fas fa-ban cancelSingleDeleteGame"></i>')
+                });
+
+                $(document).on('click', '.cancelSingleDeleteGame', function() {
+                    $(this).closest('tr').css('text-decoration','none');
+                    $(this).closest('td').html('<i class="fas fa-edit editSingleGame"></i> <i class="fas fa-trash deleteSingleGame"></i>')
+                });
+
+                // Process Deletion
+                $(document).on('click', '.saveSingleDeleteGame', function() {
+                    let id = $(this).closest('tr').data('id');
+                    url = '/games/delete';
+                    post_data = {
+                        'id' : id,
+                    };
+
+                    run_ajax(
+                        url,
+                        post_data,
+                        function(obj) {
+                            loadGames();
+                        }
+                    );
+                    $(this).closest('tr').remove();
                 });
             // End Games Actions
         // End Event Actions
@@ -311,11 +340,50 @@ const Handlebars = require("handlebars");
 
         return html;
     }
+
+    function message_pop( alert_status, message, delay, location ) {
+        delay    = delay == '' ? 2500 : delay;
+        location = location == '' ? false : location;
+
+        jQuery( document ).ready( function() {
+            jQuery( '#response .alert' ).attr( 'class', 'alert alert-' + alert_status );
+            jQuery( '#response .response_message' ).html( message );
+
+            if ( location )
+            {
+                jQuery( location ).html( jQuery( '#response' ).html() );
+            }
+            else
+            {
+                location = '#response';
+            }
+
+            jQuery( location ).slideDown( 250 );
+
+            // only hide the message if delay is not set to forever
+            if ( delay != 'forever' )
+            {
+                setTimeout( function() {
+                    jQuery( location ).slideUp( 250 );
+                }, delay );
+            }
+        });
+    }
+
+    function message_clear(location) {
+        jQuery( location ).html( '' );
+    }
 // End Global Functions
 
 // Games Functions
     function showSearchResults(obj) {
         
+    }
+
+    function showUnsavedChanges() {
+        // Show the bulk options
+        message_pop( 'warning', 'You have unsaved Changes. Click \'Save All\' to process your changes.', 'forever', '#messageBox' );
+        $( '.add-edit-options' ).removeClass('hide-on-load');
     }
 
     function loadGames() {
@@ -332,16 +400,20 @@ const Handlebars = require("handlebars");
     }
 
     function showGameList(obj) {
-        let savedRows = [];
+        savedRows = [];
+
+        // Clear all messages
+        message_clear('#messageBox');
         $( '#gamesTableBody').find('tr').each(function() {
-            if(!$(this).find('.saveSingleAddGame, .saveSingleEditGame').length) {
+            if(!$(this).find('.saveSingleAddGame, .saveSingleEditGame, .saveSingleDeleteGame').length) {
                 $(this).remove();
             } else {
+                showUnsavedChanges();
                 // Check if it is editing a game if so:
                 // Save the HTML of this row with an identified based on the id 
                 // Then during the loop later writing the rows write this code instead of the template 
                 if($(this).find('.saveSingleEditGame').length) {
-                    savedRows[$(this).data('id')] = $(this).html();
+                    savedRows[$(this).data('id')] = '<tr id="gamerow" data-id="'+$(this).data('id')+'">'+$(this).html()+'</tr>';
                     $(this).html(''); 
                 }
             }
@@ -378,7 +450,7 @@ const Handlebars = require("handlebars");
                 
                 // Pass our data to the template
                 var theCompiledHtml = theTemplate(context);
-                
+
                 // Add the compiled html to the page
                 if(savedRows.hasOwnProperty(value.id) ) {
                     $( '#gamesTableBody').append(savedRows[value.id]);

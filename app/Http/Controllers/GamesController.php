@@ -182,7 +182,26 @@ class GamesController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request) {
-        //
+        if (!Auth::check()) {
+            return json_encode(['Status'=>'Error','Message'=>'User Not Logged In', 'Logout'=> true]);
+        }
+
+        $user = Auth::id();
+        $id = $request->all('id')['id'];
+
+        $game = Game::find($id);
+        // If the game does not belong to this user
+        if( $game && $user != $game['userId'] ){
+            return json_encode(['Status' => 'Error', 'Message' => 'Invalid Game']);
+        }
+
+        if($game->delete()) {
+            $result = json_encode(['Status' => 'Success', 'Message' => 'Game Deleted Successfully']);
+        } else {
+            $result = json_encode(['Status' => 'Error', 'Message' => 'An Error has Occurred']);
+        }
+
+        return $result;
     }
 
     /**

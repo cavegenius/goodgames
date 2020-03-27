@@ -11,6 +11,7 @@
     <!--Header-->
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Good Games</a>
+      <div id="messageBox"></div>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
           <a class="nav-link" href="{{ route('logout') }}"
@@ -66,5 +67,12 @@
       $route = $route->uri;
     ?>
     <input type="hidden" value="<?php echo $route; ?>" id="currentRoute" />
+
+    <div class="hide-on-load" id="response">
+      <div class="alert alert-info">
+          <button type="button" class="close" data-dismiss="alert" aria-label="~~SMART_CLOSE~~"><span aria-hidden="true">&times;</span></button>
+          <span class="response_message">~~COMMON_SAVE~~</span>
+      </div>
+    </div>
   </body>
 </html>

@@ -322,3 +322,9 @@ body {
 .addPlatformCol select {
   width:100%;
 }
+
+#messageBox, .alert {
+  margin-top:2px !important; 
+  margin-bottom:2px !important; 
+  height:41px;
+}
