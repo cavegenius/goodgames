@@ -13,8 +13,11 @@
                 @{{{status}}}
             </select>
         </td>
-        <td><input type="text" name="platform" data-id ="@{{ id }}" value="@{{ platform }}" /></td>
-        
+        <td class="addPlatformCol">
+                <select name="platform">
+                        @{{{platforms}}}
+                </select>
+        </td>
         <td>
             <select name="platformType" data-id ="@{{ id }}">
                 @{{{platformType}}}

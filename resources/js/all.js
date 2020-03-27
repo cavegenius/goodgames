@@ -3,12 +3,13 @@ const Handlebars = require("handlebars");
 // Document ready Actions
     $(document).ready( function() {
         // Variable Definitions
-            let currentRoute = $('#currentRoute').val();
+        let currentRoute = $('#currentRoute').val();
         // End Variable Definitions
 
         // Run any functions that need to load initial data sets
         if(currentRoute == 'games') {
             loadGames();
+            load_platform_list();
         }
 
         // Event Actions
@@ -37,11 +38,17 @@ const Handlebars = require("handlebars");
                 
                     var isWishlist = $('#selectedList').val() == 'wishlist' ? true : false;
 
+                    let platformHTML = '';
+                    $.each(platforms, function( key, value ) {
+                        platformHTML += '<option value="'+value+'">'+value+'</option>';
+                    });
+
                     // Define our data object
                     var context={
-                        "wishlist": isWishlist
+                        "wishlist": isWishlist,
+                        "platforms": platformHTML
                     };
-                
+                    
                     // Pass our data to the template
                     var theCompiledHtml = theTemplate(context);
                 
@@ -300,7 +307,6 @@ const Handlebars = require("handlebars");
             html += '<div class="cssload-shaft7"></div>';
             html += '<div class="cssload-shaft8"></div>';
             html += '<div class="cssload-shaft9"></div>';
-            // html += '<div class="cssload-shaft10"></div>';
             html += '</div>';
 
         return html;
@@ -326,9 +332,6 @@ const Handlebars = require("handlebars");
     }
 
     function showGameList(obj) {
-        // TODO: Need to leave any rows that have input fields open. Remove the rest
-        // May need a flag that skips that check
-        // If no rows or that flag is set then contiue with just blank html
         let savedRows = [];
         $( '#gamesTableBody').find('tr').each(function() {
             if(!$(this).find('.saveSingleAddGame, .saveSingleEditGame').length) {
@@ -339,7 +342,6 @@ const Handlebars = require("handlebars");
                 // Then during the loop later writing the rows write this code instead of the template 
                 if($(this).find('.saveSingleEditGame').length) {
                     savedRows[$(this).data('id')] = $(this).html();
-
                     $(this).html(''); 
                 }
             }
@@ -411,7 +413,12 @@ const Handlebars = require("handlebars");
         statusHTML += '<option value="Unbeatable" '+(status == 'Unbeatable' ? 'selected' : '')+'>Unbeatable</option>';
         statusHTML += '<option value="Abandoned" '+(status == 'Abandoned' ? 'selected' : '')+'>Abandoned</option>';
         statusHTML += '<option value="Wont Play" '+(status == 'Wont Play' ? 'selected' : '')+'>Wont Play</option>';
-        
+
+        let platformHTML = '';
+        $.each(platforms, function( key, value ) {
+            platformHTML += '<option value="'+value+'" '+(platform == value ? 'selected' : '')+'>'+value+'</option>';
+        });
+
         let platformTypeHTML = '';
         platformTypeHTML += '<option value="Other" '+(platformType == 'Other'? 'selected' : '')+'>Other</option>';
         platformTypeHTML += '<option value="PC" '+(platformType == 'PC'? 'selected' : '')+'>PC</option>';
@@ -447,7 +454,7 @@ const Handlebars = require("handlebars");
             "id": id,
             "name": name,
             "status": statusHTML,
-            "platform": platform,
+            "platforms": platformHTML,
             "platformType": platformTypeHTML,
             "format": formatHTML,
             "genre": genre,
@@ -463,5 +470,18 @@ const Handlebars = require("handlebars");
 
         // Add the compiled html to the page
         $( row ).html(theCompiledHtml);
+    }
+
+    function load_platform_list() {
+        url = '/games/get_platform_list';
+        post_data = {}
+
+        run_ajax(
+            url,
+            post_data,
+            function(obj) {
+                platforms = obj.response.Platforms;
+            }
+        );
     }
 // End Games Functions

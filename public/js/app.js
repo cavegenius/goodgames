@@ -54398,6 +54398,7 @@ $(document).ready(function () {
 
   if (currentRoute == 'games') {
     loadGames();
+    load_platform_list();
   } // Event Actions
   // Games Actions
   //$( '#searchBar' ).keyup(function() {
@@ -54416,10 +54417,15 @@ $(document).ready(function () {
     var theTemplateScript = $("#addGameRowTemplate").html(); // Compile the template
 
     var theTemplate = Handlebars.compile(theTemplateScript);
-    var isWishlist = $('#selectedList').val() == 'wishlist' ? true : false; // Define our data object
+    var isWishlist = $('#selectedList').val() == 'wishlist' ? true : false;
+    var platformHTML = '';
+    $.each(platforms, function (key, value) {
+      platformHTML += '<option value="' + value + '">' + value + '</option>';
+    }); // Define our data object
 
     var context = {
-      "wishlist": isWishlist
+      "wishlist": isWishlist,
+      "platforms": platformHTML
     }; // Pass our data to the template
 
     var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
@@ -54668,8 +54674,7 @@ function loader() {
   html += '<div class="cssload-shaft6"></div>';
   html += '<div class="cssload-shaft7"></div>';
   html += '<div class="cssload-shaft8"></div>';
-  html += '<div class="cssload-shaft9"></div>'; // html += '<div class="cssload-shaft10"></div>';
-
+  html += '<div class="cssload-shaft9"></div>';
   html += '</div>';
   return html;
 } // End Global Functions
@@ -54687,9 +54692,6 @@ function loadGames() {
 }
 
 function showGameList(obj) {
-  // TODO: Need to leave any rows that have input fields open. Remove the rest
-  // May need a flag that skips that check
-  // If no rows or that flag is set then contiue with just blank html
   var savedRows = [];
   $('#gamesTableBody').find('tr').each(function () {
     if (!$(this).find('.saveSingleAddGame, .saveSingleEditGame').length) {
@@ -54768,6 +54770,10 @@ function showEditGameFields(row) {
   statusHTML += '<option value="Unbeatable" ' + (status == 'Unbeatable' ? 'selected' : '') + '>Unbeatable</option>';
   statusHTML += '<option value="Abandoned" ' + (status == 'Abandoned' ? 'selected' : '') + '>Abandoned</option>';
   statusHTML += '<option value="Wont Play" ' + (status == 'Wont Play' ? 'selected' : '') + '>Wont Play</option>';
+  var platformHTML = '';
+  $.each(platforms, function (key, value) {
+    platformHTML += '<option value="' + value + '" ' + (platform == value ? 'selected' : '') + '>' + value + '</option>';
+  });
   var platformTypeHTML = '';
   platformTypeHTML += '<option value="Other" ' + (platformType == 'Other' ? 'selected' : '') + '>Other</option>';
   platformTypeHTML += '<option value="PC" ' + (platformType == 'PC' ? 'selected' : '') + '>PC</option>';
@@ -54800,7 +54806,7 @@ function showEditGameFields(row) {
     "id": id,
     "name": name,
     "status": statusHTML,
-    "platform": platform,
+    "platforms": platformHTML,
     "platformType": platformTypeHTML,
     "format": formatHTML,
     "genre": genre,
@@ -54815,6 +54821,14 @@ function showEditGameFields(row) {
   var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
 
   $(row).html(theCompiledHtml);
+}
+
+function load_platform_list() {
+  url = '/games/get_platform_list';
+  post_data = {};
+  run_ajax(url, post_data, function (obj) {
+    platforms = obj.response.Platforms;
+  });
 } // End Games Functions
 
 /***/ }),

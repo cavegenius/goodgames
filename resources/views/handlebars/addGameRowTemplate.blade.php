@@ -24,8 +24,10 @@
                         <option value="Wont Play">Wont Play</option>
                 </select>
         </td>
-        <td>
-                <input type="text" name="platform" value="" />
+        <td class="addPlatformCol">
+                <select name="platform">
+                        @{{{platforms}}}
+                </select>
         </td>
         <td>
                 <select name="platformType">
@@ -74,3 +76,6 @@
         <td><i class="fas fa-check saveSingleAddGame"></i> <i class="fas fa-ban cancelSingleAddGame"></i></td>
     </tr>
   </script>
+
+
+  
