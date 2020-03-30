@@ -32,8 +32,7 @@ class GameTest extends TestCase {
             'favorite' => false,
             'rating' => '0',
             'format' => 'Physical',
-            'notes' => 'This is a test Note',
-            'owned' => 1
+            'notes' => 'This is a test Note'
         ];
 
         $response = $this->actingAs($user)->post('/games/add', $data, []);
@@ -47,8 +46,7 @@ class GameTest extends TestCase {
             'name' => 'horizon zero dawn',
             'platform' => 'Playstation 4',
             'platformType' => 'Console',
-            'format' => 'Physical',
-            'owned' => 1
+            'format' => 'Physical'
         ];
 
         $response = $this->actingAs($user)->post('/games/add', $data, []);
@@ -63,8 +61,7 @@ class GameTest extends TestCase {
             'favorite' => false,
             'rating' => '0',
             'format' => 'Physical',
-            'notes' => 'This is a test Note',
-            'owned' => 1
+            'notes' => 'This is a test Note'
         ];
         $response = $this->actingAs($user)->post('/games/add', $data, []);
         $response->assertStatus(302);
@@ -82,7 +79,7 @@ class GameTest extends TestCase {
             'id' => $id,
         ];
         $response = $this->actingAs($user)->post('/games/showOne', $data, []);
-        $response->assertJsonStructure(['Game' => ['name','status','favorite','rating','format','notes','owned']]);
+        $response->assertJsonStructure(['Game' => ['name','status','favorite','rating','format','notes']]);
     }
 
     public function testShowGameNotFoundTest() {
@@ -103,17 +100,17 @@ class GameTest extends TestCase {
         $this->addGameForUser($user);
         $this->addGameForUser($user);
         $data = [
-            'list' => 'owned',
+            'list' => 'all',
         ];
 
         $response = $this->actingAs($user)->post('/games/showList', $data, []);
-        $response->assertJsonStructure([ 'Games'=> [ '*' => ['name','status','favorite','rating','format','notes','owned',]]]);
+        $response->assertJsonStructure([ 'Games'=> [ '*' => ['name','status','favorite','rating','format','notes']]]);
     }
 
     public function testShowListNoGamesTest() {
         $user = $this->createUserAndLogin();
         $data = [
-            'list' => 'owned',
+            'list' => 'all',
         ];
 
         $response = $this->actingAs($user)->post('/games/showList', $data, []);

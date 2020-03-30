@@ -7,10 +7,10 @@
         <h1 id="mainHeading" class="h2">Games</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <button type="button" value="owned" class="btn btn-sm btn-outline-primary listType">Owned</button>
-                <button type="button" value="wishlist" class="btn btn-sm btn-outline-secondary listType">Wishlist</button>
+                <button type="button" value="all" class="btn btn-sm btn-outline-primary listType">All</button>
                 <button type="button"  value="backlog"class="btn btn-sm btn-outline-secondary listType">Backlog</button>
-                <input type="hidden" value="owned" id="selectedList" />
+                <button type="button" value="wishlist" class="btn btn-sm btn-outline-secondary listType">Wishlist</button>
+                <input type="hidden" value="all" id="selectedList" />
             </div>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">

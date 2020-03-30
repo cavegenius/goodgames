@@ -21984,7 +21984,7 @@ return jQuery;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.15';
+  var VERSION = '4.17.13';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -54447,10 +54447,11 @@ $(document).ready(function () {
 
     loadGames();
   });
-  $(document).on('dblclick', '#gamerow', function () {
-    showUnsavedChanges();
-    showEditGameFields(this);
-  });
+  /*$(document).on('dblclick', '#gamerow', function() {
+      showUnsavedChanges();
+       showEditGameFields(this);
+  });*/
+
   $(document).on('click', '.editSingleGame', function () {
     showUnsavedChanges();
     showEditGameFields($(this).closest('tr'));
@@ -54468,7 +54469,6 @@ $(document).ready(function () {
     var rating = 0;
     var format;
     var notes = '';
-    var owned;
     $(this).closest('tr').find('input, select').each(function () {
       switch ($(this).attr('name')) {
         case 'favorite':
@@ -54487,7 +54487,6 @@ $(document).ready(function () {
           break;
 
         case 'status':
-          owned = $(this).val() != 'wishlist' ? 1 : 0;
           status = $(this).val();
           break;
 
@@ -54517,8 +54516,7 @@ $(document).ready(function () {
       'favorite': favorite,
       'rating': rating,
       'format': format,
-      'notes': notes,
-      'owned': owned
+      'notes': notes
     };
     run_ajax(url, post_data, function (obj) {
       loadGames();
@@ -54535,7 +54533,6 @@ $(document).ready(function () {
     var rating = 0;
     var format;
     var notes = '';
-    var owned;
     $(this).closest('tr').find('input, select').each(function () {
       switch ($(this).attr('name')) {
         case 'id':
@@ -54558,7 +54555,6 @@ $(document).ready(function () {
           break;
 
         case 'status':
-          owned = $(this).val() != 'wishlist' ? 1 : 0;
           status = $(this).val();
           break;
 
@@ -54589,8 +54585,7 @@ $(document).ready(function () {
       'favorite': favorite,
       'rating': rating,
       'format': format,
-      'notes': notes,
-      'owned': owned
+      'notes': notes
     };
     run_ajax(url, post_data, function (obj) {
       loadGames();
@@ -54624,6 +54619,7 @@ $(document).ready(function () {
       'id': id
     };
     run_ajax(url, post_data, function (obj) {
+      message_pop('success', 'Game Deleted Successfully', 2500);
       loadGames();
     });
     $(this).closest('tr').remove();
@@ -54699,7 +54695,8 @@ function loader() {
   return html;
 }
 
-function message_pop(alert_status, message, delay, location) {
+function message_pop(alert_status, message, delay) {
+  var location = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '#messageBox';
   delay = delay == '' ? 2500 : delay;
   location = location == '' ? false : location;
   jQuery(document).ready(function () {
@@ -54823,7 +54820,7 @@ function showEditGameFields(row) {
   statusHTML += '<option value="Completed" ' + (status == 'Completed' ? 'selected' : '') + '>Completed</option>';
   statusHTML += '<option value="Wishlist" ' + (status == 'Wishlist' ? 'selected' : '') + '>Wishlist</option>';
   statusHTML += '<option value="Paused" ' + (status == 'Paused' ? 'selected' : '') + '>Paused</option>';
-  statusHTML += '<option value="Unbeatable" ' + (status == 'Unbeatable' ? 'selected' : '') + '>Unbeatable</option>';
+  statusHTML += '<option value="Replayable" ' + (status == 'Replayable' ? 'selected' : '') + '>Replayable</option>';
   statusHTML += '<option value="Abandoned" ' + (status == 'Abandoned' ? 'selected' : '') + '>Abandoned</option>';
   statusHTML += '<option value="Wont Play" ' + (status == 'Wont Play' ? 'selected' : '') + '>Wont Play</option>';
   var platformHTML = '';
@@ -55076,8 +55073,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

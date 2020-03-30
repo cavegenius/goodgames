@@ -24,7 +24,6 @@ class Game extends Model {
         } else {
             $games = DB::table('games')
                 ->where('userId', $user )
-                ->where('owned', 1)
                 ->orderBy('name', 'asc')
                 ->get();
         }

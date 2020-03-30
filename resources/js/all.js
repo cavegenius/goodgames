@@ -73,11 +73,11 @@ const Handlebars = require("handlebars");
                     loadGames();
                 });
 
-                $(document).on('dblclick', '#gamerow', function() {
+                /*$(document).on('dblclick', '#gamerow', function() {
                     showUnsavedChanges();
 
                     showEditGameFields(this);
-                });
+                });*/
 
                 $(document).on('click', '.editSingleGame', function() {
                     showUnsavedChanges();
@@ -99,7 +99,6 @@ const Handlebars = require("handlebars");
                     var rating = 0;
                     var format;
                     var notes = '';
-                    var owned;
 
                     $(this).closest('tr').find('input, select').each(function() {
                         switch($(this).attr('name')) {
@@ -115,7 +114,6 @@ const Handlebars = require("handlebars");
                                 name = $( this ).val();
                                 break;
                             case 'status':
-                                owned = $(this).val() != 'wishlist' ? 1 : 0;
                                 status = $(this).val();
                                 break;
                             case 'platformType':
@@ -142,8 +140,7 @@ const Handlebars = require("handlebars");
                         'favorite' : favorite,
                         'rating' : rating,
                         'format' : format,
-                        'notes' : notes,
-                        'owned' : owned
+                        'notes' : notes
                     };
 
                     run_ajax(
@@ -166,7 +163,6 @@ const Handlebars = require("handlebars");
                     var rating = 0;
                     var format;
                     var notes = '';
-                    var owned;
 
                     $(this).closest('tr').find('input, select').each(function() {
                         switch($(this).attr('name')) {
@@ -185,7 +181,6 @@ const Handlebars = require("handlebars");
                                 name = $( this ).val();
                                 break;
                             case 'status':
-                                owned = $(this).val() != 'wishlist' ? 1 : 0;
                                 status = $(this).val();
                                 break;
                             case 'platformType':
@@ -213,8 +208,7 @@ const Handlebars = require("handlebars");
                         'favorite' : favorite,
                         'rating' : rating,
                         'format' : format,
-                        'notes' : notes,
-                        'owned' : owned
+                        'notes' : notes
                     };
 
                     run_ajax(
@@ -263,6 +257,7 @@ const Handlebars = require("handlebars");
                         url,
                         post_data,
                         function(obj) {
+                            message_pop('success', 'Game Deleted Successfully', 2500);
                             loadGames();
                         }
                     );
@@ -341,7 +336,7 @@ const Handlebars = require("handlebars");
         return html;
     }
 
-    function message_pop( alert_status, message, delay, location ) {
+    function message_pop( alert_status, message, delay, location = '#messageBox' ) {
         delay    = delay == '' ? 2500 : delay;
         location = location == '' ? false : location;
 
@@ -482,7 +477,7 @@ const Handlebars = require("handlebars");
         statusHTML += '<option value="Completed" '+(status == 'Completed' ? 'selected' : '')+'>Completed</option>';
         statusHTML += '<option value="Wishlist" '+(status == 'Wishlist' ? 'selected' : '')+'>Wishlist</option>';
         statusHTML += '<option value="Paused" '+(status == 'Paused' ? 'selected' : '')+'>Paused</option>';
-        statusHTML += '<option value="Unbeatable" '+(status == 'Unbeatable' ? 'selected' : '')+'>Unbeatable</option>';
+        statusHTML += '<option value="Replayable" '+(status == 'Replayable' ? 'selected' : '')+'>Replayable</option>';
         statusHTML += '<option value="Abandoned" '+(status == 'Abandoned' ? 'selected' : '')+'>Abandoned</option>';
         statusHTML += '<option value="Wont Play" '+(status == 'Wont Play' ? 'selected' : '')+'>Wont Play</option>';
 

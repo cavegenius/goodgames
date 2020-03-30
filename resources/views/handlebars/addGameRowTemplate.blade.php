@@ -19,7 +19,7 @@
                         <option value="Completed">Completed</option>
                         <option value="Wishlist" @{{#if wishlist}} selected @{{/if}}>Wishlist</option>
                         <option value="Paused">Paused</option>
-                        <option value="Unbeatable">Unbeatable</option>
+                        <option value="Replayable">Replayable</option>
                         <option value="Abandoned">Abandoned</option>
                         <option value="Wont Play">Wont Play</option>
                 </select>

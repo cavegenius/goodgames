@@ -10,7 +10,6 @@ $factory->define(Game::class, function (Faker $faker) {
         'userId' => 1,
         'name' => $faker->name,
         'platformType' => 'Console',
-        'format' => 'Physical',
-        'owned' => 1
+        'format' => 'Physical'
     ];
 });
