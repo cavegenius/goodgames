@@ -70,8 +70,8 @@
 
     <div class="hide-on-load" id="response">
       <div class="alert alert-info">
-          <button type="button" class="close" data-dismiss="alert" aria-label="~~SMART_CLOSE~~"><span aria-hidden="true">&times;</span></button>
-          <span class="response_message">~~COMMON_SAVE~~</span>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <span class="response_message">Save</span>
       </div>
     </div>
   </body>

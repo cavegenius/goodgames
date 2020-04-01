@@ -21984,7 +21984,7 @@ return jQuery;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.13';
+  var VERSION = '4.17.15';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -54623,6 +54623,32 @@ $(document).ready(function () {
       loadGames();
     });
     $(this).closest('tr').remove();
+  });
+  $(document).on('click', '.favoriteBox', function () {
+    var id = $(this).closest('tr').data('id');
+    url = '/games/update';
+    favorite = $(this).is(':checked') == true ? 1 : 0;
+    post_data = {
+      'id': id,
+      'favorite': favorite
+    };
+    run_ajax(url, post_data, function (obj) {
+      message_pop('success', 'Updated Successfully', 2500);
+      loadGames();
+    });
+  });
+  $(document).on('click', '.ratingBox', function () {
+    var id = $(this).closest('tr').data('id');
+    url = '/games/update';
+    rating = $(this).val();
+    post_data = {
+      'id': id,
+      'rating': rating
+    };
+    run_ajax(url, post_data, function (obj) {
+      message_pop('success', 'Game Rating Updated', 2500);
+      loadGames();
+    });
   }); // End Games Actions
   // End Event Actions
 }); // End Document ready Actions
@@ -54770,9 +54796,9 @@ function showGameList(obj) {
 
       for (var step = 1; step <= 5; step++) {
         if (value.rating >= step) {
-          rating += '<label class="ratingStar"><input type="checkbox" checked value="' + step + '" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
+          rating += '<label class="ratingStar"><input type="checkbox" checked value="' + step + '" class="ratingBox" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
         } else {
-          rating += '<label class="ratingStar"><input type="checkbox" value="' + step + '" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
+          rating += '<label class="ratingStar"><input type="checkbox" value="' + step + '" class="ratingBox" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
         }
       } // Define our data object
 
@@ -55073,8 +55099,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

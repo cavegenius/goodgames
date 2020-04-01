@@ -263,6 +263,46 @@ const Handlebars = require("handlebars");
                     );
                     $(this).closest('tr').remove();
                 });
+
+                $(document).on('click', '.favoriteBox', function() {
+                    let id = $(this).closest('tr').data('id');
+                    url = '/games/update';
+                    favorite = $(this).is(':checked') == true ? 1 : 0;
+
+                    post_data = {
+                        'id' : id,
+                        'favorite': favorite
+                    };
+
+                    run_ajax(
+                        url,
+                        post_data,
+                        function(obj) {
+                            message_pop('success', 'Updated Successfully', 2500);
+                            loadGames();
+                        }
+                    );
+                });
+
+                $(document).on('click', '.ratingBox', function() {
+                    let id = $(this).closest('tr').data('id');
+                    url = '/games/update';
+                    rating = $( this ).val();
+
+                    post_data = {
+                        'id' : id,
+                        'rating': rating
+                    };
+
+                    run_ajax(
+                        url,
+                        post_data,
+                        function(obj) {
+                            message_pop('success', 'Game Rating Updated', 2500);
+                            loadGames();
+                        }
+                    );
+                });
             // End Games Actions
         // End Event Actions
     });
@@ -425,9 +465,9 @@ const Handlebars = require("handlebars");
                 let rating = '';
                 for (let step = 1; step <= 5; step++) {
                     if(value.rating >= step) {
-                        rating += '<label class="ratingStar"><input type="checkbox" checked value="'+step+'" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
+                        rating += '<label class="ratingStar"><input type="checkbox" checked value="'+step+'" class="ratingBox" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
                     } else {
-                        rating += '<label class="ratingStar"><input type="checkbox" value="'+step+'" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
+                        rating += '<label class="ratingStar"><input type="checkbox" value="'+step+'" class="ratingBox" /><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label>';
                     }
                 }
                 // Define our data object

@@ -2,7 +2,7 @@
         <tr id="gamerow" data-id="@{{gameID}}">
                 <td class="favorite">
                         <label class="favoriteIcon">
-                                <input type="checkbox" @{{#if favorite}} checked @{{/if}} />
+                                <input type="checkbox" class="favoriteBox" @{{#if favorite}} checked @{{/if}} />
                                 <i class="far fa-heart unchecked"></i>
                                 <i class="fa fa-heart checked"></i>
                         </label>
