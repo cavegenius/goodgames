@@ -13,7 +13,7 @@
                 <td class="platformType">@{{ platformType }}</td>
                 <td class="format">@{{ format }}</td>
                 <td class="genre">@{{ genre }}</td>
-                <td class="stratingatus">@{{{ rating }}}</td>
+                <td class="stratingatus" data-rating="@{{ratingValue}}">@{{{ rating }}}</td>
                 <td><i class="fas fa-edit editSingleGame"></i> <i class="fas fa-trash deleteSingleGame"></i></td>
         </tr>
 </script>

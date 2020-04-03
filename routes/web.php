@@ -26,4 +26,6 @@ Route::post('/games/showList', 'GamesController@showList');
 Route::post('/games/update', 'GamesController@update');
 Route::post('/games/importCSV', 'GamesController@importCSV');
 Route::post('/games/get_platform_list', 'GamesController@get_platform_list');
+Route::post('/games/get_genre_list', 'GamesController@get_genre_list');
 Route::post('/games/delete', 'GamesController@destroy');
+Route::get('/games/getImportTemplate', 'GamesController@getImportTemplate');

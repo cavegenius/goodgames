@@ -23,7 +23,8 @@ class Games extends Migration
             $table->enum('platformType', ['PC', 'Console', 'Other']);
             $table->boolean('favorite')->default(false);
             $table->enum('format', ['Physical', 'Digital', 'Not Set']);
-            $table->string('genre',255)->default('');
+            //$table->string('genre',255)->default('');
+            $table->enum('genre', ["Simulator", "Tactical", "Quiz/Trivia", "Fighting", "Strategy", "Adventure", "Role-playing", "Shooter", "Music", "Indie", "Other"]);
             $table->enum('rating', ['0','1','2','3','4','5'])->default('0');
             $table->string('notes',255)->default('');
             $table->timestamps();

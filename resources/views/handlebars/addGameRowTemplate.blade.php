@@ -8,7 +8,7 @@
                 </label>
         </td>
         <td>
-                <input type="text" name="name" value="" />
+                <input type="text" name="name" value="@{{#if name}} @{{name}} @{{/if}}" />
         </td>
         <td>
                 <select name="status">
@@ -44,7 +44,9 @@
                 </select>
         </td>
         <td>
-                <input type="text" name="genre" value="" placeholder="Comma Separated" />
+                <select name="genre">
+                        @{{{genres}}}
+                </select>
         </td>
         <td>
                 <label class="ratingStar">

@@ -11047,8 +11047,35 @@ body {
 }
 
 .sidebar-right {
-  padding-top: 48px;
+  padding-top: 71px;
   border-left: 0.1px inset;
+}
+
+.sidebarRightMenu {
+  padding-left: 9rem;
+}
+
+#searchResults {
+  overflow-y: scroll;
+  max-height: 100vh;
+}
+
+.searchResultRow {
+  margin-bottom: 10px;
+  border-top: 1px solid black;
+}
+
+.searchResultImage {
+  margin-top: 5px;
+  text-align: center;
+}
+
+.addToWishlist {
+  width: 90%;
+}
+
+.addToInventory {
+  width: 90%;
 }
 
 /****************************************************************
@@ -11227,6 +11254,20 @@ body {
   margin-top: 2px !important;
   margin-bottom: 2px !important;
   height: 41px;
+}
+
+.alert-error {
+  color: #761b18;
+  background-color: #f9d6d5;
+  border-color: #f7c6c5;
+}
+
+.alert-error hr {
+  border-top-color: #f4b0af;
+}
+
+.alert-error .alert-link {
+  color: #4c110f;
 }
 
 /*!

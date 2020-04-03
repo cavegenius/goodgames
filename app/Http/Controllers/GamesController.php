@@ -62,6 +62,34 @@ class GamesController extends Controller {
         $game = new Igdb;
         $games = $game->search($name);
 
+        foreach($games as $key => $oneGame) {
+            // Create Image URL
+            if(property_exists($oneGame, 'cover')){
+                $id = $game->getCover( $oneGame->cover);
+                $games[$key]->cover = 'https://images.igdb.com/igdb/image/upload/t_thumb/'.$id[0]->image_id.'.jpg';
+            }
+
+            // Platforms
+            if(property_exists($oneGame, 'platforms')){
+                $platforms = array();
+                foreach($oneGame->platforms as $platform) {
+                    $result = $game->getPlatform($platform);
+                    $platforms[] = $result[0]->name;
+                }
+                $games[$key]->platforms = $platforms;
+            }
+
+            // Genres
+            if(property_exists($oneGame, 'genres')){
+                $genres = array();
+                foreach($oneGame->genres as $genre) {
+                    $result = $game->getGenre($genre);
+                    $genres[] = $result[0]->name;
+                }
+                $games[$key]->genres = $genres;
+            }
+        }
+
         $response['Games'] = $games;
         $response['Status'] = 'Success';
 
@@ -203,6 +231,19 @@ class GamesController extends Controller {
         return $result;
     }
 
+    public function getImportTemplate()
+{
+    //PDF file is stored under project/public/download/info.pdf
+    $file= public_path(). "/download/ImportTemplate.xlsx";
+
+    $headers = array(
+              'Content-Type: application/xlsx',
+            );
+
+            return response()->download($file, 'ImportTemplate.xlsx', $headers);
+}
+
+
     /**
      *  Import Games from CSV File
      */
@@ -262,6 +303,15 @@ class GamesController extends Controller {
         $platforms = ['32X','3DO','Acorn Archimedes','Acorn Electron','Amiga','Amiga CD32','Amstrad CPC','Amstrad GX4000','Android','APF-M1000','Apple II','Apple Arcade','Apple Bandai Pippin','Arcade','Atari 2600','Atari 5200','Atari 7800','Atari 8-bit','Atari ST','Bally Astrocade','Battle.Net','BBC Micro','Beamdog','Bethesda Launcher','Big Fish Games','Browser','Calculator','CD-i','CD32X','Coleco Adam','ColecoVision','Commodore 64','Commodore CDTV','Commodore Plus/4','Commodore VIC-20','Cougar Boy','Desura','Discord','DOS','DotEmu','Dragon 32/64','Dreamcast','DSiWare','Emerson Arcadia 2001','Epic Games Launcher','Fairchild Channel F','Family Computer','Famicom Disk System','FM Towns','Fujitsu Micro 7','Gamate','Game &amp; Watch','Game Gear','Game Boy','Game Boy/Color','Game Boy Advance','e-Reader','Game Wave Family Entertainment System','GameCube','GameFly','GamersGate','GameStop PC','Games For Windows','Game.com','Genesis / Mega Drive','GetGames','Gizmondo','GOG.com','Google Stadia','GP2X Wiz','Green Man Gaming','HTC Vive','Humble Bundle Store','HyperScan','IndieCity','Intellivision','iOS','iPad','iPod','iPhone','itch.io','Jaguar','Jaguar CD','LaserActive','Linux','Lynx','Mac','Magnavox Odyssey','Master System','Microvision','Miscellaneous','Mobile','MSX','N-Gage','NEC PC-8801','NEC PC-9801','Neo Geo','Neo Geo CD','Neo Geo Pocket/Color','Nintendo 3DS','3DS Downloads','Nintendo DS','Nintendo 64','Nintendo 64DD','Nintendo Entertainment System','Nintendo Switch','Switch Downloads','Nuon','Nuuvem','Oculus Rift','Odyssey² / Videopac','OnLive','Origin','OUYA','Pandora','PC','PC Downloads','PC-50X','PC-FX','Pinball','PlayStation','PlayStation 2','PlayStation 3','PlayStation 4','PlayStation Mobile','PlayStation Network','PSOne Classics','PS2 Classics','PlayStation minis','PlayStation Portable','PlayStation Vita','PlayStation VR','Plug-and-Play','PocketStation','Pokémon Mini','R-Zone','RCA Studio II','Rockstar Games Launcher','Super A\'Can','SAM Coup','Saturn','Sega CD','Sega Pico','Sega SG-1000','Sharp X1','Sharp X68000','Steam','Super Nintendo Entertainment System','SuperGrafx','TI-99/4A','Tiger Handhelds','TurboDuo','TurboGrafx-16','TurboGrafx-CD','TRS-80 Color Computer','Twitch','Uplay','Vectrex','Virtual Boy','Virtual Console (Wii)','Virtual Console (3DS)','Watara Supervision','Wii','WiiWare','Wii U','Wii U Downloads','Virtual Console (WiiU)','Windows Phone 7','Windows Store','WonderSwan/Color','XaviXPORT','Xbox','Xbox 360','Xbox Game Pass','Xbox LIVE Arcade','XNA Indie Games','Xbox 360 Games on Demand','Xbox One','Xbox One Downloads','Zeebo','Zune','ZX Spectrum', 'Other'];
 
         $response['Platforms'] = $platforms;
+        $response['Status'] = 'Success';
+
+        return json_encode($response); 
+    }
+
+    public function get_genre_list() {
+        $genres = ["Simulator", "Tactical", "Quiz/Trivia", "Fighting", "Strategy", "Adventure", "Role-playing", "Shooter", "Music", "Indie", "Other"];
+
+        $response['Genres'] = $genres;
         $response['Status'] = 'Success';
 
         return json_encode($response); 

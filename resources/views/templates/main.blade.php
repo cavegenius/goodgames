@@ -39,22 +39,14 @@
         </main>
         
         <div class="col-md-3 d-none d-md-block bg-light sidebar-right">
-          <div id="sideSearch" class="input-group p-5">
-              <input id="searchBar" class="form-control w-50" type="text" placeholder="Search" aria-label="Search">
-              <span class="input-group-btn">
-                <input id="search" class="btn btn-dark" type="button" name="submit" value="Submit">
-              </span>
+          <div class="btn-toolbar mb-2 mb-md-0 sidebarRightMenu">
+            <div class="btn-group mr-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary btn-search right-menu-item">Search</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary btn-import right-menu-item">Import</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item">Export</button>
+            </div>
           </div>
-          <div id="testImport">
-            <form name="importCSV" action="games/importCSV" method="POST" enctype="multipart/form-data">
-              @csrf
-              CSV File: <input type="file" name="csvFile"/><br />
-              <input id="importCSVSubmit" class="btn btn-dark" type="submit" name="submit" value="Import">
-            </form>
-          </div>
-          <div class="sidebar-sticky">
-              @include('inc.sidebarright')
-          </div>
+          <div class="sidebarRightContent"></div>
         </div>
       </div>
     </div>

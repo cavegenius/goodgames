@@ -28,7 +28,11 @@
                 @{{{format}}}
             </select>
         </td>
-        <td><input type="text" name="genre" data-id ="@{{ id }}" value="@{{ genre }}" /></td>
+        <td>
+            <select name="genre">
+                @{{{genres}}}
+            </select>    
+        </td>
         <td>@{{{ rating }}}</td>
         <td><i class="fas fa-check saveSingleEditGame"></i> <i class="fas fa-ban cancelSingleEditGame"></i></td>
 </script>

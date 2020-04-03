@@ -54393,18 +54393,24 @@ var Handlebars = __webpack_require__(/*! handlebars */ "./node_modules/handlebar
 
 $(document).ready(function () {
   // Variable Definitions
-  var currentRoute = $('#currentRoute').val(); // End Variable Definitions
+  var currentRoute = $('#currentRoute').val();
+  saveAll = false;
+  saveError = false; // End Variable Definitions
   // Run any functions that need to load initial data sets
 
   if (currentRoute == 'games') {
     loadGames();
     load_platform_list();
-  } // Event Actions
+    load_genre_list();
+  }
+
+  setTimeout(function () {
+    $('.btn-search').trigger("click");
+  }, 1); // Event Actions
   // Games Actions
   //$( '#searchBar' ).keyup(function() {
 
-
-  $('#search').click(function () {
+  $(document).on('click', '#search', function () {
     name = $('#searchBar').val();
     url = '/games/search';
     post_data = {
@@ -54421,11 +54427,16 @@ $(document).ready(function () {
     var platformHTML = '';
     $.each(platforms, function (key, value) {
       platformHTML += '<option value="' + value + '">' + value + '</option>';
+    });
+    var genreHTML = '';
+    $.each(genres, function (key, value) {
+      genreHTML += '<option value="' + value + '">' + value + '</option>';
     }); // Define our data object
 
     var context = {
       "wishlist": isWishlist,
-      "platforms": platformHTML
+      "platforms": platformHTML,
+      "genres": genreHTML
     }; // Pass our data to the template
 
     var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
@@ -54446,6 +54457,15 @@ $(document).ready(function () {
     $(this).blur(); // Now we load the new games list
 
     loadGames();
+  });
+  $('.right-menu-item').click(function () {
+    $('.right-menu-item').each(function () {
+      $(this).removeClass('btn-outline-primary');
+      $(this).addClass('btn-outline-secondary');
+    });
+    $(this).removeClass('btn-outline-secondary');
+    $(this).addClass('btn-outline-primary');
+    $(this).blur();
   });
   /*$(document).on('dblclick', '#gamerow', function() {
       showUnsavedChanges();
@@ -54519,6 +54539,15 @@ $(document).ready(function () {
       'notes': notes
     };
     run_ajax(url, post_data, function (obj) {
+      if (!saveAll) {
+        message_pop(obj.response.status, obj.response.message, 2500);
+        hideUnsavedChanges();
+      } else {
+        if (obj.response.status == 'Error') {
+          saveError = true;
+        }
+      }
+
       loadGames();
     });
     $(this).closest('tr').remove();
@@ -54588,19 +54617,43 @@ $(document).ready(function () {
       'notes': notes
     };
     run_ajax(url, post_data, function (obj) {
+      if (!saveAll) {
+        message_pop(obj.response.status, obj.response.message, 2500);
+        hideUnsavedChanges();
+      } else {
+        if (obj.response.status == 'Error') {
+          saveError = true;
+        }
+      }
+
       loadGames();
     });
     $(this).closest('tr').remove();
   });
   $(document).on('click', '.cancelAll', function () {
+    cancelAll = true;
     $('#gamesTableBody').find('.cancelSingleEditGame, .cancelSingleAddGame, .cancelSingleDeleteGame').each(function () {
       $(this).click();
     });
+    cancelAll = false;
+    hideUnsavedChanges();
   });
   $(document).on('click', '.saveAll', function () {
+    saveAll = true;
     $('#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').each(function () {
       $(this).click();
     });
+
+    if (!saveError) {
+      message_pop('Success', 'All changes Saved Successfully', 2500);
+    } else {
+      message_pop('Success', 'There was an error saving one or more changes.', 2500);
+    } // Reset the flags
+
+
+    saveError = false;
+    saveAll = false;
+    hideUnsavedChanges();
   });
   $(document).on('click', '.deleteSingleGame', function () {
     showUnsavedChanges();
@@ -54619,7 +54672,15 @@ $(document).ready(function () {
       'id': id
     };
     run_ajax(url, post_data, function (obj) {
-      message_pop('success', 'Game Deleted Successfully', 2500);
+      if (!saveAll) {
+        message_pop(obj.response.status, obj.response.message, 2500);
+        hideUnsavedChanges();
+      } else {
+        if (obj.response.status == 'Error') {
+          saveError = true;
+        }
+      }
+
       loadGames();
     });
     $(this).closest('tr').remove();
@@ -54639,8 +54700,15 @@ $(document).ready(function () {
   });
   $(document).on('click', '.ratingBox', function () {
     var id = $(this).closest('tr').data('id');
+    var currentRating = $(this).closest('td').data('rating');
     url = '/games/update';
-    rating = $(this).val();
+
+    if (currentRating != $(this).val()) {
+      rating = $(this).val();
+    } else {
+      rating = 0;
+    }
+
     post_data = {
       'id': id,
       'rating': rating
@@ -54649,6 +54717,96 @@ $(document).ready(function () {
       message_pop('success', 'Game Rating Updated', 2500);
       loadGames();
     });
+  });
+  $(document).on('click', '.fa-star', function () {
+    var clicked = $(this).siblings('input').val();
+    $(this).closest('td').find('input').each(function () {
+      if ($(this).val() < clicked) {
+        if ($(this).prop("checked") == false) {
+          $(this).prop("checked", true);
+        } else {
+          $(this).prop("checked", false);
+        }
+      }
+    });
+  });
+  $(document).on('click', '.btn-search', function () {
+    var theTemplateScript = $("#sidebarSearchTemplate").html(); // Compile the template
+
+    var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+
+    var context = {}; // Pass our data to the template
+
+    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+
+    $('.sidebarRightContent').html(theCompiledHtml);
+  });
+  $(document).on('click', '.btn-import', function () {
+    var theTemplateScript = $("#sidebarImportTemplate").html(); // Compile the template
+
+    var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+
+    var context = {}; // Pass our data to the template
+
+    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+
+    $('.sidebarRightContent').html(theCompiledHtml);
+  });
+  $(document).on('click', '.addToInventory', function () {
+    // Grab the template script
+    var theTemplateScript = $("#addGameRowTemplate").html(); // Compile the template
+
+    var theTemplate = Handlebars.compile(theTemplateScript);
+    var isWishlist = false;
+    var platformHTML = '';
+    $.each(platforms, function (key, value) {
+      platformHTML += '<option value="' + value + '">' + value + '</option>';
+    });
+    var genreHTML = '';
+    $.each(genres, function (key, value) {
+      genreHTML += '<option value="' + value + '">' + value + '</option>';
+    }); // Define our data object
+
+    var context = {
+      "wishlist": isWishlist,
+      "name": $(this).data('name'),
+      "platforms": platformHTML,
+      "genres": genreHTML
+    }; // Pass our data to the template
+
+    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+
+    $('#gamesTableBody').prepend(theCompiledHtml); // Show the bulk options
+
+    $('.add-edit-options').removeClass('hide-on-load');
+  });
+  $(document).on('click', '.addToWishlist', function () {
+    // Grab the template script
+    var theTemplateScript = $("#addGameRowTemplate").html(); // Compile the template
+
+    var theTemplate = Handlebars.compile(theTemplateScript);
+    var isWishlist = true;
+    var platformHTML = '';
+    $.each(platforms, function (key, value) {
+      platformHTML += '<option value="' + value + '">' + value + '</option>';
+    });
+    var genreHTML = '';
+    $.each(genres, function (key, value) {
+      genreHTML += '<option value="' + value + '">' + value + '</option>';
+    }); // Define our data object
+
+    var context = {
+      "wishlist": isWishlist,
+      "name": $(this).data('name'),
+      "platforms": platformHTML,
+      "genres": genreHTML
+    }; // Pass our data to the template
+
+    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+
+    $('#gamesTableBody').prepend(theCompiledHtml); // Show the bulk options
+
+    $('.add-edit-options').removeClass('hide-on-load');
   }); // End Games Actions
   // End Event Actions
 }); // End Document ready Actions
@@ -54751,12 +54909,37 @@ function message_clear(location) {
 // Games Functions
 
 
-function showSearchResults(obj) {}
+function showSearchResults(obj) {
+  $('#searchResults').html('');
+  $.each(obj.response['Games'], function (key, value) {
+    var theTemplateScript = $("#searchResultsTemplate").html(); // Compile the template
+
+    var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+
+    var context = {
+      "cover": value.cover,
+      "name": value.name,
+      "genres": value.genres,
+      "platforms": value.platforms,
+      "summary": value.summary
+    }; // Pass our data to the template
+
+    var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
+
+    $('#searchResults').append(theCompiledHtml);
+  });
+}
 
 function showUnsavedChanges() {
   // Show the bulk options
   message_pop('warning', 'You have unsaved Changes. Click \'Save All\' to process your changes.', 'forever', '#messageBox');
   $('.add-edit-options').removeClass('hide-on-load');
+}
+
+function hideUnsavedChanges() {
+  // Show the bulk options
+  $('#messageBox').html('');
+  $('.add-edit-options').addClass('hide-on-load');
 }
 
 function loadGames() {
@@ -54812,7 +54995,8 @@ function showGameList(obj) {
         "platformType": value.platformType,
         "format": value.format,
         "genre": value.genre,
-        "rating": rating
+        "rating": rating,
+        "ratingValue": value.rating
       }; // Pass our data to the template
 
       var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
@@ -54853,6 +55037,10 @@ function showEditGameFields(row) {
   $.each(platforms, function (key, value) {
     platformHTML += '<option value="' + value + '" ' + (platform == value ? 'selected' : '') + '>' + value + '</option>';
   });
+  var genreHTML = '';
+  $.each(genres, function (key, value) {
+    genreHTML += '<option value="' + value + '" ' + (genre == value ? 'selected' : '') + '>' + value + '</option>';
+  });
   var platformTypeHTML = '';
   platformTypeHTML += '<option value="Other" ' + (platformType == 'Other' ? 'selected' : '') + '>Other</option>';
   platformTypeHTML += '<option value="PC" ' + (platformType == 'PC' ? 'selected' : '') + '>PC</option>';
@@ -54888,7 +55076,7 @@ function showEditGameFields(row) {
     "platforms": platformHTML,
     "platformType": platformTypeHTML,
     "format": formatHTML,
-    "genre": genre,
+    "genres": genreHTML,
     "rating": ratingHTML
   };
 
@@ -54907,6 +55095,14 @@ function load_platform_list() {
   post_data = {};
   run_ajax(url, post_data, function (obj) {
     platforms = obj.response.Platforms;
+  });
+}
+
+function load_genre_list() {
+  url = '/games/get_genre_list';
+  post_data = {};
+  run_ajax(url, post_data, function (obj) {
+    genres = obj.response.Genres;
   });
 } // End Games Functions
 

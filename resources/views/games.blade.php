@@ -16,8 +16,6 @@
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary addGame">Add Game</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Import</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
             </div>
             <div class="btn-group mr-2 add-edit-options hide-on-load">
                 <button type="button" class="btn btn-sm btn-outline-secondary saveAll">Save All</button>
@@ -52,3 +50,6 @@
 @include('handlebars.addGameRowTemplate')
 @include('handlebars.showGameRowTemplate')
 @include('handlebars.editGameRowTemplate')
+@include('handlebars.sidebarImportTemplate')
+@include('handlebars.sidebarSearchTemplate')
+@include('handlebars.searchResultsTemplate')
