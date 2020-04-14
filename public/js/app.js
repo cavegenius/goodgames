@@ -54807,6 +54807,26 @@ $(document).ready(function () {
     $('#gamesTableBody').prepend(theCompiledHtml); // Show the bulk options
 
     $('.add-edit-options').removeClass('hide-on-load');
+  });
+  $(document).on('click', '.sortableCol', function () {
+    if ($(this).hasClass('sortedAsc')) {
+      $(this).removeClass('sortedAsc');
+      $(this).addClass('sortedDesc');
+      $('#sortOrder').val('desc');
+    } else if ($(this).hasClass('sortedDesc')) {
+      $(this).addClass('sortedAsc');
+      $(this).removeClass('sortedDesc');
+      $('#sortOrder').val('asc');
+    } else {
+      $('.sortableCol').each(function () {
+        $(this).removeClass('sortedAsc');
+        $(this).removeClass('sortedDesc');
+      });
+      $(this).addClass('sortedAsc');
+      $('#sortCol').val($(this).data('name')), $('#sortOrder').val('asc');
+    }
+
+    loadGames();
   }); // End Games Actions
   // End Event Actions
 }); // End Document ready Actions
@@ -54945,7 +54965,9 @@ function hideUnsavedChanges() {
 function loadGames() {
   url = '/games/showList';
   post_data = {
-    list: $('#selectedList').val()
+    list: $('#selectedList').val(),
+    sortCol: $('#sortCol').val(),
+    sortOrder: $('#sortOrder').val()
   };
   run_ajax(url, post_data, showGameList);
 }

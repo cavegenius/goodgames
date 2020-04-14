@@ -8,23 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Game extends Model {
     protected $fillable = ['name','platformType','platform','status','genre','favorite','rating','format','notes'];
 
-    public function allGamesForListByUser( $user, $list ) {
+    public function allGamesForListByUser( $user, $list, $sortCol='name', $sortOrder='asc' ) {
         if( $list == 'backlog' ){
             $games = DB::table('games')
                 ->where('userId', $user )
                 ->where('status', 'backlog')
-                ->orderBy('name', 'asc')
+                ->orderBy($sortCol, $sortOrder)
                 ->get();
         } else if($list == 'wishlist') {
             $games = DB::table('games')
                 ->where('userId', $user )
                 ->where('status', 'wishlist')
-                ->orderBy('name', 'asc')
+                ->orderBy($sortCol, $sortOrder)
                 ->get();
         } else {
             $games = DB::table('games')
                 ->where('userId', $user )
-                ->orderBy('name', 'asc')
+                ->orderBy($sortCol, $sortOrder)
                 ->get();
         }
 

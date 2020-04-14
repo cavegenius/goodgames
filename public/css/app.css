@@ -11270,6 +11270,26 @@ body {
   color: #4c110f;
 }
 
+.sortableCol {
+  cursor: pointer;
+}
+
+.sortedAsc:after {
+  font-family: "Font Awesome 5 Free";
+  color: black;
+  position: relative;
+  left: 10px;
+  content: "\F106";
+}
+
+.sortedDesc:after {
+  font-family: "Font Awesome 5 Free";
+  color: black;
+  position: relative;
+  left: 10px;
+  content: "\F107";
+}
+
 /*!
  * Font Awesome Free 5.12.1 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
