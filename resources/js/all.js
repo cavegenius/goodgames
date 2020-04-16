@@ -78,6 +78,7 @@ const Handlebars = require("handlebars");
 
                 $( '.listType' ).click(function() {
                     // Change the disgn of the buttons to highlight the correct list
+                    clearFilters();
                     $('#selectedList').val($(this).val());
                     $('.listType').each(function() {
                         $(this).removeClass('btn-outline-primary');
@@ -114,6 +115,12 @@ const Handlebars = require("handlebars");
 
                 $( document ).on( 'click', '.cancelSingleAddGame, .cancelSingleEditGame', function(){
                     $(this).closest('tr').remove();
+                    if(!$( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').length) {
+                        // Reset the flags
+                        saveError = false;
+                        saveAll = false;
+                        hideUnsavedChanges();
+                    }
                     loadGames();
                 });
 
@@ -299,6 +306,13 @@ const Handlebars = require("handlebars");
                 $(document).on('click', '.cancelSingleDeleteGame', function() {
                     $(this).closest('tr').css('text-decoration','none');
                     $(this).closest('td').html('<i class="fas fa-edit editSingleGame"></i> <i class="fas fa-trash deleteSingleGame"></i>')
+
+                    if(!$( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').length) {
+                        // Reset the flags
+                        saveError = false;
+                        saveAll = false;
+                        hideUnsavedChanges();
+                    }
                 });
 
                 // Process Deletion
@@ -537,6 +551,11 @@ const Handlebars = require("handlebars");
                     }
                 });
 
+                $(document).on('click', '.clearFilters', function() {
+                    clearFilters();
+                    loadGames();
+                    $(this).blur();
+                });
             // End Games Actions
         // End Event Actions
     });
@@ -899,6 +918,23 @@ const Handlebars = require("handlebars");
             }
             if ( $(this).is( ":checked" ) ) {
                 filters[ name ].push( value );
+            }
+        });
+    }
+
+    function clearFilters() {
+        filters = {};
+        resetListAll();
+        $('#inventorySearch').val('');
+        searchTerm= '';
+        $('input.filterItem').each(function(key,elem){
+            let name  = $(this).attr('name');
+            let value = $(this).val();
+            if ( typeof filters[ name ] == "undefined" ) {
+                filters[ name ] = [];
+            }
+            if ( $(this).is( ":checked" ) ) {
+                $(this).prop("checked",false);
             }
         });
     }

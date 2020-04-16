@@ -1,5 +1,8 @@
 <ul class="nav flex-column">
     <h3>Filters</h3>
+    <div class="btn-group mr-2">
+        <button type="button" value="" class="btn btn-sm btn-outline-secondary clearFilters">Clear Filters</button>
+    </div>
     <!--Name Search-->
     <li class="nav-item">
         Search Your Games:

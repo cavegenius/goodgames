@@ -54450,6 +54450,7 @@ $(document).ready(function () {
   });
   $('.listType').click(function () {
     // Change the disgn of the buttons to highlight the correct list
+    clearFilters();
     $('#selectedList').val($(this).val());
     $('.listType').each(function () {
       $(this).removeClass('btn-outline-primary');
@@ -54481,6 +54482,14 @@ $(document).ready(function () {
   });
   $(document).on('click', '.cancelSingleAddGame, .cancelSingleEditGame', function () {
     $(this).closest('tr').remove();
+
+    if (!$('#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').length) {
+      // Reset the flags
+      saveError = false;
+      saveAll = false;
+      hideUnsavedChanges();
+    }
+
     loadGames();
   });
   $(document).on('click', '.saveSingleAddGame', function () {
@@ -54666,6 +54675,13 @@ $(document).ready(function () {
   $(document).on('click', '.cancelSingleDeleteGame', function () {
     $(this).closest('tr').css('text-decoration', 'none');
     $(this).closest('td').html('<i class="fas fa-edit editSingleGame"></i> <i class="fas fa-trash deleteSingleGame"></i>');
+
+    if (!$('#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').length) {
+      // Reset the flags
+      saveError = false;
+      saveAll = false;
+      hideUnsavedChanges();
+    }
   }); // Process Deletion
 
   $(document).on('click', '.saveSingleDeleteGame', function () {
@@ -54852,6 +54868,11 @@ $(document).ready(function () {
       $(this).removeClass('filterOpened');
       $(this).addClass('filterClosed');
     }
+  });
+  $(document).on('click', '.clearFilters', function () {
+    clearFilters();
+    loadGames();
+    $(this).blur();
   }); // End Games Actions
   // End Event Actions
 }); // End Document ready Actions
@@ -55179,6 +55200,25 @@ function processFilters() {
 
     if ($(this).is(":checked")) {
       filters[name].push(value);
+    }
+  });
+}
+
+function clearFilters() {
+  filters = {};
+  resetListAll();
+  $('#inventorySearch').val('');
+  searchTerm = '';
+  $('input.filterItem').each(function (key, elem) {
+    var name = $(this).attr('name');
+    var value = $(this).val();
+
+    if (typeof filters[name] == "undefined") {
+      filters[name] = [];
+    }
+
+    if ($(this).is(":checked")) {
+      $(this).prop("checked", false);
     }
   });
 } // End Games Functions
