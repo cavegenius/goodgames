@@ -30,7 +30,7 @@
       <div class="row">
         <div class="col-md-1 d-none d-md-block bg-light sidebar">
           <div class="sidebar-sticky">
-            @include('inc.sidebarleft')
+            @include('inc.filters')
           </div>
         </div>
 

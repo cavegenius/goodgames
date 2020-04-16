@@ -6,6 +6,10 @@ const Handlebars = require("handlebars");
         let currentRoute = $('#currentRoute').val();
         saveAll = false;
         saveError = false;
+        filters = {};
+        searchTerm= '';
+        //filters['status'] = ['Backlog','Wishlist'];
+
         // End Variable Definitions
 
         // Run any functions that need to load initial data sets
@@ -508,6 +512,31 @@ const Handlebars = require("handlebars");
                     }
                     loadGames();
                 });
+
+                $( '#inventorySearch' ).keyup(function() {
+                    searchTerm = $( '#inventorySearch' ).val();
+                    processFilters()
+                    loadGames();
+                });
+
+                $(document).on('change', '.filterItem', function() {
+                    processFilters()
+                    loadGames();
+                });
+
+                $(document).on('click', '.filterHeader', function() {
+                    let section = $( this ).data('section');
+                    if( $( this ).hasClass('filterClosed') ) {
+                        $( '.'+section ).removeClass('hide-on-load');
+                        $( this ).removeClass('filterClosed');
+                        $( this ).addClass('filterOpened');
+                    } else {
+                        $( '.'+section ).addClass('hide-on-load');
+                        $( this ).removeClass('filterOpened');
+                        $( this ).addClass('filterClosed');
+                    }
+                });
+
             // End Games Actions
         // End Event Actions
     });
@@ -658,7 +687,9 @@ const Handlebars = require("handlebars");
         post_data = {
             list: $('#selectedList').val(),
             sortCol: $('#sortCol').val(),
-            sortOrder: $('#sortOrder').val()
+            sortOrder: $('#sortOrder').val(),
+            filtered: JSON.stringify( filters, null, 1 ),
+            searchTerm: searchTerm
         }
 
         run_ajax(
@@ -843,5 +874,32 @@ const Handlebars = require("handlebars");
                 genres = obj.response.Genres;
             }
         );
+    }
+
+    function resetListAll() {
+        $('#selectedList').val('all');
+        $('.listType').each(function() {
+            $(this).removeClass('btn-outline-primary');
+            $(this).addClass('btn-outline-secondary');
+        });
+        
+        $('.listType[value="all"]').removeClass('btn-outline-secondary');
+        $('.listType[value="all"]').addClass('btn-outline-primary');
+        $('.listType[value="all"]').blur();
+    }
+
+    function processFilters() {
+        filters = {};
+        resetListAll();
+        $('input.filterItem').each(function(key,elem){
+            let name  = $(this).attr('name');
+            let value = $(this).val();
+            if ( typeof filters[ name ] == "undefined" ) {
+                filters[ name ] = [];
+            }
+            if ( $(this).is( ":checked" ) ) {
+                filters[ name ].push( value );
+            }
+        });
     }
 // End Games Functions

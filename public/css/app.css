@@ -11274,20 +11274,50 @@ body {
   cursor: pointer;
 }
 
-.sortedAsc:after {
+.sortedAsc::after {
   font-family: "Font Awesome 5 Free";
   color: black;
   position: relative;
   left: 10px;
+  font-weight: 900;
   content: "\F106";
 }
 
-.sortedDesc:after {
+.sortedDesc::after {
   font-family: "Font Awesome 5 Free";
   color: black;
   position: relative;
   left: 10px;
+  font-weight: 900;
   content: "\F107";
+}
+
+.filterHeader {
+  cursor: pointer;
+}
+
+.filterOpened::before {
+  font-family: "Font Awesome 5 Free";
+  color: black;
+  position: relative;
+  font-weight: 900;
+  content: "\F107";
+}
+
+.filterClosed::before {
+  font-family: "Font Awesome 5 Free";
+  color: black;
+  position: relative;
+  font-weight: 900;
+  content: "\F105";
+}
+
+.filterItem {
+  margin-left: 15px;
+}
+
+#inventorySearch {
+  width: 85%;
 }
 
 /*!

@@ -122,8 +122,15 @@ class GamesController extends Controller {
         $list = $request->all('list')['list'];
         $sortCol = $request->all('sortCol')['sortCol'];
         $sortOrder = $request->all('sortOrder')['sortOrder'];
+        $filters = json_decode($request->all('filtered')['filtered'], TRUE );
+        $search = $request->all('searchTerm')['searchTerm'];
+
         $model = new Game;
-        $games = $model->allGamesForListByUser($user, $list, $sortCol, $sortOrder);
+        if($filters ||  $search){
+            $games = $model->filteredList($user, $list, $sortCol, $sortOrder, $filters,  $search);
+        } else {
+            $games = $model->allGamesForListByUser($user, $list, $sortCol, $sortOrder);
+        }
 
         if(count($games) > 0) {
             $response['Games'] = $games;
