@@ -11299,6 +11299,7 @@ body {
 .filterOpened::before {
   font-family: "Font Awesome 5 Free";
   color: black;
+  margin-left: 5px;
   position: relative;
   font-weight: 900;
   content: "\F107";
@@ -11307,6 +11308,7 @@ body {
 .filterClosed::before {
   font-family: "Font Awesome 5 Free";
   color: black;
+  margin-left: 5px;
   position: relative;
   font-weight: 900;
   content: "\F105";
@@ -11318,6 +11320,7 @@ body {
 
 #inventorySearch {
   width: 85%;
+  margin-left: 5px;
 }
 
 /*!
