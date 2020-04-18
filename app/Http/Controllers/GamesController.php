@@ -25,11 +25,6 @@ class GamesController extends Controller {
         return view('games');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     *
-     */
     public function add(Request $request) {
         $this->validate($request, [
             'name' => 'required',
@@ -159,11 +154,8 @@ class GamesController extends Controller {
 
         $game = Game::find($id);
 
-        // If the game does not belong to this user
-        if( $game && $user != $game['userId'] ){
-            $response['Status'] = 'Error';
-            $response['Message'] ='Game Not Found For This User';
-        } else if( $game && $user == $game['userId'] ) {
+        // Verifying the game is found and belongs to this user
+        if( $game && $user == $game['userId'] ) {
             $response['Game'] = $game;
             $response['Status'] = 'Success';
         } else { 

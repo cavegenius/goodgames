@@ -29,3 +29,10 @@ Route::post('/games/get_platform_list', 'GamesController@get_platform_list');
 Route::post('/games/get_genre_list', 'GamesController@get_genre_list');
 Route::post('/games/delete', 'GamesController@destroy');
 Route::get('/games/getImportTemplate', 'GamesController@getImportTemplate');
+
+Route::post('/filters/add', 'FilterController@add');
+Route::post('/filters/delete', 'FilterController@delete');
+Route::post('/filters/apply', 'FilterController@apply');
+Route::post('/filters/updateName', 'FilterController@updateName');
+Route::post('/filters/updateFilter', 'FilterController@updateFilter');
+Route::post('/filters/list', 'FilterController@list');

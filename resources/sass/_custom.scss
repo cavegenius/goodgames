@@ -414,11 +414,64 @@ font-weight: 900;
 content: "\f105";
 }
 
-.filterItem {
+.filterItem, .savedFilterItem {
   margin-left: 15px;
 }
 
 #inventorySearch {
   width: 85%;
   margin-left:5px;
+}
+
+.saveFilter, .clearFilters, .saveFilterSubmit, .saveFilterCancel {
+  font-size: .65rem !important;
+}
+
+.filterList {
+  margin-bottom: 10px;
+}
+
+.filterNameDiv, .saveFilterButtons, .filterActions {
+  margin: 5px;
+}
+
+#leftSidebar {
+  flex: 0 0 11% !important;
+  max-width: 11% !important;
+}
+
+#rightSidebar {
+  flex: 0 0 25% !important;
+  max-width: 25% !important;
+}
+
+#mainDiv {
+  flex: 0 0 64% !important;
+  max-width: 64% !important;
+}
+
+#filterName {
+  width: 100%;
+}
+
+#inventorySearch {
+  width: 94%;
+}
+
+.editFilterName, .deleteFilter, .editFilterValues, .saveEditFilterName, .cancelEditFilterName {
+  margin: 0 2px;
+  float: right;
+}
+
+.savedFilterActionsWrapper{
+  width: 40%;
+  max-width: 40%;
+  float: right;
+}
+
+.savedFilternameWrapper {
+  word-break: break-all;
+  width: 60%;
+  max-width: 60%;
+  float: left;
 }

@@ -1,4 +1,5 @@
 const Handlebars = require("handlebars");
+var bootbox = require('bootbox');
 
 // Document ready Actions
     $(document).ready( function() {
@@ -8,6 +9,7 @@ const Handlebars = require("handlebars");
         saveError = false;
         filters = {};
         searchTerm= '';
+        filterHTML = '';
         //filters['status'] = ['Backlog','Wishlist'];
 
         // End Variable Definitions
@@ -15,6 +17,7 @@ const Handlebars = require("handlebars");
         // Run any functions that need to load initial data sets
         if(currentRoute == 'games') {
             loadGames();
+            loadSavedFilters();
             load_platform_list();
             load_genre_list();
         }
@@ -534,7 +537,7 @@ const Handlebars = require("handlebars");
                 });
 
                 $(document).on('change', '.filterItem', function() {
-                    processFilters()
+                    processFilters();
                     loadGames();
                 });
 
@@ -555,6 +558,122 @@ const Handlebars = require("handlebars");
                     clearFilters();
                     loadGames();
                     $(this).blur();
+                });
+
+                $(document).on('click', '.saveFilter', function() {
+                    if($('.filterNameDiv').hasClass('hide-on-load')) {
+                        $('.filterNameDiv').removeClass('hide-on-load');
+                        $('.saveFilterButtons').removeClass('hide-on-load');
+                    } else {
+                        $('.filterNameDiv').addClass('hide-on-load');
+                        $('.saveFilterButtons').addClass('hide-on-load');
+                    }
+                });
+
+                $(document).on('click', '.saveFilterSubmit', function() {
+                    if($('#filterName').val() == '') {
+                        message_pop('danger', 'Filter Name is Required', 2500);
+                    } else if(jQuery.isEmptyObject(filters) && searchTerm.length == 0) {
+                        message_pop('danger', 'A search term must be entered or one or more filters must be selected', 2500);
+                    } else {
+                        url = '/filters/add';
+                        name = $('#filterName').val();
+
+                        post_data = {
+                            'name' : name,
+                            'filter': filters,
+                            'searchTerm': searchTerm
+                        };
+
+                        run_ajax(
+                            url,
+                            post_data,
+                            function(obj) {
+                                message_pop('success', obj.response.Message, 2500);
+                                $('.saveFilterCancel').trigger('click');
+                                loadSavedFilters();
+                            }
+                        );
+                    }
+                });
+
+                $(document).on('click', '.saveFilterCancel', function() {
+                    $('#filterName').val('');
+                    $('.filterNameDiv').addClass('hide-on-load');
+                    $('.saveFilterButtons').addClass('hide-on-load');
+                });
+
+                $(document).on('change', '.savedFilterRadio', function() {
+                    clearFilters();
+                    let url = '/filters/apply';
+                    let id = $(this).val();
+
+                    post_data = {
+                        'id' : id
+                    };
+
+                    run_ajax(
+                        url,
+                        post_data,
+                        function(obj) {
+                            // Use obj.response.Filter.filter and obj.response.Filter.searchterm to set the values in the form
+                            // Then run process filters and then load games.
+                            let filter = $.parseJSON(obj.response.Filter.filter);
+                            $('#inventorySearch').val(obj.response.Filter.searchTerm);
+                            searchTerm = obj.response.Filter.searchTerm
+                            $.each(filter, function( key, value ) {
+                                $.each(value, function( key, value ) {
+                                    $('.filterItem[value="'+value+'"]').prop("checked",true);
+                                });
+                            });
+                            processFilters();
+                            loadGames();
+                            message_pop('success', 'Filter Applied', 2500);
+                        }
+                    );
+                });
+
+                $(document).on('click', '.deleteFilter', function() {
+                    let id = $(this).data('id');
+                    confirmAction( 'Are you sure you want to delete this filter', processFilterDelete, id);
+                });
+
+                $(document).on('click', '.editFilterName', function() {
+                    let id = $(this).data('id');
+                    let name = $('.savedFilterRadio[value="'+id+'"]').data('name');
+                    // We can only edit one at a time so I need to reset the section before creating the editor.
+                    $('#filterList').html(filterHTML);
+                    $('.savedFilterNameWrapper[data-id="'+id+'"]').html('<input type="text" name="updateName" class="updateNameField" data-id="'+id+'" value="'+name+'">');
+                    $('.savedFilterActionsWrapper[data-id="'+id+'"]').html('<i class="fas fa-ban cancelEditFilterName" data-id="'+id+'" data-name="'+name+'"></i><i class="fas fa-check saveEditFilterName" data-id="'+id+'"></i>');
+                });
+
+                $(document).on('click', '.cancelEditFilterName', function() {
+                    $('#filterList').html(filterHTML);
+                });
+
+                $(document).on('click', '.saveEditFilterName', function() {
+                    url = '/filters/updateName';
+                    id = $(this).data('id');
+                    name = $('.updateNameField[data-id="'+$(this).data('id')+'"]').val();
+
+                    post_data = {
+                        'id' : id,
+                        'name': name
+                    };
+
+                    run_ajax(
+                        url,
+                        post_data,
+                        function(obj) {
+                            message_pop('success', obj.response.Message, 2500);
+                            loadSavedFilters();
+                        }
+                    );
+                });
+
+                $(document).on('click', '.editFilterValues', function() {
+                    let id = $(this).data('id');
+                    confirmAction( 'Are you sure you want to update this filter', processEditFilterValues, id);
                 });
             // End Games Actions
         // End Event Actions
@@ -660,6 +779,18 @@ const Handlebars = require("handlebars");
 
     function message_clear(location) {
         jQuery( location ).html( '' );
+    }
+
+    function confirmAction( confirmMessage, fn_callback, param1 ='', param2='', param3='' ) {
+        bootbox.confirm({
+            message: confirmMessage,
+            title: 'Confirm?',
+            buttons: {
+                cancel: { label: 'Cancel' },
+                confirm: { label: 'Ok' }
+            },
+            callback: function( result ){ fn_callback( result, param1, param2, param3 ); }
+        });
     }
 // End Global Functions
 
@@ -926,7 +1057,7 @@ const Handlebars = require("handlebars");
         filters = {};
         resetListAll();
         $('#inventorySearch').val('');
-        searchTerm= '';
+        searchTerm = '';
         $('input.filterItem').each(function(key,elem){
             let name  = $(this).attr('name');
             let value = $(this).val();
@@ -937,5 +1068,67 @@ const Handlebars = require("handlebars");
                 $(this).prop("checked",false);
             }
         });
+    }
+
+    function loadSavedFilters() {
+        $('#filterList').html('');
+        url = '/filters/list';
+        post_data = {}
+
+        run_ajax(
+            url,
+            post_data,
+            function(obj) {
+                //savedFilters = obj.response.Genres;
+                $.each(obj.response.Filters, function( key, value ) {
+                    $('#filterList').append(' <li class="nav-item savedFilterItem" data-id="'+value.id+'"><div class="savedFilterNameWrapper" data-id="'+value.id+'"><input type="radio" name="activateSavedFilter" value="'+value.id+'" data-name="'+value.name+'" class="savedFilterRadio" /> '+value.name+'</div><div class="savedFilterActionsWrapper" data-id="'+value.id+'"><i class="fas fa-trash deleteFilter" title="Delete Filter" data-id="'+value.id+'"></i> <i class="fas fa-wrench editFilterValues" title="Update Filter to Currently Selected Filters" data-id="'+value.id+'"></i> <i class="fas fa-edit editFilterName" title="Edit Filter Name" data-id="'+value.id+'"></i></div></li>')
+                });
+                filterHTML = $('#filterList').html();
+            }
+        );
+    }
+
+    function processFilterDelete(result, id) {
+        if( result ) {
+            url = '/filters/delete';
+            
+
+            post_data = {
+                'id' : id,
+            };
+
+            run_ajax(
+                url,
+                post_data,
+                function(obj) {
+                    message_pop('success', obj.response.Message, 2500);
+                    loadSavedFilters();
+                }
+            );
+        }
+    }
+
+    function processEditFilterValues( result, id ) {
+        if(jQuery.isEmptyObject(filters) && searchTerm.length == 0) {
+            message_pop('danger', 'A search term must be entered or one or more filters must be selected', 2500);
+        } else {
+            url = '/filters/updateFilter';
+            
+
+            post_data = {
+                'id' : id,
+                'filter': filters,
+                'searchTerm': searchTerm
+            };
+
+            run_ajax(
+                url,
+                post_data,
+                function(obj) {
+                    message_pop('success', obj.response.Message, 2500);
+                    loadSavedFilters();
+                }
+            );
+        }
     }
 // End Games Functions

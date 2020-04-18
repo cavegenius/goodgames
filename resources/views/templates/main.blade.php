@@ -28,17 +28,17 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-1 d-none d-md-block bg-light sidebar">
+        <div id="leftSidebar" class="col-md-1 d-none d-md-block bg-light sidebar filtersBar">
           <div class="sidebar-sticky">
             @include('inc.filters')
           </div>
         </div>
 
-        <main role="main" class="col-md-8 ml-sm-auto px-4">
+        <main role="main" id="mainDiv" class="col-md-8 ml-sm-auto px-4">
           @yield('content')
         </main>
         
-        <div class="col-md-3 d-none d-md-block bg-light sidebar-right">
+        <div id="rightSidebar" class="col-md-3 d-none d-md-block bg-light sidebar-right">
           <div class="btn-toolbar mb-2 mb-md-0 sidebarRightMenu">
             <div class="btn-group mr-2">
               <button type="button" class="btn btn-sm btn-outline-secondary btn-search right-menu-item">Search</button>

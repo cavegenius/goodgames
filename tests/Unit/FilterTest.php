@@ -3,43 +3,32 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use App\Http\Controllers\Game;
-use Illuminate\Support\Str;
+use App\Http\Controllers\Filter;
 
-class GameTest extends TestCase {
+class FilterTest extends TestCase {
     use RefreshDatabase;
 
-    public function testSearchTest() {
-        $this->json('POST', '/games/search', ['name' => 'horizon zero dawn'])
-             ->assertJsonStructure([
-                // Verify all elements have an id and name
-                'Games' => [
-                    '*' => [
-                        'id', 'name'
-                    ]
-                ]
-            ]);
-    }
-
-    public function testAddGameFullTest() {
+    public function testAddFilterFullTest() {
         $user = $this->createUserAndLogin();
 
         $data = [
             'name' => 'horizon zero dawn',
-            'status' => 'None',
-            'platform' => 'Playstation 4',
-            'platformType' => 'Console',
-            'favorite' => false,
-            'rating' => '0',
-            'format' => 'Physical',
-            'notes' => 'This is a test Note'
+            'filter' => [
+                'favorite' => ["true"],
+                'format' => [],
+                'genre' => [],
+                'platform' => [],
+                'platformType' => [],
+                'rating' => [],
+                'status' => ['Replayable'],
+            ],
+            'searchTerm' => 'age'
         ];
 
-        $response = $this->actingAs($user)->post('/games/add', $data, []);
-        $response->assertExactJson(['Status'=>'Success','Message'=>'Game Added Successfully']);
+        $response = $this->actingAs($user)->post('/filters/add', $data, []);
+        $response->assertExactJson(['Status'=>'Success','Message'=>'Filter Created Successfully']);
     }
-
+/*
     public function testAddGamepartialTest() {
         $user = $this->createUserAndLogin();
 
@@ -102,8 +91,6 @@ class GameTest extends TestCase {
         $this->addGameForUser($user);
         $data = [
             'list' => 'all',
-            'sortCol' => 'name',
-            'sortOrder' => 'asc'
         ];
 
         $response = $this->actingAs($user)->post('/games/showList', $data, []);
@@ -114,8 +101,6 @@ class GameTest extends TestCase {
         $user = $this->createUserAndLogin();
         $data = [
             'list' => 'all',
-            'sortCol' => 'name',
-            'sortOrder' => 'asc'
         ];
 
         $response = $this->actingAs($user)->post('/games/showList', $data, []);
@@ -151,7 +136,7 @@ class GameTest extends TestCase {
     public function testImportCSVSuccessfulTest() {
         $user = $this->createUserAndLogin();
         $stub = __DIR__.'/files/importFile.csv';
-        $name = Str::random(8).'.csv';
+        $name = str_random(8).'.csv';
         $path = sys_get_temp_dir().'/'.$name;
 
         copy($stub, $path);
@@ -161,7 +146,7 @@ class GameTest extends TestCase {
             $name,
             'text/csv',
             filesize($path),
-            false,
+            null,
             TRUE
         );
         $response = $this->actingAs($user)->call('POST', '/games/importCSV', [], [], ['csvFile' => $file], ['Accept' => 'application/json']);
@@ -171,5 +156,6 @@ class GameTest extends TestCase {
         $uploaded = 'uploads'.DIRECTORY_SEPARATOR.$name;
         @unlink($uploaded);
     }
+*/
 
 }

@@ -1,14 +1,28 @@
 <ul class="nav flex-column">
     <h3>Filters</h3>
-    <div class="btn-group mr-2">
+    <!--Saved Filters-->
+    <li class="nav-item">
+        <span class="filterHeader filterOpened" data-section="savedFilterList">Saved Filters:</span>
+    </li>
+    <ul id='filterList' class="nav flex-column mb-2 savedFilterList"></ul>
+    <!--Buttons-->
+    <div class="btn-group mr-2 filterActions">
+        <button type="button" value="" class="btn btn-sm btn-outline-secondary saveFilter">Save Filter</button>
         <button type="button" value="" class="btn btn-sm btn-outline-secondary clearFilters">Clear Filters</button>
+    </div>
+    <div class="filterNameDiv hide-on-load">
+        <input type="text" id="filterName" name="filterName" placeholder="Filter Name" value="" class="" />
+    </div>
+    <div class="btn-group mr-2 saveFilterButtons hide-on-load">
+        <button type="button" value="" class="btn btn-sm btn-outline-secondary saveFilterSubmit">Submit</button>
+        <button type="button" value="" class="btn btn-sm btn-outline-secondary saveFilterCancel">Cancel</button>
     </div>
     <!--Name Search-->
     <li class="nav-item">
         Search Your Games:
     </li>
     <ul class="nav flex-column mb-2">
-        <li class="nav-item">
+        <li class="nav-item searchLi">
             <input type="text" id="inventorySearch" name="searchInventory" value="" class="" />
         </li>
     </ul>
