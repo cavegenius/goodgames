@@ -291,7 +291,7 @@ var bootbox = require('bootbox');
                     if (!saveError) {
                         message_pop( 'Success', 'All changes Saved Successfully', 2500);
                     } else {
-                        message_pop( 'Success', 'There was an error saving one or more changes.', 2500);
+                        message_pop( 'Error', 'There was an error saving one or more changes.', 2500);
                     }
                     // Reset the flags
                     saveError = false;
@@ -589,7 +589,7 @@ var bootbox = require('bootbox');
                             url,
                             post_data,
                             function(obj) {
-                                message_pop('success', obj.response.Message, 2500);
+                                message_pop(obj.response.Status, obj.response.Message, 2500);
                                 $('.saveFilterCancel').trigger('click');
                                 loadSavedFilters();
                             }
@@ -665,7 +665,7 @@ var bootbox = require('bootbox');
                         url,
                         post_data,
                         function(obj) {
-                            message_pop('success', obj.response.Message, 2500);
+                            message_pop(obj.response.Status, obj.response.Message, 2500);
                             loadSavedFilters();
                         }
                     );
@@ -1101,7 +1101,7 @@ var bootbox = require('bootbox');
                 url,
                 post_data,
                 function(obj) {
-                    message_pop('success', obj.response.Message, 2500);
+                    message_pop(obj.response.Status, obj.response.Message, 2500);
                     loadSavedFilters();
                 }
             );
@@ -1125,7 +1125,7 @@ var bootbox = require('bootbox');
                 url,
                 post_data,
                 function(obj) {
-                    message_pop('success', obj.response.Message, 2500);
+                    message_pop(obj.response.Status, obj.response.Message, 2500);
                     loadSavedFilters();
                 }
             );
