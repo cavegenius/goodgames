@@ -56096,7 +56096,7 @@ $(document).ready(function () {
     if (!saveError) {
       message_pop('Success', 'All changes Saved Successfully', 2500);
     } else {
-      message_pop('Success', 'There was an error saving one or more changes.', 2500);
+      message_pop('Error', 'There was an error saving one or more changes.', 2500);
     } // Reset the flags
 
 
@@ -56334,7 +56334,7 @@ $(document).ready(function () {
         'searchTerm': searchTerm
       };
       run_ajax(url, post_data, function (obj) {
-        message_pop('success', obj.response.Message, 2500);
+        message_pop(obj.response.Status, obj.response.Message, 2500);
         $('.saveFilterCancel').trigger('click');
         loadSavedFilters();
       });
@@ -56392,7 +56392,7 @@ $(document).ready(function () {
       'name': name
     };
     run_ajax(url, post_data, function (obj) {
-      message_pop('success', obj.response.Message, 2500);
+      message_pop(obj.response.Status, obj.response.Message, 2500);
       loadSavedFilters();
     });
   });
@@ -56790,7 +56790,7 @@ function processFilterDelete(result, id) {
       'id': id
     };
     run_ajax(url, post_data, function (obj) {
-      message_pop('success', obj.response.Message, 2500);
+      message_pop(obj.response.Status, obj.response.Message, 2500);
       loadSavedFilters();
     });
   }
@@ -56807,7 +56807,7 @@ function processEditFilterValues(result, id) {
       'searchTerm': searchTerm
     };
     run_ajax(url, post_data, function (obj) {
-      message_pop('success', obj.response.Message, 2500);
+      message_pop(obj.response.Status, obj.response.Message, 2500);
       loadSavedFilters();
     });
   }
@@ -57002,8 +57002,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
