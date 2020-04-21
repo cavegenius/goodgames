@@ -7,6 +7,11 @@
                     <i class="fa fa-heart checked"></i>
             </label>
         </td>
+        @{{#if showRank}}
+            <td><input type="text" name="rank" data-id="@{{ id }}" value="@{{ rank }}" size="2" /></td>
+        @{{else}}
+            <input type="hidden" name="rank" data-id="@{{ id }}" value="@{{ rank }}" size="2" />
+        @{{/if}}
         <td><input type="text" name="name" data-id="@{{ id }}" value="@{{ name }}" /></td>
         <td>
             <select name="status" data-id ="@{{ id }}">

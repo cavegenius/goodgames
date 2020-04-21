@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Game;
 use App\Igdb;
 use App\Steam;
+use Illuminate\Support\Facades\Log;
 
 class GamesController extends Controller {
 
@@ -26,19 +27,36 @@ class GamesController extends Controller {
     }
 
     public function add(Request $request) {
+        $user = Auth::id();
+        $status = $request->all('status')['status'];
+        if($status=='Wishlist'|| $status=='Backlog') {
+            $max = Game::where('rank', '>', 0)->where('status', '=', $status)->where('userId', $user )->max('rank')+1;
+        }
         $this->validate($request, [
             'name' => 'required',
             'platform' => 'required',
             'platformType' => 'required',
+            'rank' => 'required|numeric|min:0|max:'.$max,
             'format' => 'required'
         ]);
 
-        $user = Auth::id();
         $game = new Game;
         $game->userId = $user;
+
         foreach( (array)$request->all() as $key=>$value ) {
             if( $key == '_token') { continue; }
             if( $key == 'notes' && !$value ) { $value='';}
+
+            if($key == 'rank' && ($status == 'Wishlist' || $status == 'Backlog')) {
+                if($value==0) {
+                    $value = $this->getNextRank($status);
+                } else {
+                    $this->moveRanksDown($value, $status );
+                }
+            } else if($key == 'rank') {
+                $value = 0;
+            }
+
             $game->$key = $value;
         }
 
@@ -188,13 +206,32 @@ class GamesController extends Controller {
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Game']);
         }
 
+        $oldStatus = $game->status;
+        $status = $request->all('status')['status'];
         foreach( (array)$request->all() as $key=>$value ) {
             if( $key == '_token') { continue; }
             if( $key == 'notes' && !$value ) { $value='';}
+
+            if($key == 'rank' && ($status == 'Wishlist' || $status == 'Backlog')) {
+                if($status != $oldStatus) {
+                    $value=0;
+                }
+                if($value==0) {
+                    $value = $this->getNextRank($status);
+                } else {
+                    $this->moveRanksDown($value, $status );
+                }
+            } else if($key == 'rank') {
+                $value = 0;
+            }
+
             $game->$key = $value;
         }
 
         if($game->save()) {
+            if(($oldStatus == 'Wishlist' || $oldStatus == 'Backlog' ) && ($status != 'Wishlist' || $status != 'Backlog') ) {
+                $this->closeRankGaps($oldStatus);
+            }
             $result = json_encode(['Status' => 'Success', 'Message' => 'Game Updated Successfully']);
         } else {
             $result = json_encode(['Status' => 'Error', 'Message' => 'An Error has Occurred']);
@@ -216,14 +253,20 @@ class GamesController extends Controller {
 
         $user = Auth::id();
         $id = $request->all('id')['id'];
-
         $game = Game::find($id);
+        $updateRanks = false;
         // If the game does not belong to this user
         if( $game && $user != $game['userId'] ){
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Game']);
         }
 
+        $status = $game->status;
+        if($status == 'Wishlist' || $status == 'Backlog') {
+            $updateRanks = true;
+        }
+
         if($game->delete()) {
+            if($updateRanks) { $this->closeRankGaps($status); }
             $result = json_encode(['Status' => 'Success', 'Message' => 'Game Deleted Successfully']);
         } else {
             $result = json_encode(['Status' => 'Error', 'Message' => 'An Error has Occurred']);
@@ -254,6 +297,14 @@ class GamesController extends Controller {
         $gamesArray = $this->csvToArray($file);
 
         for ($i = 0; $i < count($gamesArray); $i++) {
+            $existinggame = null;
+            // TODO check for existing game needs to go here and skip item if it exists
+            $gameCheck = new Game;
+            $existinggame = $gameCheck->where('userId', '=', Auth::id())->where('name', '=',$gamesArray[$i]['Name'])->where('platform', '=',$gamesArray[$i]['Platform'])->first();
+            if ($existinggame !== null) {
+                continue;
+            }
+
             $game = new Game;
             $game->userId = Auth::id();
             foreach( $gamesArray[$i] as $key=>$value ) {
@@ -262,9 +313,27 @@ class GamesController extends Controller {
                 if( $key == 'favorite' && !$value ) { $value=0;}
                 if( $key == 'rating' && !$value ) { $value='0';}
                 if( $key == 'format' && !$value ) { $value='Not Set';}
+                if( $key == 'rank' && !$value ) { $value=0;}
+                //Logic for backlog and wishlist ranking
+
+                if($key == 'rank' && ($gamesArray[$i]['Status'] == 'Wishlist' || $gamesArray[$i]['Status'] == 'Backlog')) {
+                    if($value==0) {
+                        $value = $this->getNextRank($gamesArray[$i]['Status']);
+                    } else {
+                        $max = Game::where('rank', '>', 0)->where('status', '=', $gamesArray[$i]['Status'])->where('userId', Auth::id() )->max('rank')+1;
+                        if($value > $max) {
+                            $value = $max;
+                        }
+                        $this->moveRanksDown($value, $gamesArray[$i]['Status'] );
+                        $this->closeRankGaps($gamesArray[$i]['Status']);
+                    }
+                } else if($key == 'rank') {
+                    $value = 0;
+                }
+
                 $game->$key  = $value;
-                $game->save();
             }
+            $game->save();
         }
 
         $result = json_encode(['Status' => 'Success', 'Message' => 'Games Successfully Imported']);
@@ -320,6 +389,53 @@ class GamesController extends Controller {
         $response['Status'] = 'Success';
 
         return json_encode($response); 
+    }
+
+    private function getNextRank($list) {
+        $value = Game::where('rank', '>', 0)->where('status', '=', $list)->where('userId', Auth::id() )->max('rank')+1;
+
+        return $value;
+    }
+
+    private function moveRanksDown($rank, $list) {
+        $existingGame = null;
+        $games = null;
+        $games = new Game;
+        $existingGame = $games->where('rank', '=', $rank)->where('status', '=', $list)->first();
+        //Log::stack(['single', 'slack'])->info($existingGame);
+        //Log::channel('single')->info($rank);
+
+        if ($existingGame !== null) {
+            $newRank = $rank+1;
+            $this->moveRanksDown($newRank, $list);
+            $existingGame->rank = $newRank;
+            $existingGame->save();
+        }
+
+        return true;
+    }
+
+    private function closeRankGaps($list) {
+        // Need to select all the games on the specific list sorted by rank asc.
+        // look for any case where the current lines rank is not exactly one higher than the previous.
+        // If that happens set it to the previous +1
+        // then keep going and any ones after that should automatically be fixed.
+        $model = new Game;
+        $user = Auth::id();
+        $games = $model->allGamesForListByUser( $user, strtolower( $list ), 'rank', 'asc');
+//        $prev = 0;
+        //Log::stack(['single', 'slack'])->info($existingGame);
+        // view in logs/laravel.log
+        $gameslist = json_decode($games, true);
+        //Log::channel('single')->info(print_r($gameslist));
+
+        foreach($gameslist as $key=>$game) {
+            if($game['rank'] != $key+1) {
+                $gameUpdate = Game::find($game['id']);
+                $gameUpdate->rank = $key+1;
+                $gameUpdate->save();
+            }
+        }
     }
 
 }

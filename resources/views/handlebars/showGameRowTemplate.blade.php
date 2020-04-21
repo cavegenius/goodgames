@@ -7,6 +7,7 @@
                                 <i class="fa fa-heart checked"></i>
                         </label>
                 </td>
+                @{{#if showRank}} <td class="rank">@{{ rank }}</td> @{{else}} <input type="hidden" class="rank" value="@{{ rank }}" >@{{/if}}
                 <td class="name">@{{ name }}</td>
                 <td class="status">@{{ status }}</td>
                 <td class="platform">@{{ platform }}</td>

@@ -10,6 +10,7 @@ var bootbox = require('bootbox');
         filters = {};
         searchTerm= '';
         filterHTML = '';
+        listChanged = false;
         //filters['status'] = ['Backlog','Wishlist'];
 
         // End Variable Definitions
@@ -51,7 +52,7 @@ var bootbox = require('bootbox');
                     var theTemplate = Handlebars.compile(theTemplateScript);
                 
                     var isWishlist = $('#selectedList').val() == 'wishlist' ? true : false;
-
+                    var isBacklog = $('#selectedList').val() == 'backlog' ? true : false;
                     let platformHTML = '';
                     $.each(platforms, function( key, value ) {
                         platformHTML += '<option value="'+value+'">'+value+'</option>';
@@ -65,9 +66,15 @@ var bootbox = require('bootbox');
                     // Define our data object
                     var context={
                         "wishlist": isWishlist,
+                        "backlog": isBacklog,
                         "platforms": platformHTML,
                         "genres": genreHTML
                     };
+
+                    let listType = $( '#selectedList' ).val();
+                    if(listType == 'wishlist' || listType == 'backlog') {
+                        context.rank = true
+                    }
                     
                     // Pass our data to the template
                     var theCompiledHtml = theTemplate(context);
@@ -90,7 +97,14 @@ var bootbox = require('bootbox');
                     $(this).removeClass('btn-outline-secondary');
                     $(this).addClass('btn-outline-primary');
                     $(this).blur();
+                    // Check for wishlist or backlog and sort by rank as default
+                    if($(this).val() == 'backlog' || $(this).val() == 'wishlist') {
+                        $('#sortCol').val('rank');
+                    } else {
+                        $('#sortCol').val('name');
+                    }
                     // Now we load the new games list
+                    listChanged = true;
                     loadGames();
                 });
 
@@ -128,6 +142,7 @@ var bootbox = require('bootbox');
                 });
 
                 $( document ).on( 'click', '.saveSingleAddGame', function(){
+                    var rank;
                     var name;
                     var status;
                     var platform;
@@ -165,12 +180,16 @@ var bootbox = require('bootbox');
                             case 'genre':
                                 genre = $( this ).val();
                                 break;
+                            case 'rank':
+                                rank = $( this ).val();
+                                break;
                         }
                     });
 
                     url = '/games/add';
                     post_data = {
                         'name' : name,
+                        'rank' : rank,
                         'status' : status,
                         'platform' : platform,
                         'platformType' : platformType,
@@ -200,6 +219,7 @@ var bootbox = require('bootbox');
 
                 $( document ).on( 'click', '.saveSingleEditGame', function(){
                     var id;
+                    var rank;
                     var name;
                     var status;
                     var platform;
@@ -240,12 +260,16 @@ var bootbox = require('bootbox');
                             case 'genre':
                                 genre = $( this ).val();
                                 break;
+                            case 'rank':
+                                rank = $( this ).val();
+                                break;
                         }
                     });
 
                     url = '/games/update';
                     post_data = {
                         'id' : id,
+                        'rank': rank,
                         'name' : name,
                         'status' : status,
                         'platform' : platform,
@@ -854,22 +878,74 @@ var bootbox = require('bootbox');
 
         // Clear all messages
         message_clear('#messageBox');
-        $( '#gamesTableBody').find('tr').each(function() {
-            if(!$(this).find('.saveSingleAddGame, .saveSingleEditGame, .saveSingleDeleteGame').length) {
-                $(this).remove();
-            } else {
-                showUnsavedChanges();
-                // Check if it is editing a game if so:
-                // Save the HTML of this row with an identified based on the id 
-                // Then during the loop later writing the rows write this code instead of the template 
-                if($(this).find('.saveSingleEditGame').length) {
-                    savedRows[$(this).data('id')] = '<tr id="gamerow" data-id="'+$(this).data('id')+'">'+$(this).html()+'</tr>';
-                    $(this).html(''); 
+        if(listChanged){
+            $( '#gamesTableBody').html('');
+        } else {
+            $( '#gamesTableBody').find('tr').each(function() {
+                if(!$(this).find('.saveSingleAddGame, .saveSingleEditGame, .saveSingleDeleteGame').length) {
+                    $(this).remove();
+                } else {
+                    showUnsavedChanges();
+                    // Check if it is editing a game if so:
+                    // Save the HTML of this row with an identified based on the id 
+                    // Then during the loop later writing the rows write this code instead of the template 
+                    if($(this).find('.saveSingleEditGame').length) {
+                        savedRows[$(this).data('id')] = '<tr id="gamerow" data-id="'+$(this).data('id')+'">'+$(this).html()+'</tr>';
+                        $(this).html(''); 
+                    }
                 }
-            }
-        });
+            });
+        }
+        // Showing the table headers
+        var theTemplateScript = $("#tableHeadersTemplate").html();
+        // Compile the template
+        var theTemplate = Handlebars.compile(theTemplateScript);
+        // Define our data object
+        var context={
+        };
+        let listType = $( '#selectedList' ).val();
+        if(listType == 'wishlist' || listType == 'backlog') {
+            context.showRank = true;
+        }
 
-        //$( '#gamesTableBody').html('');
+        if($('#sortOrder').val() == 'asc') {
+            context.asc = true;
+        }
+
+        switch($('#sortCol').val()) {
+            case 'favorite':
+                context.sortFavorite = true;
+                break;
+            case 'rating':
+                context.sortRating = true;
+                break;
+            case 'name':
+                context.sortName = true;
+                break;
+            case 'status':
+                context.sortStatus = true;
+                break;
+            case 'platformType':
+                context.sortPlatformType = true;
+                break;
+            case 'format':
+                context.sortFormat = true;
+                break;
+            case 'platform':
+                context.sortPlatform = true;
+                break;
+            case 'genre':
+                context.sortGenre = true;
+                break;
+            case 'rank':
+                context.sortRank = true;
+                break;
+        }
+
+        // Pass our data to the template
+        var theCompiledHtml = theTemplate(context);
+        $( '#gameTableHeading').html(theCompiledHtml);
+
         if (obj.response.Status == 'Success') {
             $.each(obj.response['Games'], function( key, value ) {
                 // Grab the template script
@@ -898,6 +974,12 @@ var bootbox = require('bootbox');
                     "rating": rating,
                     "ratingValue": value.rating,
                 };
+
+                let listType = $( '#selectedList' ).val();
+                if(listType == 'wishlist' || listType == 'backlog') {
+                    context.showRank = true;
+                }
+                context.rank = value.rank
                 
                 // Pass our data to the template
                 var theCompiledHtml = theTemplate(context);
@@ -916,7 +998,13 @@ var bootbox = require('bootbox');
 
     function showEditGameFields( row ) {
         let id = $(row).data('id');
+        let listType = $( '#selectedList' ).val();
         let name = $(row).find('.name').text();
+        if(listType == 'all') {
+            var rank = $(row).find('.rank').val();
+        } else {
+            var rank = $(row).find('.rank').text();
+        }
         let status = $(row).find('.status').text();
         let platform = $(row).find('.platform').text();
         let platformType = $(row).find('.platformType').text();
@@ -988,6 +1076,10 @@ var bootbox = require('bootbox');
             "genres": genreHTML,
             "rating": ratingHTML,
         };
+        if(listType == 'wishlist' || listType == 'backlog') {
+            context.showRank = true;
+        }
+        context.rank = rank;
 
         if($(row).find('.favoriteIcon').children('input[type=checkbox]').is(':checked') ){
             context.favorite = true;
@@ -1040,7 +1132,7 @@ var bootbox = require('bootbox');
 
     function processFilters() {
         filters = {};
-        resetListAll();
+        // resetListAll(); 
         $('input.filterItem').each(function(key,elem){
             let name  = $(this).attr('name');
             let value = $(this).val();

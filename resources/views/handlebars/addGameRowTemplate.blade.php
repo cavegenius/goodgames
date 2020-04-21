@@ -7,6 +7,13 @@
                         <i class="fa fa-heart checked"></i>
                 </label>
         </td>
+        @{{#if rank}}
+                <td>
+                    <input type="text" name="rank" value="" size="2" /> 
+                </td>
+        @{{else}}
+                <input type="hidden" name="rank" value="0" size="2" />
+        @{{/if}}
         <td>
                 <input type="text" name="name" value="@{{#if name}} @{{name}} @{{/if}}" />
         </td>
@@ -14,7 +21,7 @@
                 <select name="status">
                         <option value="None" selected>None</option>
                         <option value="Might Play">Might Play</option>
-                        <option value="Backlog">Backlog</option>
+                        <option value="Backlog" @{{#if backlog}} selected @{{/if}}>Backlog</option>
                         <option value="In Progress">In Progress</option>
                         <option value="Completed">Completed</option>
                         <option value="Wishlist" @{{#if wishlist}} selected @{{/if}}>Wishlist</option>

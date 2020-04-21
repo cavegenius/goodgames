@@ -55833,7 +55833,8 @@ $(document).ready(function () {
   saveError = false;
   filters = {};
   searchTerm = '';
-  filterHTML = ''; //filters['status'] = ['Backlog','Wishlist'];
+  filterHTML = '';
+  listChanged = false; //filters['status'] = ['Backlog','Wishlist'];
   // End Variable Definitions
   // Run any functions that need to load initial data sets
 
@@ -55864,6 +55865,7 @@ $(document).ready(function () {
 
     var theTemplate = Handlebars.compile(theTemplateScript);
     var isWishlist = $('#selectedList').val() == 'wishlist' ? true : false;
+    var isBacklog = $('#selectedList').val() == 'backlog' ? true : false;
     var platformHTML = '';
     $.each(platforms, function (key, value) {
       platformHTML += '<option value="' + value + '">' + value + '</option>';
@@ -55875,9 +55877,16 @@ $(document).ready(function () {
 
     var context = {
       "wishlist": isWishlist,
+      "backlog": isBacklog,
       "platforms": platformHTML,
       "genres": genreHTML
-    }; // Pass our data to the template
+    };
+    var listType = $('#selectedList').val();
+
+    if (listType == 'wishlist' || listType == 'backlog') {
+      context.rank = true;
+    } // Pass our data to the template
+
 
     var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
 
@@ -55895,8 +55904,16 @@ $(document).ready(function () {
     });
     $(this).removeClass('btn-outline-secondary');
     $(this).addClass('btn-outline-primary');
-    $(this).blur(); // Now we load the new games list
+    $(this).blur(); // Check for wishlist or backlog and sort by rank as default
 
+    if ($(this).val() == 'backlog' || $(this).val() == 'wishlist') {
+      $('#sortCol').val('rank');
+    } else {
+      $('#sortCol').val('name');
+    } // Now we load the new games list
+
+
+    listChanged = true;
     loadGames();
   });
   $('.right-menu-item').click(function () {
@@ -55930,6 +55947,7 @@ $(document).ready(function () {
     loadGames();
   });
   $(document).on('click', '.saveSingleAddGame', function () {
+    var rank;
     var name;
     var status;
     var platform;
@@ -55974,11 +55992,16 @@ $(document).ready(function () {
         case 'genre':
           genre = $(this).val();
           break;
+
+        case 'rank':
+          rank = $(this).val();
+          break;
       }
     });
     url = '/games/add';
     post_data = {
       'name': name,
+      'rank': rank,
       'status': status,
       'platform': platform,
       'platformType': platformType,
@@ -56003,6 +56026,7 @@ $(document).ready(function () {
   });
   $(document).on('click', '.saveSingleEditGame', function () {
     var id;
+    var rank;
     var name;
     var status;
     var platform;
@@ -56051,11 +56075,16 @@ $(document).ready(function () {
         case 'genre':
           genre = $(this).val();
           break;
+
+        case 'rank':
+          rank = $(this).val();
+          break;
       }
     });
     url = '/games/update';
     post_data = {
       'id': id,
+      'rank': rank,
       'name': name,
       'status': status,
       'platform': platform,
@@ -56571,20 +56600,83 @@ function showGameList(obj) {
   savedRows = []; // Clear all messages
 
   message_clear('#messageBox');
-  $('#gamesTableBody').find('tr').each(function () {
-    if (!$(this).find('.saveSingleAddGame, .saveSingleEditGame, .saveSingleDeleteGame').length) {
-      $(this).remove();
-    } else {
-      showUnsavedChanges(); // Check if it is editing a game if so:
-      // Save the HTML of this row with an identified based on the id 
-      // Then during the loop later writing the rows write this code instead of the template 
 
-      if ($(this).find('.saveSingleEditGame').length) {
-        savedRows[$(this).data('id')] = '<tr id="gamerow" data-id="' + $(this).data('id') + '">' + $(this).html() + '</tr>';
-        $(this).html('');
+  if (listChanged) {
+    $('#gamesTableBody').html('');
+  } else {
+    $('#gamesTableBody').find('tr').each(function () {
+      if (!$(this).find('.saveSingleAddGame, .saveSingleEditGame, .saveSingleDeleteGame').length) {
+        $(this).remove();
+      } else {
+        showUnsavedChanges(); // Check if it is editing a game if so:
+        // Save the HTML of this row with an identified based on the id 
+        // Then during the loop later writing the rows write this code instead of the template 
+
+        if ($(this).find('.saveSingleEditGame').length) {
+          savedRows[$(this).data('id')] = '<tr id="gamerow" data-id="' + $(this).data('id') + '">' + $(this).html() + '</tr>';
+          $(this).html('');
+        }
       }
-    }
-  }); //$( '#gamesTableBody').html('');
+    });
+  } // Showing the table headers
+
+
+  var theTemplateScript = $("#tableHeadersTemplate").html(); // Compile the template
+
+  var theTemplate = Handlebars.compile(theTemplateScript); // Define our data object
+
+  var context = {};
+  var listType = $('#selectedList').val();
+
+  if (listType == 'wishlist' || listType == 'backlog') {
+    context.showRank = true;
+  }
+
+  if ($('#sortOrder').val() == 'asc') {
+    context.asc = true;
+  }
+
+  switch ($('#sortCol').val()) {
+    case 'favorite':
+      context.sortFavorite = true;
+      break;
+
+    case 'rating':
+      context.sortRating = true;
+      break;
+
+    case 'name':
+      context.sortName = true;
+      break;
+
+    case 'status':
+      context.sortStatus = true;
+      break;
+
+    case 'platformType':
+      context.sortPlatformType = true;
+      break;
+
+    case 'format':
+      context.sortFormat = true;
+      break;
+
+    case 'platform':
+      context.sortPlatform = true;
+      break;
+
+    case 'genre':
+      context.sortGenre = true;
+      break;
+
+    case 'rank':
+      context.sortRank = true;
+      break;
+  } // Pass our data to the template
+
+
+  var theCompiledHtml = theTemplate(context);
+  $('#gameTableHeading').html(theCompiledHtml);
 
   if (obj.response.Status == 'Success') {
     $.each(obj.response['Games'], function (key, value) {
@@ -56614,7 +56706,14 @@ function showGameList(obj) {
         "genre": value.genre,
         "rating": rating,
         "ratingValue": value.rating
-      }; // Pass our data to the template
+      };
+      var listType = $('#selectedList').val();
+
+      if (listType == 'wishlist' || listType == 'backlog') {
+        context.showRank = true;
+      }
+
+      context.rank = value.rank; // Pass our data to the template
 
       var theCompiledHtml = theTemplate(context); // Add the compiled html to the page
 
@@ -56631,7 +56730,15 @@ function showGameList(obj) {
 
 function showEditGameFields(row) {
   var id = $(row).data('id');
+  var listType = $('#selectedList').val();
   var name = $(row).find('.name').text();
+
+  if (listType == 'all') {
+    var rank = $(row).find('.rank').val();
+  } else {
+    var rank = $(row).find('.rank').text();
+  }
+
   var status = $(row).find('.status').text();
   var platform = $(row).find('.platform').text();
   var platformType = $(row).find('.platformType').text();
@@ -56697,6 +56804,12 @@ function showEditGameFields(row) {
     "rating": ratingHTML
   };
 
+  if (listType == 'wishlist' || listType == 'backlog') {
+    context.showRank = true;
+  }
+
+  context.rank = rank;
+
   if ($(row).find('.favoriteIcon').children('input[type=checkbox]').is(':checked')) {
     context.favorite = true;
   } // Pass our data to the template
@@ -56735,8 +56848,8 @@ function resetListAll() {
 }
 
 function processFilters() {
-  filters = {};
-  resetListAll();
+  filters = {}; // resetListAll(); 
+
   $('input.filterItem').each(function (key, elem) {
     var name = $(this).attr('name');
     var value = $(this).val();
@@ -57002,8 +57115,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -29,16 +29,8 @@
         <input type="hidden" value="asc" id="sortOrder" />
         <table class="table table-striped table-sm">
             <thead>
-            <tr>
-                <th class="sortableCol" data-name="favorite">Favorite</th>
-                <th class="sortableCol sortedAsc" data-name="name">Name</th>
-                <th class="sortableCol" data-name="status">Status</th>
-                <th class="sortableCol" data-name="platform">Platform</th>
-                <th class="sortableCol" data-name="platformType">Platform Type</th>
-                <th class="sortableCol" data-name="format">Format</th>
-                <th class="sortableCol" data-name="genre">Genre</th>
-                <th class="sortableCol" data-name="rating">Rating</th>
-                <th>Actions</th>
+            <tr id="gameTableHeading">
+
             </tr>
             </thead>
             <tbody id="gamesTableBody">
@@ -55,3 +47,4 @@
 @include('handlebars.sidebarImportTemplate')
 @include('handlebars.sidebarSearchTemplate')
 @include('handlebars.searchResultsTemplate')
+@include('handlebars.tableHeadersTemplate')
