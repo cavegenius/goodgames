@@ -28,7 +28,8 @@ class GamesController extends Controller {
 
     public function add(Request $request) {
         $user = Auth::id();
-        $status = $request->all('status')['status'];
+        $status = $request->get('status');
+        $max = 0;
         if($status=='Wishlist'|| $status=='Backlog') {
             $max = Game::where('rank', '>', 0)->where('status', '=', $status)->where('userId', $user )->max('rank')+1;
         }
@@ -70,7 +71,7 @@ class GamesController extends Controller {
     }
 
     public function search(Request $request) {
-        $name = $request->all('name')['name']; // This will get all the request data.
+        $name = $request->get('name'); // This will get all the request data.
 
         $game = new Igdb;
         $games = $game->search($name);
@@ -110,7 +111,7 @@ class GamesController extends Controller {
     }
 
     public function importSteam(Request $request) {
-        $user = $request->all('user')['user']; // This will get all the request data.
+        $user = $request->get('user'); // This will get all the request data.
 
         $game = new Steam;
         $games = $game->import($user);
@@ -132,11 +133,11 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $list = $request->all('list')['list'];
-        $sortCol = $request->all('sortCol')['sortCol'];
-        $sortOrder = $request->all('sortOrder')['sortOrder'];
-        $filters = json_decode($request->all('filtered')['filtered'], TRUE );
-        $search = $request->all('searchTerm')['searchTerm'];
+        $list = $request->get('list');
+        $sortCol = $request->get('sortCol');
+        $sortOrder = $request->get('sortOrder');
+        $filters = json_decode($request->get('filtered'), TRUE );
+        $search = $request->get('searchTerm');
 
         $model = new Game;
         if($filters ||  $search){
@@ -168,7 +169,7 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id')['id'];
+        $id = $request->get('id');
 
         $game = Game::find($id);
 
@@ -198,7 +199,7 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id')['id'];
+        $id = $request->get('id');
 
         $game = Game::find($id);
         // If the game does not belong to this user
@@ -207,7 +208,7 @@ class GamesController extends Controller {
         }
 
         $oldStatus = $game->status;
-        $status = $request->all('status')['status'];
+        $status = $request->get('status');
         foreach( (array)$request->all() as $key=>$value ) {
             if( $key == '_token') { continue; }
             if( $key == 'notes' && !$value ) { $value='';}
@@ -252,7 +253,7 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id')['id'];
+        $id = $request->get('id');
         $game = Game::find($id);
         $updateRanks = false;
         // If the game does not belong to this user

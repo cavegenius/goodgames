@@ -18,7 +18,7 @@ class FilterController extends Controller {
             'name' => 'required'
         ]);
 
-        if(empty($request->all('filter')['filter']) && $request->all('searchTerm')['searchTerm'] == '') {
+        if(empty($request->get('filter')) && $request->get('searchTerm') == '') {
             return json_encode(['Status' => 'Error', 'Message' => 'A search term must be entered or one or more filters must be selected']);
         }
 
@@ -27,21 +27,21 @@ class FilterController extends Controller {
         $filter = new Filter;
         
         // Check for exact copy of filter
-        $existingFilter = $filter->where('userId', '=', $user)->where('filter', '=', json_encode($request->all('filter')['filter']))->where('searchTerm', '=', $request->all('searchTerm')['searchTerm'])->first();
+        $existingFilter = $filter->where('userId', '=', $user)->where('filter', '=', json_encode($request->get('filter')))->where('searchTerm', '=', $request->get('searchTerm'))->first();
         if ($existingFilter !== null) {
             return json_encode(['Status' => 'Error', 'Message' => 'This filter already exists']);
         }
 
         // Check for that name already being used for this user
-        $existingFilter = $filter->where('userId', '=', $user)->where('name', '=', $request->all('name')['name'])->first();
+        $existingFilter = $filter->where('userId', '=', $user)->where('name', '=', $request->get('name'))->first();
         if ($existingFilter !== null) {
             return json_encode(['Status' => 'Error', 'Message' => 'This name already exists']);
         }
 
         $filter->userId = $user;
-        $filter->name = $request->all('name')['name'];
-        $filter->filter = json_encode($request->all('filter')['filter']);
-        $filter->searchTerm = $request->all('searchTerm')['searchTerm'];
+        $filter->name = $request->get('name');
+        $filter->filter = json_encode($request->get('filter'));
+        $filter->searchTerm = $request->get('searchTerm');
 
         if($filter->save()) {
             $response = json_encode(['Status' => 'Success', 'Message' => 'Filter Created Successfully']);
@@ -90,7 +90,7 @@ class FilterController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id')['id'];
+        $id = $request->get('id');
 
         $filter = Filter::find($id);
 
@@ -119,7 +119,7 @@ class FilterController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id')['id'];
+        $id = $request->get('id');
 
         $filter = Filter::find($id);
         // Verify filter belogs to the user
@@ -127,8 +127,8 @@ class FilterController extends Controller {
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Filter']);
         }
 
-        $filter->filter = $request->all('filter')['filter'];
-        $filter->searchTerm = $request->all('searchTerm')['searchTerm'];
+        $filter->filter = $request->get('filter');
+        $filter->searchTerm = $request->get('searchTerm');
 
         if($filter->save()) {
             $result = json_encode(['Status' => 'Success', 'Message' => 'Filter Updated Successfully']);
@@ -145,11 +145,11 @@ class FilterController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id')['id'];
+        $id = $request->get('id');
 
         $filter = Filter::find($id);
         // Check for that name already being used for this user
-        $existingFilter = $filter->where('userId', '=', $user)->where('name', '=', $request->all('name')['name'])->first();
+        $existingFilter = $filter->where('userId', '=', $user)->where('name', '=', $request->get('name'))->first();
         if ($existingFilter !== null) {
             return json_encode(['Status' => 'Error', 'Message' => 'This name already exists']);
         }
@@ -158,7 +158,7 @@ class FilterController extends Controller {
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Filter']);
         }
 
-        $filter->name = $request->all('name')['name'];
+        $filter->name = $request->get('name');
 
         if($filter->save()) {
             $result = json_encode(['Status' => 'Success', 'Message' => 'Filter Updated Successfully']);
@@ -181,7 +181,7 @@ class FilterController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->all('id')['id'];
+        $id = $request->get('id');
 
         $filter = Filter::find($id);
         // Verify filter belogs to the user

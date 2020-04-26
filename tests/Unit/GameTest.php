@@ -26,6 +26,7 @@ class GameTest extends TestCase {
         $user = $this->createUserAndLogin();
 
         $data = [
+            'rank' => 0,
             'name' => 'horizon zero dawn',
             'status' => 'None',
             'platform' => 'Playstation 4',
@@ -47,7 +48,8 @@ class GameTest extends TestCase {
             'name' => 'horizon zero dawn',
             'platform' => 'Playstation 4',
             'platformType' => 'Console',
-            'format' => 'Physical'
+            'format' => 'Physical',
+            'rank' => 0
         ];
 
         $response = $this->actingAs($user)->post('/games/add', $data, []);
