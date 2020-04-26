@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Filter;
 
 class FilterController extends Controller {
+    private $model;
+
+    public function __construct() {
+        $this->model = new Filter;
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -92,7 +97,7 @@ class FilterController extends Controller {
         $user = Auth::id();
         $id = $request->get('id');
 
-        $filter = Filter::find($id);
+        $filter = $this->model->find($id);
 
         // If the Filter does not belong to this user
         if( $filter && $user == $filter['userId'] ) {
@@ -121,7 +126,7 @@ class FilterController extends Controller {
         $user = Auth::id();
         $id = $request->get('id');
 
-        $filter = Filter::find($id);
+        $filter = $this->model->find($id);
         // Verify filter belogs to the user
         if( $filter && $user != $filter['userId'] ){
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Filter']);
@@ -147,7 +152,7 @@ class FilterController extends Controller {
         $user = Auth::id();
         $id = $request->get('id');
 
-        $filter = Filter::find($id);
+        $filter = $this->model->find($id);
         // Check for that name already being used for this user
         $existingFilter = $filter->where('userId', '=', $user)->where('name', '=', $request->get('name'))->first();
         if ($existingFilter !== null) {
@@ -183,7 +188,7 @@ class FilterController extends Controller {
         $user = Auth::id();
         $id = $request->get('id');
 
-        $filter = Filter::find($id);
+        $filter = $this->model->find($id);
         // Verify filter belogs to the user
         if( $filter && $user != $filter['userId'] ){
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Filter']);

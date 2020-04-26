@@ -10,6 +10,11 @@ use App\Steam;
 use Illuminate\Support\Facades\Log;
 
 class GamesController extends Controller {
+    private $model;
+
+    public function __construct() {
+        $this->model = new Game;
+    }
 
     /**
      * Display a listing of the resource.
@@ -31,7 +36,7 @@ class GamesController extends Controller {
         $status = $request->get('status');
         $max = 0;
         if($status=='Wishlist'|| $status=='Backlog') {
-            $max = Game::where('rank', '>', 0)->where('status', '=', $status)->where('userId', $user )->max('rank')+1;
+            $max = $this->model->where('rank', '>', 0)->where('status', '=', $status)->where('userId', $user )->max('rank')+1;
         }
         $this->validate($request, [
             'name' => 'required',
@@ -171,7 +176,7 @@ class GamesController extends Controller {
         $user = Auth::id();
         $id = $request->get('id');
 
-        $game = Game::find($id);
+        $game = $this->model->find($id);
 
         // Verifying the game is found and belongs to this user
         if( $game && $user == $game['userId'] ) {
@@ -201,7 +206,7 @@ class GamesController extends Controller {
         $user = Auth::id();
         $id = $request->get('id');
 
-        $game = Game::find($id);
+        $game = $this->model->find($id);
         // If the game does not belong to this user
         if( $game && $user != $game['userId'] ){
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Game']);
@@ -254,7 +259,7 @@ class GamesController extends Controller {
 
         $user = Auth::id();
         $id = $request->get('id');
-        $game = Game::find($id);
+        $game = $this->model->find($id);
         $updateRanks = false;
         // If the game does not belong to this user
         if( $game && $user != $game['userId'] ){
@@ -321,7 +326,7 @@ class GamesController extends Controller {
                     if($value==0) {
                         $value = $this->getNextRank($gamesArray[$i]['Status']);
                     } else {
-                        $max = Game::where('rank', '>', 0)->where('status', '=', $gamesArray[$i]['Status'])->where('userId', Auth::id() )->max('rank')+1;
+                        $max = $this->model->where('rank', '>', 0)->where('status', '=', $gamesArray[$i]['Status'])->where('userId', Auth::id() )->max('rank')+1;
                         if($value > $max) {
                             $value = $max;
                         }
@@ -393,7 +398,7 @@ class GamesController extends Controller {
     }
 
     private function getNextRank($list) {
-        $value = Game::where('rank', '>', 0)->where('status', '=', $list)->where('userId', Auth::id() )->max('rank')+1;
+        $value = $this->model->where('rank', '>', 0)->where('status', '=', $list)->where('userId', Auth::id() )->max('rank')+1;
 
         return $value;
     }
@@ -432,7 +437,7 @@ class GamesController extends Controller {
 
         foreach($gameslist as $key=>$game) {
             if($game['rank'] != $key+1) {
-                $gameUpdate = Game::find($game['id']);
+                $gameUpdate = $this->model->find($game['id']);
                 $gameUpdate->rank = $key+1;
                 $gameUpdate->save();
             }
