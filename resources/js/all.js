@@ -699,6 +699,29 @@ var bootbox = require('bootbox');
                     let id = $(this).data('id');
                     confirmAction( 'Are you sure you want to update this filter', processEditFilterValues, id);
                 });
+
+                $(document).on("click", "#importCSVSubmit", function () {
+                    var formData = new FormData();
+                    file = $('#csvFile').prop('files')[0];
+                    show_big_loader( );
+                    formData.append("_token", $('meta[name="csrf-token"]').attr('content'));
+                    formData.append("csvFile", file);
+                    $.ajax({
+                        url: '/games/importCSV',
+                        type: 'POST',              
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(obj) {
+                            let response = $.parseJSON(obj);
+                            hide_big_loader();
+                            loadGames();
+                            setTimeout( function() {
+                                message_pop(response.Status, response.Message, 5000);
+                            }, 500 );
+                        }
+                    });
+                }); 
             // End Games Actions
         // End Event Actions
     });

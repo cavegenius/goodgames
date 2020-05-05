@@ -56428,6 +56428,28 @@ $(document).ready(function () {
   $(document).on('click', '.editFilterValues', function () {
     var id = $(this).data('id');
     confirmAction('Are you sure you want to update this filter', processEditFilterValues, id);
+  });
+  $(document).on("click", "#importCSVSubmit", function () {
+    var formData = new FormData();
+    file = $('#csvFile').prop('files')[0];
+    show_big_loader();
+    formData.append("_token", $('meta[name="csrf-token"]').attr('content'));
+    formData.append("csvFile", file);
+    $.ajax({
+      url: '/games/importCSV',
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function success(obj) {
+        var response = $.parseJSON(obj);
+        hide_big_loader();
+        loadGames();
+        setTimeout(function () {
+          message_pop(response.Status, response.Message, 5000);
+        }, 500);
+      }
+    });
   }); // End Games Actions
   // End Event Actions
 }); // End Document ready Actions
@@ -57115,8 +57137,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
