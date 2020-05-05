@@ -15,24 +15,24 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/games', 'GamesController@index');
-Route::post('/games/search', 'GamesController@search');
-Route::post('/games/add', 'GamesController@add');
-Route::post('/games/showOne', 'GamesController@showOne');
-Route::post('/games/showList', 'GamesController@showList');
-Route::post('/games/update', 'GamesController@update');
-Route::post('/games/importCSV', 'GamesController@importCSV');
-Route::post('/games/get_platform_list', 'GamesController@get_platform_list');
-Route::post('/games/get_genre_list', 'GamesController@get_genre_list');
-Route::post('/games/delete', 'GamesController@destroy');
-Route::get('/games/getImportTemplate', 'GamesController@getImportTemplate');
+Route::get('/games', 'GamesController@index')->middleware('verified');;
+Route::post('/games/search', 'GamesController@search')->middleware('verified');;
+Route::post('/games/add', 'GamesController@add')->middleware('verified');;
+Route::post('/games/showOne', 'GamesController@showOne')->middleware('verified');;
+Route::post('/games/showList', 'GamesController@showList')->middleware('verified');;
+Route::post('/games/update', 'GamesController@update')->middleware('verified');;
+Route::post('/games/importCSV', 'GamesController@importCSV')->middleware('verified');;
+Route::post('/games/get_platform_list', 'GamesController@get_platform_list')->middleware('verified');;
+Route::post('/games/get_genre_list', 'GamesController@get_genre_list')->middleware('verified');;
+Route::post('/games/delete', 'GamesController@destroy')->middleware('verified');;
+Route::get('/games/getImportTemplate', 'GamesController@getImportTemplate')->middleware('verified');;
 
-Route::post('/filters/add', 'FilterController@add');
-Route::post('/filters/delete', 'FilterController@delete');
-Route::post('/filters/apply', 'FilterController@apply');
-Route::post('/filters/updateName', 'FilterController@updateName');
-Route::post('/filters/updateFilter', 'FilterController@updateFilter');
-Route::post('/filters/list', 'FilterController@list');
+Route::post('/filters/add', 'FilterController@add')->middleware('verified');;
+Route::post('/filters/delete', 'FilterController@delete')->middleware('verified');;
+Route::post('/filters/apply', 'FilterController@apply')->middleware('verified');;
+Route::post('/filters/updateName', 'FilterController@updateName')->middleware('verified');;
+Route::post('/filters/updateFilter', 'FilterController@updateFilter')->middleware('verified');;
+Route::post('/filters/list', 'FilterController@list')->middleware('verified');;
