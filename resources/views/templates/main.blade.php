@@ -43,7 +43,7 @@
             <div class="btn-group mr-2">
               <button type="button" class="btn btn-sm btn-outline-secondary btn-search right-menu-item">Search</button>
               <button type="button" class="btn btn-sm btn-outline-secondary btn-import right-menu-item">Import</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item">Export</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-export">Export</button>
             </div>
           </div>
           <div class="sidebarRightContent"></div>

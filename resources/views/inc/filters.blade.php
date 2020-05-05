@@ -664,6 +664,9 @@
         <li class="nav-item">
             <input type="checkbox" name="genre" value="Adventure" class="filterItem" /> Adventure
         </li>
+        <li class="nav-item">
+            <input type="checkbox" name="genre" value="Board Game" class="filterItem" /> Board Game
+        </li>
         <li>    
             <input type="checkbox" name="genre" value="Fighting" class="filterItem"/> Fighting
         </li>

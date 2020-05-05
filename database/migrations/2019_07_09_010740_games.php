@@ -25,7 +25,7 @@ class Games extends Migration
             $table->boolean('favorite')->default(false);
             $table->enum('format', ['Physical', 'Digital', 'Not Set'])->default('Not Set');
             //$table->string('genre',255)->default('');
-            $table->enum('genre', ["Adventure", "Fighting", "Indie", "Music", "Not Set", "Other", "Quiz/Trivia", "Role-playing", "Shooter", "Simulator", "Strategy", "Tactical"])->default('Not Set');
+            $table->enum('genre', ["Adventure", "Board Game", "Fighting", "Indie", "Music", "Not Set", "Other", "Quiz/Trivia", "Role-playing", "Shooter", "Simulator", "Strategy", "Tactical"])->default('Not Set');
             $table->enum('rating', ['0','1','2','3','4','5'])->default('0');
             $table->string('notes',255)->default('');
             $table->timestamps();

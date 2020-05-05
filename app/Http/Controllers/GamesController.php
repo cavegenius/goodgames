@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Game;
 use App\Igdb;
 use App\Steam;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Log;
 
 class GamesController extends Controller {
@@ -350,7 +351,28 @@ class GamesController extends Controller {
      * Export to a CSV
      */
     public function exportCSV() {
-
+        $headers = array(
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=file.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        );
+    
+        $games = $this->model->allGamesForListByUser( Auth::id() );
+        $columns = array('Rank','Name','PlatformType','Platform','Status','Genre','Favorite','Rating','Format','Notes');
+    
+        $callback = function() use ($games, $columns)
+        {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+    
+            foreach($games as $game) {
+                fputcsv($file, array($game->rank, $game->name, $game->platformType, $game->platform, $game->status, $game->genre, $game->favorite, $game->rating, $game->format, $game->notes));
+            }
+            fclose($file);
+        };
+        return Response::stream($callback, 200, $headers);
     }
 
     private function csvToArray($filename = '', $delimiter = ',')
@@ -389,7 +411,7 @@ class GamesController extends Controller {
     }
 
     public function get_genre_list() {
-        $genres = ["Simulator", "Tactical", "Quiz/Trivia", "Fighting", "Strategy", "Adventure", "Role-playing", "Shooter", "Music", "Indie", "Other"];
+        $genres = ["Simulator", "Tactical", "Quiz/Trivia", "Fighting", "Strategy", "Adventure", "Board Game", "Role-playing", "Shooter", "Music", "Indie", "Other"];
 
         $response['Genres'] = $genres;
         $response['Status'] = 'Success';

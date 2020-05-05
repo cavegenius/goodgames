@@ -56237,6 +56237,11 @@ $(document).ready(function () {
 
     $('.sidebarRightContent').html(theCompiledHtml);
   });
+  $(document).on('click', '.btn-export', function () {
+    url = '/games/exportCSV';
+    window.open(url, '_blank' // <- This is what makes it open in a new window.
+    );
+  });
   $(document).on('click', '.addToInventory', function () {
     // Grab the template script
     var theTemplateScript = $("#addGameRowTemplate").html(); // Compile the template
@@ -56893,7 +56898,6 @@ function clearFilters() {
   searchTerm = '';
   $('input.filterItem').each(function (key, elem) {
     var name = $(this).attr('name');
-    var value = $(this).val();
 
     if (typeof filters[name] == "undefined") {
       filters[name] = [];

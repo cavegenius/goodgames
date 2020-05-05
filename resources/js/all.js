@@ -458,6 +458,15 @@ var bootbox = require('bootbox');
                     $( '.sidebarRightContent' ).html(theCompiledHtml);
                 });
 
+                $(document).on('click', '.btn-export', function() {
+                    url = '/games/exportCSV';
+                    window.open(
+                        url,
+                        '_blank' // <- This is what makes it open in a new window.
+                      );
+                      
+                });
+
                 $(document).on('click', '.addToInventory', function() {
                     // Grab the template script
                     var theTemplateScript = $("#addGameRowTemplate").html();
@@ -1175,7 +1184,7 @@ var bootbox = require('bootbox');
         searchTerm = '';
         $('input.filterItem').each(function(key,elem){
             let name  = $(this).attr('name');
-            let value = $(this).val();
+
             if ( typeof filters[ name ] == "undefined" ) {
                 filters[ name ] = [];
             }
@@ -1206,7 +1215,6 @@ var bootbox = require('bootbox');
     function processFilterDelete(result, id) {
         if( result ) {
             url = '/filters/delete';
-            
 
             post_data = {
                 'id' : id,
