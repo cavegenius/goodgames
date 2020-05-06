@@ -26,7 +26,6 @@ var bootbox = require('bootbox');
         setTimeout( function() {
             $('.btn-search').trigger("click");
         }, 1 );
-
         // Event Actions
             // Games Actions
                 //$( '#searchBar' ).keyup(function() {
@@ -106,6 +105,45 @@ var bootbox = require('bootbox');
                     // Now we load the new games list
                     listChanged = true;
                     loadGames();
+
+                    if($('#selectedList').val() != 'all'){
+                        $('#gamesTableBody').sortable({
+                            update: function(event, ui) {
+                                let list = $('#selectedList').val();
+                                let row = ui.item;
+                                let prev = row.prev('tr');
+                                let next = row.next('tr');
+                                let rank;
+                                let id = row.data('id'); 
+
+                                if(prev.length == 0) {
+                                    // Get the next and use it
+                                    rank = parseInt( next.find('.rank').text() );
+                                } else {
+                                    // Check the rank for the previous row and add one
+                                    rank = parseInt( prev.find('.rank').text() )+1;
+                                }
+                                
+                                url = '/games/update';
+                                post_data = {
+                                    'id' : id,
+                                    'rank': rank,
+                                    'status' : list,
+                                };
+
+                                run_ajax(
+                                    url,
+                                    post_data,
+                                    function(obj) {
+                                        message_pop(obj.response.status, obj.response.message, 2500);
+                                        loadGames();
+                                    }
+                                );
+                            }
+                        });
+                    } else {
+                        $("#gamesTableBody").sortable("destroy");
+                    }
                 });
 
                 $( '.right-menu-item' ).click(function() {
@@ -314,7 +352,7 @@ var bootbox = require('bootbox');
                     $( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').each(function() {
                         $(this).click();
                     });
-                    
+
                     if (!saveError) {
                         message_pop( 'Success', 'All changes Saved Successfully', 2500);
                     } else {

@@ -221,7 +221,7 @@ class GamesController extends Controller {
         }
 
         $oldStatus = $game->status;
-        $status = $request->get('status');
+        $status = ucfirst( $request->get('status') );
         foreach( (array)$request->all() as $key=>$value ) {
             if( $key == '_token') { continue; }
             if( $key == 'notes' && !$value ) { $value='';}
@@ -472,5 +472,4 @@ class GamesController extends Controller {
             }
         }
     }
-
 }

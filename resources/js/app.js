@@ -4,6 +4,11 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
+'use strict';
+var $ = require("jquery-ui");
+require('jquery-ui');
+require('jquery-ui/ui/widgets/sortable');
+require('jquery-ui/ui/disable-selection');
 
 require('./bootstrap');
 require('./all');
