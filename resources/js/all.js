@@ -109,13 +109,15 @@ var bootbox = require('bootbox');
                 });
 
                 $( '.right-menu-item' ).click(function() {
-                    $('.right-menu-item').each(function() {
-                        $(this).removeClass('btn-outline-primary');
-                        $(this).addClass('btn-outline-secondary');
-                    });
-                    $(this).removeClass('btn-outline-secondary');
-                    $(this).addClass('btn-outline-primary');
-                    $(this).blur();
+                    if( !$(this).hasClass('btn-export') ) {
+                        $('.right-menu-item').each(function() {
+                            $(this).removeClass('btn-outline-primary');
+                            $(this).addClass('btn-outline-secondary');
+                        });
+                        $(this).removeClass('btn-outline-secondary');
+                        $(this).addClass('btn-outline-primary');
+                        $(this).blur();
+                    }
                 });
 
                 /*$(document).on('dblclick', '#gamerow', function() {
@@ -204,7 +206,7 @@ var bootbox = require('bootbox');
                         post_data,
                         function(obj) {
                             if(!saveAll) {
-                                message_pop(obj.response.status, obj.response.message, 2500);
+                                message_pop(obj.response.Status, obj.response.Message, 2500);
                                 hideUnsavedChanges();
                             } else {
                                 if(obj.response.status == 'Error') {
@@ -312,6 +314,7 @@ var bootbox = require('bootbox');
                     $( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').each(function() {
                         $(this).click();
                     });
+                    
                     if (!saveError) {
                         message_pop( 'Success', 'All changes Saved Successfully', 2500);
                     } else {

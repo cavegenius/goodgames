@@ -47,6 +47,13 @@ class GamesController extends Controller {
             'format' => 'required'
         ]);
 
+        $existinggame = null;
+        $gameCheck = new Game;
+        $existinggame = $gameCheck->where('userId', '=', Auth::id())->where('name', '=',$request->get('name') )->where('platform', '=',$request->get( 'platform') )->first();
+        if ($existinggame !== null) {
+            return json_encode(['Status' => 'Error', 'Message' => 'This game already exists for this platform. Please update your existing game.']);
+        } 
+
         $game = new Game;
         $game->userId = $user;
 
@@ -305,14 +312,14 @@ class GamesController extends Controller {
 
         for ($i = 0; $i < count($gamesArray); $i++) {
             $existinggame = null;
-            // TODO check for existing game needs to go here and skip item if it exists
             $gameCheck = new Game;
             $existinggame = $gameCheck->where('userId', '=', Auth::id())->where('name', '=',$gamesArray[$i]['Name'])->where('platform', '=',$gamesArray[$i]['Platform'])->first();
             if ($existinggame !== null) {
-                continue;
+                $game = $existinggame;
+            } else {
+                $game = new Game;
             }
 
-            $game = new Game;
             $game->userId = Auth::id();
             foreach( $gamesArray[$i] as $key=>$value ) {
                 $key = strtolower($key );

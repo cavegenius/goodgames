@@ -55917,13 +55917,15 @@ $(document).ready(function () {
     loadGames();
   });
   $('.right-menu-item').click(function () {
-    $('.right-menu-item').each(function () {
-      $(this).removeClass('btn-outline-primary');
-      $(this).addClass('btn-outline-secondary');
-    });
-    $(this).removeClass('btn-outline-secondary');
-    $(this).addClass('btn-outline-primary');
-    $(this).blur();
+    if (!$(this).hasClass('btn-export')) {
+      $('.right-menu-item').each(function () {
+        $(this).removeClass('btn-outline-primary');
+        $(this).addClass('btn-outline-secondary');
+      });
+      $(this).removeClass('btn-outline-secondary');
+      $(this).addClass('btn-outline-primary');
+      $(this).blur();
+    }
   });
   /*$(document).on('dblclick', '#gamerow', function() {
       showUnsavedChanges();
@@ -56012,7 +56014,7 @@ $(document).ready(function () {
     };
     run_ajax(url, post_data, function (obj) {
       if (!saveAll) {
-        message_pop(obj.response.status, obj.response.message, 2500);
+        message_pop(obj.response.Status, obj.response.Message, 2500);
         hideUnsavedChanges();
       } else {
         if (obj.response.status == 'Error') {
