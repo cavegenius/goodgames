@@ -58589,8 +58589,7 @@ $(document).ready(function () {
   filters = {};
   searchTerm = '';
   filterHTML = '';
-  listChanged = false; //filters['status'] = ['Backlog','Wishlist'];
-  // End Variable Definitions
+  listChanged = false; // End Variable Definitions
   // Run any functions that need to load initial data sets
 
   if (currentRoute == 'games') {
@@ -59115,6 +59114,7 @@ $(document).ready(function () {
     loadGames();
   });
   $(document).on('change', '.filterItem', function () {
+    clearSavedFilters();
     processFilters();
     loadGames();
   });
@@ -59132,6 +59132,7 @@ $(document).ready(function () {
     }
   });
   $(document).on('click', '.clearFilters', function () {
+    clearSavedFilters();
     clearFilters();
     loadGames();
     $(this).blur();
@@ -59274,6 +59275,10 @@ function run_ajax(url, data_obj, return_function) {
           return_function(obj);
         }
 
+        hide_big_loader();
+      },
+      error: function error(data, textStatus, errorThrown) {
+        message_pop('danger', 'An unexpected error has occured. Please reload the page.', 2500);
         hide_big_loader();
       }
     });
@@ -59666,8 +59671,7 @@ function resetListAll() {
 }
 
 function processFilters() {
-  filters = {}; // resetListAll(); 
-
+  filters = {};
   $('input.filterItem').each(function (key, elem) {
     var name = $(this).attr('name');
     var value = $(this).val();
@@ -59694,6 +59698,14 @@ function clearFilters() {
       filters[name] = [];
     }
 
+    if ($(this).is(":checked")) {
+      $(this).prop("checked", false);
+    }
+  });
+}
+
+function clearSavedFilters() {
+  $('input.savedFilterRadio').each(function (key, elem) {
     if ($(this).is(":checked")) {
       $(this).prop("checked", false);
     }

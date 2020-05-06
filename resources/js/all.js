@@ -11,8 +11,6 @@ var bootbox = require('bootbox');
         searchTerm= '';
         filterHTML = '';
         listChanged = false;
-        //filters['status'] = ['Backlog','Wishlist'];
-
         // End Variable Definitions
 
         // Run any functions that need to load initial data sets
@@ -611,6 +609,7 @@ var bootbox = require('bootbox');
                 });
 
                 $(document).on('change', '.filterItem', function() {
+                    clearSavedFilters();
                     processFilters();
                     loadGames();
                 });
@@ -629,6 +628,7 @@ var bootbox = require('bootbox');
                 });
 
                 $(document).on('click', '.clearFilters', function() {
+                    clearSavedFilters();
                     clearFilters();
                     loadGames();
                     $(this).blur();
@@ -803,7 +803,11 @@ var bootbox = require('bootbox');
                         }
 
                         hide_big_loader();
-                    }
+                    },
+                    error: function (data, textStatus, errorThrown) {
+                        message_pop('danger', 'An unexpected error has occured. Please reload the page.', 2500);
+                        hide_big_loader();
+                    },
             });
         }
 
@@ -1205,7 +1209,6 @@ var bootbox = require('bootbox');
 
     function processFilters() {
         filters = {};
-        // resetListAll(); 
         $('input.filterItem').each(function(key,elem){
             let name  = $(this).attr('name');
             let value = $(this).val();
@@ -1229,6 +1232,14 @@ var bootbox = require('bootbox');
             if ( typeof filters[ name ] == "undefined" ) {
                 filters[ name ] = [];
             }
+            if ( $(this).is( ":checked" ) ) {
+                $(this).prop("checked",false);
+            }
+        });
+    }
+
+    function clearSavedFilters() {
+        $('input.savedFilterRadio').each(function(key,elem){
             if ( $(this).is( ":checked" ) ) {
                 $(this).prop("checked",false);
             }
