@@ -59277,8 +59277,13 @@ function run_ajax(url, data_obj, return_function) {
 
         hide_big_loader();
       },
-      error: function error(data, textStatus, errorThrown) {
-        message_pop('danger', 'An unexpected error has occured. Please reload the page.', 2500);
+      error: function error(response) {
+        if (response.status == 419) {
+          window.location.replace('/login');
+        } else {
+          message_pop('danger', 'An unexpected error has occured. Please reload the page.', 2500);
+        }
+
         hide_big_loader();
       }
     });

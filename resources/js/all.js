@@ -804,8 +804,12 @@ var bootbox = require('bootbox');
 
                         hide_big_loader();
                     },
-                    error: function (data, textStatus, errorThrown) {
-                        message_pop('danger', 'An unexpected error has occured. Please reload the page.', 2500);
+                    error: function (response) {
+                        if(response.status == 419) {
+                            window.location.replace('/login');
+                        } else {
+                            message_pop('danger', 'An unexpected error has occured. Please reload the page.', 2500);
+                        }
                         hide_big_loader();
                     },
             });
