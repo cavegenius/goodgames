@@ -8,17 +8,27 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
   </head>
   <body id="gamesBody">
+    <?php
+      $route = Route::current();
+      $route = $route->uri;
+    ?>
     <!--Header-->
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Good Games</a>
+      @if (Auth::check())
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/games">Good Games</a>
+      @else
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Good Games</a>
+      @endif
       <div id="messageBox"></div>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
-          <a class="nav-link" href="{{ route('logout') }}"
-            onclick="event.preventDefault();
-              document.getElementById('logout-form').submit();">
-            {{ __('Logout') }}
-          </a>
+          @if (Auth::check())
+            <a class="nav-link" href="{{ route('logout') }}"
+              onclick="event.preventDefault();
+                document.getElementById('logout-form').submit();">
+              {{ __('Logout') }}
+            </a>
+          @endif
           <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
           </form>
@@ -30,7 +40,9 @@
       <div class="row">
         <div id="leftSidebar" class="col-md-1 d-none d-md-block bg-light sidebar filtersBar">
           <div class="sidebar-sticky">
-            @include('inc.filters')
+            <?php if($route == 'games') { ?>
+              @include('inc.filters')
+            <?php } ?>
           </div>
         </div>
 
@@ -39,14 +51,18 @@
         </main>
         
         <div id="rightSidebar" class="col-md-3 d-none d-md-block bg-light sidebar-right">
-          <div class="btn-toolbar mb-2 mb-md-0 sidebarRightMenu">
-            <div class="btn-group mr-2">
-              <button type="button" class="btn btn-sm btn-outline-secondary btn-search right-menu-item">Search</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary btn-import right-menu-item">Import</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-export">Export</button>
-            </div>
+          <div class="sidebar-sticky">
+            <?php if($route == 'games') { ?>
+              <div class="btn-toolbar mb-2 mb-md-0 sidebarRightMenu">
+                <div class="btn-group mr-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary btn-search right-menu-item">Search</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary btn-import right-menu-item">Import</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-export">Export</button>
+                </div>
+              </div>
+              <div class="sidebarRightContent"></div>
+            <?php } ?>
           </div>
-          <div class="sidebarRightContent"></div>
         </div>
       </div>
     </div>
@@ -54,10 +70,6 @@
     <div id="big_loader" class="hide-on-load">
       <div id="big_loader_html"></div>
     </div>
-    <?php
-      $route = Route::current();
-      $route = $route->uri;
-    ?>
     <input type="hidden" value="<?php echo $route; ?>" id="currentRoute" />
 
     <div class="hide-on-load" id="response">
