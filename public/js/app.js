@@ -58661,9 +58661,24 @@ $(document).ready(function () {
     $(this).blur(); // Check for wishlist or backlog and sort by rank as default
 
     if ($(this).val() == 'backlog' || $(this).val() == 'wishlist') {
-      $('#sortCol').val('rank');
+      $('#sortCol').val('rank'); // Select the filter and disable the other options
+
+      $('.filterItem[name=status]').each(function (key, elem) {
+        var item = $(this).val().toLowerCase();
+        var list = $('#selectedList').val();
+
+        if (item == list) {
+          $(this).prop("checked", true);
+        }
+
+        $(this).attr("disabled", true);
+      });
     } else {
-      $('#sortCol').val('name');
+      $('#sortCol').val('name'); //Re-enable the checkboxes for status
+
+      $('.filterItem[name=status]').each(function (key, elem) {
+        $(this).attr("disabled", false);
+      });
     } // Now we load the new games list
 
 
