@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Good Games</title>
+    <title>Your Game Lists</title>
     <link rel="stylesheet" href="/css/app.css" />
     <script src="/js/app.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -15,9 +15,9 @@
     <!--Header-->
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
       @if (Auth::check())
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/games">Good Games</a>
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/games">Your Game Lists</a>
       @else
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Good Games</a>
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Your Game Lists</a>
       @endif
       <div id="messageBox"></div>
       <ul class="navbar-nav px-3">

@@ -57,7 +57,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'wyatt@cavegenius.com'),
-        'name' => env('MAIL_FROM_NAME', 'Good Games'),
+        'name' => env('MAIL_FROM_NAME', 'Your Game Lists'),
     ],
 
     /*
