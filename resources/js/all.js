@@ -1271,18 +1271,21 @@ var bootbox = require('bootbox');
 
     function loadSavedFilters() {
         $('#filterList').html('');
-        url = '/filters/list';
+        url = '/filters/filterList';
         post_data = {}
 
         run_ajax(
             url,
             post_data,
             function(obj) {
-                //savedFilters = obj.response.Genres;
-                $.each(obj.response.Filters, function( key, value ) {
-                    $('#filterList').append(' <li class="nav-item savedFilterItem" data-id="'+value.id+'"><div class="savedFilterNameWrapper" data-id="'+value.id+'"><input type="radio" name="activateSavedFilter" value="'+value.id+'" data-name="'+value.name+'" class="savedFilterRadio" /> '+value.name+'</div><div class="savedFilterActionsWrapper" data-id="'+value.id+'"><i class="fas fa-trash deleteFilter" title="Delete Filter" data-id="'+value.id+'"></i> <i class="fas fa-wrench editFilterValues" title="Update Filter to Currently Selected Filters" data-id="'+value.id+'"></i> <i class="fas fa-edit editFilterName" title="Edit Filter Name" data-id="'+value.id+'"></i></div></li>')
-                });
-                filterHTML = $('#filterList').html();
+                if(obj.response.Status == 'Error'){
+                    $('#filterList').append('<div class="text-center">'+obj.response.Message+'</div>');
+                } else {
+                    $.each(obj.response.Filters, function( key, value ) {
+                        $('#filterList').append(' <li class="nav-item savedFilterItem" data-id="'+value.id+'"><div class="savedFilterNameWrapper" data-id="'+value.id+'"><input type="radio" name="activateSavedFilter" value="'+value.id+'" data-name="'+value.name+'" class="savedFilterRadio" /> '+value.name+'</div><div class="savedFilterActionsWrapper" data-id="'+value.id+'"><i class="fas fa-trash deleteFilter" title="Delete Filter" data-id="'+value.id+'"></i> <i class="fas fa-wrench editFilterValues" title="Update Filter to Currently Selected Filters" data-id="'+value.id+'"></i> <i class="fas fa-edit editFilterName" title="Edit Filter Name" data-id="'+value.id+'"></i></div></li>')
+                    });
+                    filterHTML = $('#filterList').html();
+                }
             }
         );
     }

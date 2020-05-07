@@ -77,7 +77,7 @@ class FilterController extends Controller {
             $response['Status'] = 'Success';
         } else {
             $response['Status'] = 'Error';
-            $response['Message'] = 'No Filters Found';
+            $response['Message'] = 'No Saved Filters';
         }
 
         return json_encode($response);

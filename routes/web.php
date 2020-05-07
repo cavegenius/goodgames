@@ -36,4 +36,4 @@ Route::post('/filters/delete', 'FilterController@delete')->middleware('verified'
 Route::post('/filters/apply', 'FilterController@apply')->middleware('verified');
 Route::post('/filters/updateName', 'FilterController@updateName')->middleware('verified');
 Route::post('/filters/updateFilter', 'FilterController@updateFilter')->middleware('verified');
-Route::post('/filters/list', 'FilterController@list')->middleware('verified');
+Route::post('/filters/filterList', 'FilterController@list')->middleware('verified');
