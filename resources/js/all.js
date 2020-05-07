@@ -24,6 +24,8 @@ var bootbox = require('bootbox');
         setTimeout( function() {
             $('.btn-search').trigger("click");
         }, 1 );
+
+        $('.saveFilter, .clearFilters').attr('disabled', true);
         // Event Actions
             // Games Actions
                 //$( '#searchBar' ).keyup(function() {
@@ -1242,6 +1244,16 @@ var bootbox = require('bootbox');
                 filters[ name ].push( value );
             }
         });
+
+        var allEmpty = Object.keys(filters).every(function(key){
+            return filters[key].length === 0
+        });
+
+        if(allEmpty == false) {
+            $('.saveFilter, .clearFilters').attr('disabled', false);
+        } else {
+            $('.saveFilter, .clearFilters').attr('disabled', true);
+        }
     }
 
     function clearFilters() {
@@ -1259,6 +1271,8 @@ var bootbox = require('bootbox');
                 $(this).prop("checked",false);
             }
         });
+
+        $('.saveFilter, .clearFilters').attr('disabled', true);
     }
 
     function clearSavedFilters() {

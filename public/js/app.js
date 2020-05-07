@@ -58601,7 +58601,8 @@ $(document).ready(function () {
 
   setTimeout(function () {
     $('.btn-search').trigger("click");
-  }, 1); // Event Actions
+  }, 1);
+  $('.saveFilter, .clearFilters').attr('disabled', true); // Event Actions
   // Games Actions
   //$( '#searchBar' ).keyup(function() {
 
@@ -59704,6 +59705,15 @@ function processFilters() {
       filters[name].push(value);
     }
   });
+  var allEmpty = Object.keys(filters).every(function (key) {
+    return filters[key].length === 0;
+  });
+
+  if (allEmpty == false) {
+    $('.saveFilter, .clearFilters').attr('disabled', false);
+  } else {
+    $('.saveFilter, .clearFilters').attr('disabled', true);
+  }
 }
 
 function clearFilters() {
@@ -59722,6 +59732,7 @@ function clearFilters() {
       $(this).prop("checked", false);
     }
   });
+  $('.saveFilter, .clearFilters').attr('disabled', true);
 }
 
 function clearSavedFilters() {
