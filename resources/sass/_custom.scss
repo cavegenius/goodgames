@@ -95,6 +95,8 @@ body {
   padding-top: .75rem;
   padding-bottom: .75rem;
   font-size: 1rem;
+  font-family: "Hack", monospace;
+  font-weight: 2;
   background-color: rgba(0, 0, 0, .25);
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
   max-width: 159.98px !important;
@@ -134,7 +136,6 @@ body {
 
 .sidebar-right {
     padding-top:71px;
-    border-left: .1px inset;
 }
 
 .sidebarRightMenu {
@@ -376,7 +377,7 @@ body {
 
 .sortedAsc::after {
     font-family: "Font Awesome 5 Free";
-    color:black;
+    color:$activated;
     position: relative;
     left: 10px;
     font-weight: 900;
@@ -385,7 +386,7 @@ body {
 
 .sortedDesc::after {
   font-family: "Font Awesome 5 Free";
-  color:black;
+  color:$activated;
   position: relative;
   left: 10px;
   font-weight: 900;
@@ -398,7 +399,7 @@ body {
 
 .filterOpened::before {
   font-family: "Font Awesome 5 Free";
-  color:black;
+  color:$activated;
   margin-left:5px;
   position: relative;
   font-weight: 900;
@@ -407,7 +408,7 @@ body {
 
 .filterClosed::before {
 font-family: "Font Awesome 5 Free";
-color:black;
+color:$activated;
 margin-left:5px;
 position: relative;
 font-weight: 900;
@@ -438,16 +439,22 @@ content: "\f105";
 #leftSidebar {
   flex: 0 0 11% !important;
   max-width: 11% !important;
+  border-right: 2px solid $border;
+  background-color: $body-bg;
+  color: $text;
 }
 
 #rightSidebar {
   flex: 0 0 25% !important;
   max-width: 25% !important;
+  background-color: $body-bg;
+  color: $text;
 }
 
 #mainDiv {
   flex: 0 0 64% !important;
   max-width: 64% !important;
+  border-right: 2px solid $border;
 }
 
 #filterName {
@@ -478,4 +485,53 @@ content: "\f105";
 
 .stratingatus, .platformType {
   width: 10%;
+}
+
+.card {
+  background-color: $body-bg;
+  color: $text;
+  border: 1px solid $border;
+  margin-top: 5px;
+}
+
+.card-header {
+  border-bottom: 1px solid $border;
+}
+
+#gamesTable {
+  color: $text;
+  font-size: 12px;
+}
+
+#gamesTable th, #gamesTable td {
+  border-color: $border;
+}
+
+.btn-outline-primary {
+  color: $text;
+  border-color: $text;
+}
+
+.btn-outline-secondary {
+  color: $text;
+  border-color: $activated;
+}
+
+#search {
+  margin-left: 5px;
+  color: $text;
+  background-color: $accent;
+}
+
+#gamesBody {
+  color: $text;
+  font-family: "Hack", monospace;
+}
+
+.favoriteIcon:checked, .fa-star:checked {
+  color:$activated;
+}
+
+.fa-heart, .fa-star {
+  color: $compliments;
 }

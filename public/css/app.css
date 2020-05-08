@@ -1,5 +1,30 @@
 @import url(https://fonts.googleapis.com/css?family=Nunito);@charset "UTF-8";
 
+/*
+// Gothic Architecture
+$body-bg: #212624;
+$accent: #2e303e;
+$text: #9199be;
+$activated: #54678F;
+$border: #6c6b74;
+
+// Blue Accent
+$body-bg: #E4EBF2;
+$accent: #5A4D4C;
+$text: #328DAA;
+$activated: #8ED3F4;
+$border: #5A4D4C;
+*/
+
+/*
+// Halloween
+$body-bg: #07000E;
+$accent: #EECC8D;
+$text: #F08b33;
+$activated: #D75404;
+$border: #8A2C02;
+*/
+
 /*!
  * Bootstrap v4.4.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
@@ -72,7 +97,7 @@ body {
   line-height: 1.6;
   color: #212529;
   text-align: left;
-  background-color: #f8fafc;
+  background-color: #212624;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
@@ -512,7 +537,7 @@ mark,
 
 .img-thumbnail {
   padding: 0.25rem;
-  background-color: #f8fafc;
+  background-color: #212624;
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
   max-width: 100%;
@@ -4265,15 +4290,15 @@ input[type=button].btn-block {
 }
 
 .custom-range:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 1px #f8fafc, 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
+  box-shadow: 0 0 0 1px #212624, 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
 }
 
 .custom-range:focus::-moz-range-thumb {
-  box-shadow: 0 0 0 1px #f8fafc, 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
+  box-shadow: 0 0 0 1px #212624, 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
 }
 
 .custom-range:focus::-ms-thumb {
-  box-shadow: 0 0 0 1px #f8fafc, 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
+  box-shadow: 0 0 0 1px #212624, 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
 }
 
 .custom-range::-moz-focus-outer {
@@ -4479,8 +4504,8 @@ input[type=button].btn-block {
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
   color: #495057;
-  background-color: #f8fafc;
-  border-color: #dee2e6 #dee2e6 #f8fafc;
+  background-color: #212624;
+  border-color: #dee2e6 #dee2e6 #212624;
 }
 
 .nav-tabs .dropdown-menu {
@@ -11009,6 +11034,8 @@ body {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   font-size: 1rem;
+  font-family: "Hack", monospace;
+  font-weight: 2;
   background-color: rgba(0, 0, 0, 0.25);
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.25);
   max-width: 159.98px !important;
@@ -11048,7 +11075,6 @@ body {
 
 .sidebar-right {
   padding-top: 71px;
-  border-left: 0.1px inset;
 }
 
 .sidebarRightMenu {
@@ -11276,7 +11302,7 @@ body {
 
 .sortedAsc::after {
   font-family: "Font Awesome 5 Free";
-  color: black;
+  color: #107050;
   position: relative;
   left: 10px;
   font-weight: 900;
@@ -11285,7 +11311,7 @@ body {
 
 .sortedDesc::after {
   font-family: "Font Awesome 5 Free";
-  color: black;
+  color: #107050;
   position: relative;
   left: 10px;
   font-weight: 900;
@@ -11298,7 +11324,7 @@ body {
 
 .filterOpened::before {
   font-family: "Font Awesome 5 Free";
-  color: black;
+  color: #107050;
   margin-left: 5px;
   position: relative;
   font-weight: 900;
@@ -11307,7 +11333,7 @@ body {
 
 .filterClosed::before {
   font-family: "Font Awesome 5 Free";
-  color: black;
+  color: #107050;
   margin-left: 5px;
   position: relative;
   font-weight: 900;
@@ -11344,16 +11370,22 @@ body {
 #leftSidebar {
   flex: 0 0 11% !important;
   max-width: 11% !important;
+  border-right: 2px solid #C7F6EC;
+  background-color: #212624;
+  color: #55D9C0;
 }
 
 #rightSidebar {
   flex: 0 0 25% !important;
   max-width: 25% !important;
+  background-color: #212624;
+  color: #55D9C0;
 }
 
 #mainDiv {
   flex: 0 0 64% !important;
   max-width: 64% !important;
+  border-right: 2px solid #C7F6EC;
 }
 
 #filterName {
@@ -11389,6 +11421,94 @@ body {
 .stratingatus,
 .platformType {
   width: 10%;
+}
+
+.card {
+  background-color: #212624;
+  color: #55D9C0;
+  border: 1px solid #C7F6EC;
+  margin-top: 5px;
+}
+
+.card-header {
+  border-bottom: 1px solid #C7F6EC;
+}
+
+#gamesTable {
+  color: #55D9C0;
+  font-size: 12px;
+}
+
+#gamesTable th,
+#gamesTable td {
+  border-color: #C7F6EC;
+}
+
+.btn-outline-primary {
+  color: #55D9C0;
+  border-color: #55D9C0;
+}
+
+.btn-outline-secondary {
+  color: #55D9C0;
+  border-color: #107050;
+}
+
+#search {
+  margin-left: 5px;
+  color: #55D9C0;
+  background-color: #4DD8AD;
+}
+
+#gamesBody {
+  color: #55D9C0;
+  font-family: "Hack", monospace;
+}
+
+.favoriteIcon:checked,
+.fa-star:checked {
+  color: #107050;
+}
+
+.fa-heart,
+.fa-star {
+  color: #FF8E63;
+}
+
+/*!
+ *  Hack typeface https://github.com/source-foundry/Hack
+ *  License: https://github.com/source-foundry/Hack/blob/master/LICENSE.md
+ */
+
+/* FONT PATHS
+ * -------------------------- */
+
+@font-face {
+  font-family: "Hack";
+  src: url("/fonts/hack-regular.woff2?sha=3114f1256") format("woff2"), url("/fonts/hack-regular.woff?sha=3114f1256") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Hack";
+  src: url("/fonts/hack-bold.woff2?sha=3114f1256") format("woff2"), url("/fonts/hack-bold.woff?sha=3114f1256") format("woff");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Hack";
+  src: url("/fonts/hack-italic.woff2?sha=3114f1256") format("woff2"), url("/fonts/hack-italic.woff?sha=3114f1256") format("woff");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Hack";
+  src: url("/fonts/hack-bolditalic.woff2?sha=3114f1256") format("woff2"), url("/fonts/hack-bolditalic.woff?sha=3114f1256") format("woff");
+  font-weight: 700;
+  font-style: italic;
 }
 
 /*!

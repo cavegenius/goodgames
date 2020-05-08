@@ -27,7 +27,7 @@
     <div class="table-responsive">
         <input type="hidden" value="name" id="sortCol" />
         <input type="hidden" value="asc" id="sortOrder" />
-        <table class="table table-striped table-sm">
+        <table id="gamesTable" class="table table-striped table-sm">
             <thead>
             <tr id="gameTableHeading">
 

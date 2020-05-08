@@ -38,7 +38,7 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div id="leftSidebar" class="col-md-1 d-none d-md-block bg-light sidebar filtersBar">
+        <div id="leftSidebar" class="col-md-1 d-none d-md-block sidebar filtersBar">
           <div class="sidebar-sticky">
             <?php if($route == 'games') { ?>
               @include('inc.filters')
@@ -50,7 +50,7 @@
           @yield('content')
         </main>
         
-        <div id="rightSidebar" class="col-md-3 d-none d-md-block bg-light sidebar-right">
+        <div id="rightSidebar" class="col-md-3 d-none d-md-block sidebar-right">
           <div class="sidebar-sticky">
             <?php if($route == 'games') { ?>
               <div class="btn-toolbar mb-2 mb-md-0 sidebarRightMenu">
