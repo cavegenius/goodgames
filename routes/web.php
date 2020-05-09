@@ -11,9 +11,11 @@
 |
 */
 
-Route::get('/', function () {
+// TODO: Create a proper Welcome Page
+/*Route::get('/', function () {
     return view('welcome');
-});
+});*/
+Route::get('/', 'Auth\LoginController@showLoginForm');
 
 Auth::routes(['verify' => true]);
 
