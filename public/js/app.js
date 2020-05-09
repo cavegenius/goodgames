@@ -59607,6 +59607,7 @@ function showEditGameFields(row) {
   });
   var genreHTML = '';
   $.each(genres, function (key, value) {
+    console.log(genre + ' ' + value);
     genreHTML += '<option value="' + value + '" ' + (genre == value ? 'selected' : '') + '>' + value + '</option>';
   });
   var platformTypeHTML = '';

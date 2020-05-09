@@ -29,10 +29,10 @@ class ImportTest extends TestCase
     }
 
     public function testImportSteamTest() {
-        $this->markTestIncomplete('This test has not been implemented yet.');
-        /*$steam = new Steam;
+        //$this->markTestIncomplete('This test has not been implemented yet.');
+        $steam = new Steam;
         $games = $steam->import('76561198166200918');
 
-        $this->assertArrayHasKey(3, $games);*/
+        $this->assertArrayHasKey(3, $games);
     }
 }

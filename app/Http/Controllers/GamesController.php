@@ -418,7 +418,7 @@ class GamesController extends Controller {
     }
 
     public function get_genre_list() {
-        $genres = ["Simulator", "Tactical", "Quiz/Trivia", "Fighting", "Strategy", "Adventure", "Board Game", "Role-playing", "Shooter", "Music", "Indie", "Other"];
+        $genres = ["Simulator", "Tactical", "Quiz/Trivia", "Fighting", "Strategy", "Adventure", "Board Game", "Role-playing", "Shooter", "Music", "Indie", "Other", "Not Set",];
 
         $response['Genres'] = $genres;
         $response['Status'] = 'Success';

@@ -1134,6 +1134,7 @@ var bootbox = require('bootbox');
 
         let genreHTML = '';
         $.each(genres, function( key, value ) {
+            console.log(genre+' '+value);
             genreHTML += '<option value="'+value+'" '+(genre == value ? 'selected' : '')+'>'+value+'</option>';
         });
 
