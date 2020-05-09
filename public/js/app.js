@@ -58814,6 +58814,7 @@ $(document).ready(function () {
       'favorite': favorite,
       'rating': rating,
       'format': format,
+      'genre': genre,
       'notes': notes
     };
     run_ajax(url, post_data, function (obj) {
@@ -58897,6 +58898,7 @@ $(document).ready(function () {
       'platformType': platformType,
       'favorite': favorite,
       'rating': rating,
+      'genre': genre,
       'format': format,
       'notes': notes
     };
@@ -59607,7 +59609,6 @@ function showEditGameFields(row) {
   });
   var genreHTML = '';
   $.each(genres, function (key, value) {
-    console.log(genre + ' ' + value);
     genreHTML += '<option value="' + value + '" ' + (genre == value ? 'selected' : '') + '>' + value + '</option>';
   });
   var platformTypeHTML = '';

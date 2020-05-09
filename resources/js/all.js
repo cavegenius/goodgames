@@ -255,6 +255,7 @@ var bootbox = require('bootbox');
                         'favorite' : favorite,
                         'rating' : rating,
                         'format' : format,
+                        'genre' : genre,
                         'notes' : notes
                     };
 
@@ -335,6 +336,7 @@ var bootbox = require('bootbox');
                         'platformType' : platformType,
                         'favorite' : favorite,
                         'rating' : rating,
+                        'genre' : genre,
                         'format' : format,
                         'notes' : notes
                     };
@@ -1134,7 +1136,6 @@ var bootbox = require('bootbox');
 
         let genreHTML = '';
         $.each(genres, function( key, value ) {
-            console.log(genre+' '+value);
             genreHTML += '<option value="'+value+'" '+(genre == value ? 'selected' : '')+'>'+value+'</option>';
         });
 
