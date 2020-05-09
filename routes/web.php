@@ -19,7 +19,8 @@ Route::get('/', 'Auth\LoginController@showLoginForm');
 
 Auth::routes(['verify' => true]);
 
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'GamesController@index')->middleware('verified');
 Route::get('/games', 'GamesController@index')->middleware('verified');
 Route::post('/games/search', 'GamesController@search')->middleware('verified');
 Route::post('/games/add', 'GamesController@add')->middleware('verified');

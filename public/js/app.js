@@ -59711,6 +59711,8 @@ function processFilters() {
 
   if (allEmpty == false) {
     $('.saveFilter, .clearFilters').attr('disabled', false);
+  } else if ($('#inventorySearch').val().length > 0) {
+    $('.saveFilter, .clearFilters').attr('disabled', false);
   } else {
     $('.saveFilter, .clearFilters').attr('disabled', true);
   }
@@ -59989,8 +59991,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

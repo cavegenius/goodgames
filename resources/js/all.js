@@ -1251,6 +1251,8 @@ var bootbox = require('bootbox');
 
         if(allEmpty == false) {
             $('.saveFilter, .clearFilters').attr('disabled', false);
+        } else if( $('#inventorySearch').val().length > 0 ) {
+            $('.saveFilter, .clearFilters').attr('disabled', false);
         } else {
             $('.saveFilter, .clearFilters').attr('disabled', true);
         }
