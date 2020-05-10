@@ -1068,7 +1068,6 @@ var bootbox = require('bootbox');
                 // Define our data object
                 var context={
                     "gameID": value.id,
-                    "favorite": value.favorite,
                     "name": value.name,
                     "status": value.status,
                     "platform": value.platform,
@@ -1078,6 +1077,10 @@ var bootbox = require('bootbox');
                     "rating": rating,
                     "ratingValue": value.rating,
                 };
+
+                if(value.favorite == 1) {
+                    context.favorite = 1;
+                }
 
                 let listType = $( '#selectedList' ).val();
                 if(listType == 'wishlist' || listType == 'backlog') {

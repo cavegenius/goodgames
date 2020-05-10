@@ -59543,7 +59543,6 @@ function showGameList(obj) {
 
       var context = {
         "gameID": value.id,
-        "favorite": value.favorite,
         "name": value.name,
         "status": value.status,
         "platform": value.platform,
@@ -59553,6 +59552,11 @@ function showGameList(obj) {
         "rating": rating,
         "ratingValue": value.rating
       };
+
+      if (value.favorite == 1) {
+        context.favorite = 1;
+      }
+
       var listType = $('#selectedList').val();
 
       if (listType == 'wishlist' || listType == 'backlog') {
