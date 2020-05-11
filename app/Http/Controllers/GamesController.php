@@ -153,7 +153,7 @@ class GamesController extends Controller {
         $search = $request->get('searchTerm');
 
         $model = new Game;
-        if($filters ||  $search){
+        if($filters || $search){
             $games = $model->filteredList($user, $list, $sortCol, $sortOrder, $filters,  $search);
         } else {
             $games = $model->allGamesForListByUser($user, $list, $sortCol, $sortOrder);

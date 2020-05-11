@@ -10,6 +10,7 @@
                 <button type="button" value="all" class="btn btn-sm btn-outline-primary listType">All</button>
                 <button type="button"  value="backlog"class="btn btn-sm btn-outline-secondary listType">Backlog</button>
                 <button type="button" value="wishlist" class="btn btn-sm btn-outline-secondary listType">Wishlist</button>
+                <button type="button" value="In Progress" class="btn btn-sm btn-outline-secondary listType">In Progress</button>
                 <input type="hidden" value="all" id="selectedList" />
             </div>
         </div>

@@ -59296,12 +59296,7 @@ function run_ajax(url, data_obj, return_function) {
         hide_big_loader();
       },
       error: function error(response) {
-        if (response.status == 419) {
-          window.location.replace('/login');
-        } else {
-          message_pop('danger', 'An unexpected error has occured. Please reload the page.', 2500);
-        }
-
+        window.location.replace('/login');
         hide_big_loader();
       }
     });
@@ -59997,8 +59992,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/wyattmorgan/Documents/repos/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/matthewmorgan/Documents/myStuff/goodgames/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
