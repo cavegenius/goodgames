@@ -536,3 +536,18 @@ content: "\f105";
 .fa-heart, .fa-star {
   color: $compliments;
 }
+
+.importSection {
+  border-bottom: 1px solid $border;
+  padding:20px;
+}
+
+.modal-content {
+  background-color: $body-bg;
+}
+
+.close {
+  color: $text;
+}
+
+.modal-title { font-size: 28px !important; }

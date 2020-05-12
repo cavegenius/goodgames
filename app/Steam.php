@@ -22,6 +22,7 @@ class Steam extends Model {
         foreach( $games as $game ) {
             $gamesList[] = $game->name;
         }
+
         return $gamesList;
     }
     

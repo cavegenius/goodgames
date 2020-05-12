@@ -472,4 +472,60 @@ class GamesController extends Controller {
             }
         }
     }
+
+    public function steamImport( Request $request) {
+        if (!Auth::check()) {
+            return json_encode(['Status'=>'Error','Message'=>'User Not Logged In', 'Logout'=> true]);
+        }
+
+        $rules = [
+            'steamId' => 'required|regex:/\d{17}/'
+        ];
+        $messages = [
+            'steamId.regex' => 'Please use the 17 digit numeric Steam ID'
+        ];
+
+        $this->validate($request, $rules, $messages);
+
+        $addedGames = array();
+
+        $user = Auth::id();
+
+        $steamId = $request->get('steamId');
+        $steam = new Steam;
+        $games = $steam->import($steamId);
+
+        // Take each game and loop through them using the save function?
+        // If its a new game add it to the return list
+        foreach($games as $gameName) {
+            $existinggame = null;
+            $gameCheck = new Game;
+            $existinggame = $gameCheck->where('userId', '=', Auth::id())->where('name', '=', $gameName )->where('platform', '=', 'Steam' )->first();
+            if ($existinggame !== null) {
+                continue;
+            }
+
+            $game = new Game;
+            $game->userId = $user;
+            $game->name = $gameName;
+            $game->status = 'None';
+            $game->platform = 'Steam';
+            $game->platformtype = 'PC';
+            $game->format = 'Digital';
+            $game->favorite = 0;
+            $game->rating = '0';
+            $game->rank = 0;
+            $game->genre = 'Not Set';
+            $game->notes = '';
+
+            if($game->save()) {
+                $addedGames[] = $game->name;
+            }
+        }
+
+        $response['Games'] = $addedGames;
+        $response['Status'] = 'Success';
+
+        return json_encode($response);
+    }
 }

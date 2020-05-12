@@ -794,7 +794,11 @@ var bootbox = require('bootbox');
                             }, 500 );
                         }
                     });
-                }); 
+                });
+
+                $(document).on("click", "#steamImportSubmit", function () {
+                    steamImport( );
+                });
             // End Games Actions
         // End Event Actions
     });
@@ -816,6 +820,7 @@ var bootbox = require('bootbox');
                         if( response.Logout == true ) {
                             window.location.replace("/login");
                         }
+
                         if ( return_function != '' && return_function !== null && return_function !== undefined )
                         {
                             var obj          = {};
@@ -828,7 +833,21 @@ var bootbox = require('bootbox');
                         hide_big_loader();
                     },
                     error: function (response) {
-                        window.location.replace('/login');
+                        if(response.status == 422) {
+                            let message = '';
+                            $.each(response.responseJSON.errors, function( key, value ) {
+                                console.log(value);
+                                $.each(value, function( key, value ) {
+                                    message += value;
+                                });
+                            });
+                            message_pop( 'danger', message, 2500 )
+                        } else if(response.status == 500) {
+                            message_pop( 'danger', 'An unexpected error has occurred. Please try again or reload the page.', 2500 )
+                        } else {
+                            window.location.replace('/login');
+                        }
+                        
                         hide_big_loader();
                     },
             });
@@ -915,6 +934,47 @@ var bootbox = require('bootbox');
             },
             callback: function( result ){ fn_callback( result, param1, param2, param3 ); }
         });
+    }
+
+    function show_modal( title, body, footer, size ) {
+        // variables
+        var my_modal = '#my_modal';
+            size     = size == '' ? false : ( size == 'large' ? 'modal-lg' : ( size == 'small' ? 'modal-sm' : false ) );
+            footer   = footer == '' ? false : true;
+        
+        // title
+        $( my_modal ).find( '.modal-header' ).find( 'h4' ).html( title );
+        
+        // body
+        $( my_modal ).find( '.modal-body' ).html( body );
+        
+        // footer
+        if ( footer )
+        {
+            // show it
+            $( my_modal ).find( '.modal-footer' ).show();
+        }
+        else
+        {
+            // hide that sucker
+            $( my_modal ).find( '.modal-footer' ).hide();
+        }
+        
+        // clear out size
+        $( my_modal ).find( '.modal-dialog' ).removeClass( 'modal-lg' ).removeClass( 'modal-sm' );
+        
+        // set new size
+        if ( size )
+        {
+            $( my_modal ).find( '.modal-dialog' ).addClass( size );
+        }
+        
+        // show the modal
+        $( my_modal ).modal( 'show' );
+    }
+
+    function close_modal() {
+        $( '#my_modal' ).modal( 'hide' );
     }
 // End Global Functions
 
@@ -1348,5 +1408,34 @@ var bootbox = require('bootbox');
                 }
             );
         }
+    }
+
+    function steamImport( ){
+        url = '/games/steamImport';
+
+        post_data = {
+            steamId: $('#steamId').val()
+        };
+
+        run_ajax(
+            url,
+            post_data,
+            function(obj) {
+                var body = '';
+                $('#steamResults').html('');
+                if(obj.response['Games'].length > 0) {
+                    var title = '<p>The Following Games have been added:</p>';
+                    
+                    $.each(obj.response['Games'], function( key, value ) {
+                        body += value+'<br />';
+                    });
+                    
+                } else {
+                    body += '<p>No New Games Added</p>';
+                }
+                show_modal( title, body, ' ', 'large' );
+                loadGames();
+            }
+        );
     }
 // End Games Functions

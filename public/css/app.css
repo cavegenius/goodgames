@@ -11476,6 +11476,23 @@ body {
   color: #FF8E63;
 }
 
+.importSection {
+  border-bottom: 1px solid #C7F6EC;
+  padding: 20px;
+}
+
+.modal-content {
+  background-color: #212624;
+}
+
+.close {
+  color: #55D9C0;
+}
+
+.modal-title {
+  font-size: 28px !important;
+}
+
 /*!
  *  Hack typeface https://github.com/source-foundry/Hack
  *  License: https://github.com/source-foundry/Hack/blob/master/LICENSE.md

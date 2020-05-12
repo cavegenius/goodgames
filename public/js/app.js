@@ -59265,6 +59265,9 @@ $(document).ready(function () {
         }, 500);
       }
     });
+  });
+  $(document).on("click", "#steamImportSubmit", function () {
+    steamImport();
   }); // End Games Actions
   // End Event Actions
 }); // End Document ready Actions
@@ -59296,7 +59299,21 @@ function run_ajax(url, data_obj, return_function) {
         hide_big_loader();
       },
       error: function error(response) {
-        window.location.replace('/login');
+        if (response.status == 422) {
+          var message = '';
+          $.each(response.responseJSON.errors, function (key, value) {
+            console.log(value);
+            $.each(value, function (key, value) {
+              message += value;
+            });
+          });
+          message_pop('danger', message, 2500);
+        } else if (response.status == 500) {
+          message_pop('danger', 'An unexpected error has occurred. Please try again or reload the page.', 2500);
+        } else {
+          window.location.replace('/login');
+        }
+
         hide_big_loader();
       }
     });
@@ -59388,6 +59405,39 @@ function confirmAction(confirmMessage, fn_callback) {
       fn_callback(result, param1, param2, param3);
     }
   });
+}
+
+function show_modal(title, body, footer, size) {
+  // variables
+  var my_modal = '#my_modal';
+  size = size == '' ? false : size == 'large' ? 'modal-lg' : size == 'small' ? 'modal-sm' : false;
+  footer = footer == '' ? false : true; // title
+
+  $(my_modal).find('.modal-header').find('h4').html(title); // body
+
+  $(my_modal).find('.modal-body').html(body); // footer
+
+  if (footer) {
+    // show it
+    $(my_modal).find('.modal-footer').show();
+  } else {
+    // hide that sucker
+    $(my_modal).find('.modal-footer').hide();
+  } // clear out size
+
+
+  $(my_modal).find('.modal-dialog').removeClass('modal-lg').removeClass('modal-sm'); // set new size
+
+  if (size) {
+    $(my_modal).find('.modal-dialog').addClass(size);
+  } // show the modal
+
+
+  $(my_modal).modal('show');
+}
+
+function close_modal() {
+  $('#my_modal').modal('hide');
 } // End Global Functions
 // Games Functions
 
@@ -59790,6 +59840,29 @@ function processEditFilterValues(result, id) {
       loadSavedFilters();
     });
   }
+}
+
+function steamImport() {
+  url = '/games/steamImport';
+  post_data = {
+    steamId: $('#steamId').val()
+  };
+  run_ajax(url, post_data, function (obj) {
+    var body = '';
+    $('#steamResults').html('');
+
+    if (obj.response['Games'].length > 0) {
+      var title = '<p>The Following Games have been added:</p>';
+      $.each(obj.response['Games'], function (key, value) {
+        body += value + '<br />';
+      });
+    } else {
+      body += '<p>No New Games Added</p>';
+    }
+
+    show_modal(title, body, ' ', 'large');
+    loadGames();
+  });
 } // End Games Functions
 
 /***/ }),

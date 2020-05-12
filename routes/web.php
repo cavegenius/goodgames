@@ -33,6 +33,8 @@ Route::post('/games/get_platform_list', 'GamesController@get_platform_list')->mi
 Route::post('/games/get_genre_list', 'GamesController@get_genre_list')->middleware('verified');
 Route::post('/games/delete', 'GamesController@destroy')->middleware('verified');
 Route::get('/games/getImportTemplate', 'GamesController@getImportTemplate')->middleware('verified');
+Route::post('/games/steamImport', 'GamesController@steamImport')->middleware('verified');
+
 
 Route::post('/filters/add', 'FilterController@add')->middleware('verified');
 Route::post('/filters/delete', 'FilterController@delete')->middleware('verified');
