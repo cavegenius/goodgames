@@ -9,7 +9,7 @@
         </td>
         @{{#if rank}}
                 <td>
-                    <input type="text" name="rank" value="" size="2" /> 
+                    <input type="text" name="rank" value="@{{{rank}}}" size="2" /> 
                 </td>
         @{{else}}
                 <input type="hidden" name="rank" value="0" size="2" />

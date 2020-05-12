@@ -72,7 +72,12 @@ var bootbox = require('bootbox');
 
                     let listType = $( '#selectedList' ).val();
                     if(listType == 'wishlist' || listType == 'backlog') {
-                        context.rank = true
+                        if( $('#gamesTableBody').find('>tr:last-child .rank').length > 0 ) {
+                            let lastRank = parseInt( $('#gamesTableBody').find('>tr:last-child .rank').text() );
+                            context.rank = lastRank+1;
+                        } else {
+                            context.rank = 1;
+                        }
                     }
                     
                     // Pass our data to the template
@@ -836,7 +841,6 @@ var bootbox = require('bootbox');
                         if(response.status == 422) {
                             let message = '';
                             $.each(response.responseJSON.errors, function( key, value ) {
-                                console.log(value);
                                 $.each(value, function( key, value ) {
                                     message += value;
                                 });
@@ -1155,7 +1159,7 @@ var bootbox = require('bootbox');
                 }
             });
         } else if(obj.response.Status == 'Error') {
-            $( '#gamesTableBody').append('<tr><td colspan="9" class="text-center">'+obj.response.Message+'</td></tr>');
+            $( '#gamesTableBody').append('<tr><td colspan="10" class="text-center">'+obj.response.Message+'</td></tr>');
         }
     }
 
