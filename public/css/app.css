@@ -11493,6 +11493,10 @@ body {
   font-size: 28px !important;
 }
 
+#feedbackSubmit {
+  float: right;
+}
+
 /*!
  *  Hack typeface https://github.com/source-foundry/Hack
  *  License: https://github.com/source-foundry/Hack/blob/master/LICENSE.md

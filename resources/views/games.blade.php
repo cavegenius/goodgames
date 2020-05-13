@@ -49,3 +49,4 @@
 @include('handlebars.sidebarSearchTemplate')
 @include('handlebars.searchResultsTemplate')
 @include('handlebars.tableHeadersTemplate')
+@include('handlebars.feedbackFormTemplate')

@@ -805,6 +805,46 @@ var bootbox = require('bootbox');
                 $(document).on("click", "#steamImportSubmit", function () {
                     steamImport( );
                 });
+
+                // BETA FEEDBACK
+                $(document).on("click", ".btn-feedback", function () {
+                    var theTemplateScript = $("#feedbackFormTemplate").html();
+
+                    // Compile the template
+                    var theTemplate = Handlebars.compile(theTemplateScript);
+
+                    // Define our data object
+                    var context={
+                    };
+
+                    // Pass our data to the template
+                    var theCompiledHtml = theTemplate(context);
+
+                    show_modal( 'Beta Feedback', theCompiledHtml )
+                });
+
+                $(document).on("click", "#feedbackSubmit", function () {
+                    let url = '/feedback/submit';
+                    let name = $('#feedbackName').val();
+                    let email = $('#feedbackEmail').val();
+                    let comments = $('#feedbackComments').val();
+
+                    post_data = {
+                        'name'    : name,
+                        'email'   : email,
+                        'comments': comments
+                    };
+
+                    run_ajax(
+                        url,
+                        post_data,
+                        function(obj) {
+                            close_modal();
+                            message_pop(obj.response.Status, obj.response.Message, 2500);
+                        }
+                    );
+                });
+                // BETA FEEDBACK
             // End Games Actions
         // End Event Actions
     });

@@ -23,6 +23,7 @@
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
           @if (Auth::check())
+            <button type="button" class="btn btn-sm btn-outline-secondary btn-feedback">Beta Feedback</button>
             <a class="nav-link" href="{{ route('logout') }}"
               onclick="event.preventDefault();
                 document.getElementById('logout-form').submit();">
