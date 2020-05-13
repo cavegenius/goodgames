@@ -28,11 +28,12 @@ class FeedbackController extends Controller
         ];
         $this->validate($request, $rules);
 
+        $userId = Auth::id();
         $name = $request->get('name');
         $email = $request->get('email');
         $comments = $request->get('comments');
 
-        $data = array('name' => $name,'email' => $email,'comments' => $comments);
+        $data = array('user' => $userId, 'name' => $name,'email' => $email,'comments' => $comments);
 
         Mail::send('emails.feedback', $data, function($message) {
             $message->to('wyatt@cavegenius.com')->subject('Feedback from Your Game Lists');
