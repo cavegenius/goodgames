@@ -159,7 +159,7 @@ var bootbox = require('bootbox');
                                     url,
                                     post_data,
                                     function(obj) {
-                                        message_pop(obj.response.status, obj.response.message, 2500);
+                                        message_pop(obj.response.Status, obj.response.Message, 2500);
                                         loadGames();
                                     }
                                 );
@@ -271,12 +271,12 @@ var bootbox = require('bootbox');
                             if(!saveAll) {
                                 message_pop(obj.response.Status, obj.response.Message, 2500);
                                 hideUnsavedChanges();
+                                loadGames();
                             } else {
-                                if(obj.response.status == 'Error') {
+                                if(obj.response.Status == 'Error') {
                                     saveError = true;
                                 }
                             }
-                            loadGames();
                         }
                     );
                     $(this).closest('tr').remove();
@@ -351,14 +351,14 @@ var bootbox = require('bootbox');
                         post_data,
                         function(obj) {
                             if(!saveAll) {
-                                message_pop(obj.response.status, obj.response.message, 2500);
+                                message_pop(obj.response.Status, obj.response.Message, 2500);
                                 hideUnsavedChanges();
+                                loadGames();
                             } else {
-                                if(obj.response.status == 'Error') {
+                                if(obj.response.Status == 'Error') {
                                     saveError = true;
                                 }
                             }
-                            loadGames();
                         }
                     );
                     $(this).closest('tr').remove();
@@ -375,19 +375,19 @@ var bootbox = require('bootbox');
 
                 $(document).on('click', '.saveAll', function() {
                     saveAll = true;
-                    $( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').each(function() {
-                        $(this).click();
-                    });
-
-                    if (!saveError) {
-                        message_pop( 'Success', 'All changes Saved Successfully', 2500);
-                    } else {
-                        message_pop( 'Error', 'There was an error saving one or more changes.', 2500);
-                    }
-                    // Reset the flags
-                    saveError = false;
-                    saveAll = false;
-                    hideUnsavedChanges();
+                    $( '#gamesTableBody').find('.saveSingleEditGame, .saveSingleAddGame, .saveSingleDeleteGame').trigger("click");
+                    setTimeout( function() {
+                        if (!saveError) {
+                            message_pop( 'Success', 'All changes Saved Successfully', 25000);
+                        } else {
+                            message_pop( 'Error', 'There was an error saving one or more changes.', 25000);
+                        }
+                        // Reset the flags
+                        saveError = false;
+                        //saveAll = false;
+                        hideUnsavedChanges();
+                        loadGames();
+                    }, 2500 );
                 });
 
                 $(document).on('click', '.deleteSingleGame', function() {
@@ -422,14 +422,15 @@ var bootbox = require('bootbox');
                         post_data,
                         function(obj) {
                             if(!saveAll) {
-                                message_pop(obj.response.status, obj.response.message, 2500);
+                                message_pop(obj.response.Status, obj.response.Message, 2500);
                                 hideUnsavedChanges();
+                                loadGames();
                             } else {
-                                if(obj.response.status == 'Error') {
+                                if(obj.response.Status == 'Error') {
                                     saveError = true;
                                 }
                             }
-                            loadGames();
+                            
                         }
                     );
                     $(this).closest('tr').remove();
@@ -839,15 +840,19 @@ var bootbox = require('bootbox');
                     },
                     error: function (response) {
                         if(response.status == 422) {
-                            let message = '';
-                            $.each(response.responseJSON.errors, function( key, value ) {
-                                $.each(value, function( key, value ) {
-                                    message += value;
+                            if(!saveAll) {
+                                let message = '';
+                                $.each(response.responseJSON.errors, function( key, value ) {
+                                    $.each(value, function( key, value ) {
+                                        message += value;
+                                    });
                                 });
-                            });
-                            message_pop( 'danger', message, 2500 )
+                                message_pop( 'danger', message, 2500 );
+                            } else {
+                                saveError = true;
+                            }
                         } else if(response.status == 500) {
-                            message_pop( 'danger', 'An unexpected error has occurred. Please try again or reload the page.', 2500 )
+                            message_pop( 'danger', 'An unexpected error has occurred. Please try again or reload the page.', 2500 );
                         } else {
                             window.location.replace('/login');
                         }
@@ -1039,9 +1044,10 @@ var bootbox = require('bootbox');
 
     function showGameList(obj) {
         savedRows = [];
+        saveAll = false;
 
         // Clear all messages
-        message_clear('#messageBox');
+        //message_clear('#messageBox');
         if(listChanged){
             $( '#gamesTableBody').html('');
         } else {
