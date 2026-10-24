@@ -6,6 +6,8 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      SESSION_SECURE_COOKIE: "false"
     volumes:
       - ./src/app:/var/www/html/app:ro
       - ./src/bootstrap/app.php:/var/www/html/bootstrap/app.php:ro

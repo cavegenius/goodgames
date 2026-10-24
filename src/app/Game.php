@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Game extends Model {
     use HasFactory;
-    protected $fillable = ['name','platformType','platform','status','genre','favorite','rating','format','notes'];
+    protected $fillable = ['name','rank','platformType','platform','status','genre','favorite','rating','format','notes'];
 
     public function allGamesForListByUser( $user, $list='all', $sortCol='name', $sortOrder='asc') {
        if( $list == 'all' ){

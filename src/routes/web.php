@@ -17,24 +17,26 @@
 });*/
 Route::get('/', 'Auth\LoginController@showLoginForm');
 
-Auth::routes(['verify' => true]);
+Route::middleware('throttle:10,1')->group(function () {
+    Auth::routes(['verify' => true]);
+});
 
 //Route::get('/home', 'HomeController@index')->name('home');
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'throttle:60,1'])->group(function () {
     Route::get('/home', 'GamesController@index');
     Route::get('/games', 'GamesController@index');
-    Route::post('/games/search', 'GamesController@search');
+    Route::post('/games/search', 'GamesController@search')->middleware('throttle:10,1');
     Route::post('/games/add', 'GamesController@add');
     Route::post('/games/showOne', 'GamesController@showOne');
     Route::post('/games/showList', 'GamesController@showList');
     Route::post('/games/update', 'GamesController@update');
-    Route::post('/games/importCSV', 'GamesController@importCSV');
+    Route::post('/games/importCSV', 'GamesController@importCSV')->middleware('throttle:3,1');
     Route::get('/games/exportCSV', 'GamesController@exportCSV');
     Route::post('/games/get_platform_list', 'GamesController@get_platform_list');
     Route::post('/games/get_genre_list', 'GamesController@get_genre_list');
     Route::post('/games/delete', 'GamesController@destroy');
     Route::get('/games/getImportTemplate', 'GamesController@getImportTemplate');
-    Route::post('/games/steamImport', 'GamesController@steamImport');
+    Route::post('/games/steamImport', 'GamesController@steamImport')->middleware('throttle:3,1');
     Route::post('/feedback/submit', 'FeedbackController@submit');
 
     Route::post('/filters/add', 'FilterController@add');

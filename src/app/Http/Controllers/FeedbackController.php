@@ -23,8 +23,9 @@ class FeedbackController extends Controller
         }
 
         $rules = [
-            'name' => 'required',
-            'comments' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'comments' => 'required|string|max:5000',
         ];
         $this->validate($request, $rules);
 

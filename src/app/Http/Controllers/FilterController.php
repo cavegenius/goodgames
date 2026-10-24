@@ -95,9 +95,8 @@ class FilterController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->get('id');
-
-        $filter = $this->model->find($id);
+        $id = $request->validate(['id' => 'required|integer'])['id'];
+        $filter = $this->model->where('userId', $user)->find($id);
 
         // If the Filter does not belong to this user
         if( $filter && $user == $filter['userId'] ) {
@@ -124,16 +123,18 @@ class FilterController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->get('id');
-
-        $filter = $this->model->find($id);
-        // Verify filter belogs to the user
-        if( $filter && $user != $filter['userId'] ){
+        $id = $request->validate(['id' => 'required|integer'])['id'];
+        $filter = $this->model->where('userId', $user)->find($id);
+        if (!$filter) {
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Filter']);
         }
 
-        $filter->filter = $request->get('filter');
-        $filter->searchTerm = $request->get('searchTerm');
+        $data = $request->validate([
+            'filter' => 'required',
+            'searchTerm' => 'nullable|string|max:100',
+        ]);
+        $filter->filter = is_array($data['filter']) ? json_encode($data['filter']) : $data['filter'];
+        $filter->searchTerm = $data['searchTerm'] ?? '';
 
         if($filter->save()) {
             $result = json_encode(['Status' => 'Success', 'Message' => 'Filter Updated Successfully']);
@@ -150,20 +151,17 @@ class FilterController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->get('id');
-
-        $filter = $this->model->find($id);
-        // Check for that name already being used for this user
-        $existingFilter = $filter->where('userId', '=', $user)->where('name', '=', $request->get('name'))->first();
+        $data = $request->validate(['id' => 'required|integer', 'name' => 'required|string|max:100']);
+        $filter = $this->model->where('userId', $user)->find($data['id']);
+        if (!$filter) {
+            return json_encode(['Status' => 'Error', 'Message' => 'Invalid Filter']);
+        }
+        $existingFilter = $this->model->where('userId', $user)->where('name', $data['name'])->where('id', '!=', $filter->id)->first();
         if ($existingFilter !== null) {
             return json_encode(['Status' => 'Error', 'Message' => 'This name already exists']);
         }
         // Verify filter belogs to the user
-        if( $filter && $user != $filter['userId'] ){
-            return json_encode(['Status' => 'Error', 'Message' => 'Invalid Filter']);
-        }
-
-        $filter->name = $request->get('name');
+        $filter->name = $data['name'];
 
         if($filter->save()) {
             $result = json_encode(['Status' => 'Success', 'Message' => 'Filter Updated Successfully']);
@@ -186,11 +184,9 @@ class FilterController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->get('id');
-
-        $filter = $this->model->find($id);
-        // Verify filter belogs to the user
-        if( $filter && $user != $filter['userId'] ){
+        $id = $request->validate(['id' => 'required|integer'])['id'];
+        $filter = $this->model->where('userId', $user)->find($id);
+        if (!$filter) {
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Filter']);
         }
 

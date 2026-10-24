@@ -10,7 +10,7 @@ use \GuzzleHttp\Psr7\Request;
 
 class Steam extends Model {
 
-    private $api_url = 'http://api.steampowered.com/';
+    private $api_url = 'https://api.steampowered.com/';
     private ?ClientInterface $httpClient = null;
 
     public function setHttpClient(ClientInterface $client): void
@@ -22,7 +22,16 @@ class Steam extends Model {
         $client = $this->httpClient ?? new Client();
         $gamesList = [];
 
-        $response = $client->get($this->api_url.'IPlayerService/GetOwnedGames/v0001/?key='.config('keys.steamKey').'&steamid='.$user.'&include_appinfo=1&format=json');
+        $response = $client->get($this->api_url.'IPlayerService/GetOwnedGames/v0001/', [
+            'query' => [
+                'key' => config('keys.steamKey'),
+                'steamid' => $user,
+                'include_appinfo' => 1,
+                'format' => 'json',
+            ],
+            'connect_timeout' => 3,
+            'timeout' => 10,
+        ]);
         $games = json_decode($response->getBody()->getContents());
         $games = $games->response->games;
 

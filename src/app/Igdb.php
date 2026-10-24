@@ -23,7 +23,9 @@ class Igdb {
     public function search( $search ) {
         $client = $this->client();
 
-        $data = 'fields name,cover,genres,platforms,release_dates,summary,url; search "'.$search.'"; limit 50;';
+        $safeSearch = preg_replace('/[\x00-\x1F\x7F]/', ' ', (string) $search);
+        $escapedSearch = str_replace(['\\', '"'], ['\\\\', '\\"'], $safeSearch ?? '');
+        $data = 'fields name,cover,genres,platforms,release_dates,summary,url; search "'.$escapedSearch.'"; limit 10;';
         $header = ['user-key' => config('keys.igdbKey') , 'Content-Type'=>'text/plain'];
         $response = $client->post($this->api_url.'games', ['headers' => $header, 'body'=>$data]);
 

@@ -34,18 +34,24 @@ class GamesController extends Controller {
 
     public function add(Request $request) {
         $user = Auth::id();
-        $status = $request->get('status');
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'platform' => 'required|string|max:100',
+            'platformType' => 'required|string|in:PC,Console,Other',
+            'status' => 'required|string|in:Abandoned,Backlog,Completed,In Progress,Might Play,None,Paused,Replayable,Wishlist,Wont Play',
+            'rank' => 'required|integer|min:0',
+            'favorite' => 'sometimes|boolean',
+            'rating' => 'sometimes|integer|between:0,5',
+            'format' => 'required|string|in:Physical,Digital,Not Set',
+            'genre' => 'sometimes|string|in:Adventure,Board Game,Fighting,Indie,Music,Not Set,Other,Quiz/Trivia,Role-playing,Shooter,Simulator,Strategy,Tactical',
+            'notes' => 'nullable|string|max:255',
+        ]);
+        $status = $data['status'];
         $max = 0;
         if($status=='Wishlist'|| $status=='Backlog') {
             $max = $this->model->where('rank', '>', 0)->where('status', '=', $status)->where('userId', $user )->max('rank')+1;
         }
-        $this->validate($request, [
-            'name' => 'required',
-            'platform' => 'required',
-            'platformType' => 'required',
-            'rank' => 'required|numeric|min:0|max:'.$max,
-            'format' => 'required'
-        ]);
+        $this->validate($request, ['rank' => 'integer|max:'.$max]);
 
         $existinggame = null;
         $gameCheck = new Game;
@@ -56,23 +62,13 @@ class GamesController extends Controller {
 
         $game = new Game;
         $game->userId = $user;
-
-        foreach( (array)$request->all() as $key=>$value ) {
-            if( $key == '_token') { continue; }
-            if( $key == 'notes' && !$value ) { $value='';}
-
-            if($key == 'rank' && ($status == 'Wishlist' || $status == 'Backlog')) {
-                if($value==0) {
-                    $value = $this->getNextRank($status);
-                } else {
-                    $this->moveRanksDown($value, $status );
-                }
-            } else if($key == 'rank') {
-                $value = 0;
-            }
-
-            $game->$key = $value;
+        $data['rank'] = in_array($status, ['Wishlist', 'Backlog'], true)
+            ? ($data['rank'] ?: $this->getNextRank($status))
+            : 0;
+        if ($data['rank'] > 0 && in_array($status, ['Wishlist', 'Backlog'], true)) {
+            $this->moveRanksDown($data['rank'], $status);
         }
+        $game->fill($data);
 
         if($game->save()) {
             $response = json_encode(['Status' => 'Success', 'Message' => 'Game Added Successfully']);
@@ -84,34 +80,29 @@ class GamesController extends Controller {
     }
 
     public function search(Request $request, Igdb $game) {
-        $name = $request->input('name');
+        $name = $request->validate(['name' => 'required|string|max:100'])['name'];
 
         $games = $game->search($name);
+        if (!is_array($games)) $games = [];
 
         foreach($games as $key => $oneGame) {
             // Create Image URL
-            if(property_exists($oneGame, 'cover')){
-                $id = $game->getCover( $oneGame->cover);
+            if (property_exists($oneGame, 'cover')) {
+                $id = $game->getCover($oneGame->cover);
                 $games[$key]->cover = 'https://images.igdb.com/igdb/image/upload/t_thumb/'.$id[0]->image_id.'.jpg';
             }
 
             // Platforms
-            if(property_exists($oneGame, 'platforms')){
-                $platforms = array();
-                foreach($oneGame->platforms as $platform) {
-                    $result = $game->getPlatform($platform);
-                    $platforms[] = $result[0]->name;
-                }
+            if (property_exists($oneGame, 'platforms')) {
+                $platforms = [];
+                foreach ($oneGame->platforms as $platform) $platforms[] = $game->getPlatform($platform)[0]->name;
                 $games[$key]->platforms = $platforms;
             }
 
             // Genres
-            if(property_exists($oneGame, 'genres')){
-                $genres = array();
-                foreach($oneGame->genres as $genre) {
-                    $result = $game->getGenre($genre);
-                    $genres[] = $result[0]->name;
-                }
+            if (property_exists($oneGame, 'genres')) {
+                $genres = [];
+                foreach ($oneGame->genres as $genre) $genres[] = $game->getGenre($genre)[0]->name;
                 $games[$key]->genres = $genres;
             }
         }
@@ -145,11 +136,25 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $list = $request->get('list');
-        $sortCol = $request->get('sortCol');
-        $sortOrder = $request->get('sortOrder');
-        $filters = json_decode($request->get('filtered'), TRUE );
-        $search = $request->get('searchTerm');
+        $params = $request->validate([
+            'list' => 'sometimes|string|in:all,backlog,wishlist,In Progress,Backlog,Wishlist',
+            'sortCol' => 'sometimes|string|in:name,rank,status,platform,platformType,format,genre,rating,created_at,updated_at',
+            'sortOrder' => 'sometimes|string|in:asc,desc',
+            'filtered' => 'nullable|string|max:10000',
+            'searchTerm' => 'nullable|string|max:100',
+        ]);
+        $list = ['backlog' => 'Backlog', 'wishlist' => 'Wishlist'][$params['list'] ?? ''] ?? ($params['list'] ?? 'all');
+        $sortCol = $params['sortCol'] ?? 'name';
+        $sortOrder = $params['sortOrder'] ?? 'asc';
+        $filters = json_decode($params['filtered'] ?? '', true);
+        $filterKeys = ['favorite', 'status', 'platform', 'platformType', 'format', 'genre', 'rating'];
+        $filters = array_merge(array_fill_keys($filterKeys, []), is_array($filters) ? array_intersect_key($filters, array_flip($filterKeys)) : []);
+        foreach ($filterKeys as $key) {
+            $filters[$key] = is_array($filters[$key])
+                ? array_slice(array_values(array_filter($filters[$key], 'is_string')), 0, 100)
+                : [];
+        }
+        $search = $params['searchTerm'] ?? '';
 
         $model = new Game;
         if($filters || $search){
@@ -181,9 +186,8 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->get('id');
-
-        $game = $this->model->find($id);
+        $id = $request->validate(['id' => 'required|integer'])['id'];
+        $game = $this->model->where('userId', $user)->find($id);
 
         // Verifying the game is found and belongs to this user
         if( $game && $user == $game['userId'] ) {
@@ -211,35 +215,41 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->get('id');
-
-        $game = $this->model->find($id);
-        // If the game does not belong to this user
-        if( $game && $user != $game['userId'] ){
+        $data = $request->validate([
+            'id' => 'required|integer',
+            'name' => 'sometimes|required|string|max:255',
+            'platform' => 'sometimes|required|string|max:100',
+            'platformType' => 'sometimes|required|string|in:PC,Console,Other',
+            'status' => 'sometimes|required|string|in:Abandoned,Backlog,Completed,In Progress,Might Play,None,Paused,Replayable,Wishlist,Wont Play',
+            'rank' => 'sometimes|integer|min:0',
+            'favorite' => 'sometimes|boolean',
+            'rating' => 'sometimes|integer|between:0,5',
+            'format' => 'sometimes|required|string|in:Physical,Digital,Not Set',
+            'genre' => 'sometimes|string|in:Adventure,Board Game,Fighting,Indie,Music,Not Set,Other,Quiz/Trivia,Role-playing,Shooter,Simulator,Strategy,Tactical',
+            'notes' => 'nullable|string|max:255',
+        ]);
+        $game = $this->model->where('userId', $user)->find($data['id']);
+        if (!$game) {
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Game']);
         }
 
         $oldStatus = $game->status;
-        $status = ucfirst( $request->get('status') );
-        foreach( (array)$request->all() as $key=>$value ) {
-            if( $key == '_token') { continue; }
-            if( $key == 'notes' && !$value ) { $value='';}
-
-            if($key == 'rank' && ($status == 'Wishlist' || $status == 'Backlog')) {
-                if($status != $oldStatus) {
-                    $value=0;
-                }
-                if($value==0) {
-                    $value = $this->getNextRank($status);
-                } else {
-                    $this->moveRanksDown($value, $status );
-                }
-            } else if($key == 'rank') {
-                $value = 0;
-            }
-
-            $game->$key = $value;
+        $status = $data['status'] ?? $oldStatus;
+        unset($data['id']);
+        if (isset($data['status']) && $status !== $oldStatus && !array_key_exists('rank', $data)) {
+            $data['rank'] = 0;
         }
+        if (array_key_exists('rank', $data)) {
+            if (in_array($status, ['Wishlist', 'Backlog'], true)) {
+                $maxRank = Game::where('userId', $user)->where('status', $status)->where('rank', '>', 0)->max('rank') + 1;
+                validator(['rank' => $data['rank']], ['rank' => 'integer|min:0|max:'.$maxRank])->validate();
+                $data['rank'] = $data['rank'] ?: $this->getNextRank($status);
+                if ($data['rank'] > 0) $this->moveRanksDown($data['rank'], $status);
+            } else {
+                $data['rank'] = 0;
+            }
+        }
+        $game->fill($data);
 
         if($game->save()) {
             if(($oldStatus == 'Wishlist' || $oldStatus == 'Backlog' ) && ($status != 'Wishlist' || $status != 'Backlog') ) {
@@ -265,11 +275,10 @@ class GamesController extends Controller {
         }
 
         $user = Auth::id();
-        $id = $request->get('id');
-        $game = $this->model->find($id);
+        $id = $request->validate(['id' => 'required|integer'])['id'];
+        $game = $this->model->where('userId', $user)->find($id);
         $updateRanks = false;
-        // If the game does not belong to this user
-        if( $game && $user != $game['userId'] ){
+        if (!$game) {
             return json_encode(['Status' => 'Error', 'Message' => 'Invalid Game']);
         }
 
@@ -305,9 +314,33 @@ class GamesController extends Controller {
      *  Import Games from CSV File
      */
     public function importCSV(Request $request) {
-        $file = $request->file('csvFile');
-
-        $gamesArray = $this->csvToArray($file);
+        $file = $request->validate(['csvFile' => 'required|file|mimes:csv,txt|max:10240'])['csvFile'];
+        $gamesArray = $this->csvToArray($file->getRealPath());
+        $allowedColumns = ['Name', 'Rank', 'PlatformType', 'Platform', 'Status', 'Genre', 'Favorite', 'Rating', 'Format', 'Notes'];
+        if (!is_array($gamesArray) || $gamesArray === [] || count($gamesArray) > 1000) {
+            return response()->json(['Status' => 'Error', 'Message' => 'The CSV file is invalid or has too many rows.'], 422);
+        }
+        if ($gamesArray !== [] && (array_diff(array_keys($gamesArray[0]), $allowedColumns)
+            || array_diff(['Name', 'Platform', 'Status'], array_keys($gamesArray[0])))) {
+            return response()->json(['Status' => 'Error', 'Message' => 'The CSV contains unsupported columns.'], 422);
+        }
+        foreach ($gamesArray as $row) {
+            $rowValidator = validator($row, [
+                'Name' => 'required|string|max:255',
+                'Rank' => 'nullable|integer|min:0',
+                'PlatformType' => 'nullable|in:PC,Console,Other',
+                'Platform' => 'required|string|max:100',
+                'Status' => 'required|in:Abandoned,Backlog,Completed,In Progress,Might Play,None,Paused,Replayable,Wishlist,Wont Play',
+                'Genre' => 'nullable|in:Adventure,Board Game,Fighting,Indie,Music,Not Set,Other,Quiz/Trivia,Role-playing,Shooter,Simulator,Strategy,Tactical',
+                'Favorite' => 'nullable|boolean',
+                'Rating' => 'nullable|integer|between:0,5',
+                'Format' => 'nullable|in:Physical,Digital,Not Set',
+                'Notes' => 'nullable|string|max:255',
+            ]);
+            if ($rowValidator->fails()) {
+                return response()->json(['Status' => 'Error', 'Message' => 'The CSV contains invalid game data.'], 422);
+            }
+        }
 
         for ($i = 0; $i < count($gamesArray); $i++) {
             $existinggame = null;
@@ -345,7 +378,9 @@ class GamesController extends Controller {
                 }
 
                 $attribute = $key === 'platformtype' ? 'platformType' : $key;
-                $game->$attribute = $value;
+                if (in_array($attribute, ['name', 'rank', 'platformType', 'platform', 'status', 'genre', 'favorite', 'rating', 'format', 'notes'], true)) {
+                    $game->$attribute = $value;
+                }
             }
             $game->save();
         }
@@ -362,7 +397,7 @@ class GamesController extends Controller {
             "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=file.csv",
             "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Cache-Control" => "private, no-store, max-age=0",
             "Expires" => "0"
         );
     
@@ -375,11 +410,17 @@ class GamesController extends Controller {
             fputcsv($file, $columns);
     
             foreach($games as $game) {
-                fputcsv($file, array($game->rank, $game->name, $game->platformType, $game->platform, $game->status, $game->genre, $game->favorite, $game->rating, $game->format, $game->notes));
+                fputcsv($file, array_map([$this, 'safeCsvCell'], [$game->rank, $game->name, $game->platformType, $game->platform, $game->status, $game->genre, $game->favorite, $game->rating, $game->format, $game->notes]));
             }
             fclose($file);
         };
         return Response::stream($callback, 200, $headers);
+    }
+
+    private function safeCsvCell($value): string
+    {
+        $value = (string) ($value ?? '');
+        return preg_match('/^[\s\x00-\x1F]*[=+\-@]/u', $value) ? "'".$value : $value;
     }
 
     private function csvToArray($filename = '', $delimiter = ',')
@@ -399,7 +440,11 @@ class GamesController extends Controller {
                     $row[0] = preg_replace("/^$bom/", '', $row[0]);
                     $header = $row;
                 } else {
-                    $data[] = array_combine($header, $row);
+                    if (count($header) !== count($row)) return false;
+                    if (count(array_unique($header)) !== count($header)) return false;
+                    $record = array_combine($header, $row);
+                    if ($record === false) return false;
+                    $data[] = $record;
                 }
             }
             fclose($handle);
@@ -436,7 +481,7 @@ class GamesController extends Controller {
         $existingGame = null;
         $games = null;
         $games = new Game;
-        $existingGame = $games->where('rank', '=', $rank)->where('status', '=', $list)->first();
+        $existingGame = $games->where('userId', Auth::id())->where('rank', '=', $rank)->where('status', '=', $list)->first();
         //Log::stack(['single', 'slack'])->info($existingGame);
         //Log::channel('single')->info($rank);
 
@@ -479,7 +524,7 @@ class GamesController extends Controller {
         }
 
         $rules = [
-            'steamId' => 'required|regex:/\d{17}/'
+            'steamId' => 'required|regex:/^\d{17}$/'
         ];
         $messages = [
             'steamId.regex' => 'Please use the 17 digit numeric Steam ID'
