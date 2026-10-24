@@ -50,6 +50,8 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 # the active local app container without changing the production runtime image.
 FROM runtime AS local-dev
 
+RUN printf 'opcache.validate_timestamps=1\nopcache.revalidate_freq=0\n' > /usr/local/etc/php/conf.d/zz-local-dev.ini
+
 RUN apk add --no-cache --virtual .sqlite-build-deps $PHPIZE_DEPS sqlite-dev \
     && docker-php-ext-install -j"$(nproc)" pdo_sqlite \
     && apk del .sqlite-build-deps

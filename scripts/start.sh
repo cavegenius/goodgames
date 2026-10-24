@@ -43,5 +43,10 @@ EOF
     echo "Created $ENV_FILE with generated app and database secrets. Keep it private."
 fi
 
+# The local container reads the working tree through bind mounts. Keep these
+# application files readable to PHP-FPM and Nginx inside Docker Desktop.
+chmod -R a+rX src/app src/config src/database src/public src/resources src/routes
+chmod a+rX src/bootstrap/app.php src/artisan
+
 docker compose --env-file "$ENV_FILE" -f compose.yaml -f compose.local.yaml up --build -d --wait --wait-timeout 180
 echo "Good Games is ready at http://localhost:$(sed -n 's/^APP_PORT=//p' "$ENV_FILE" | tail -n 1)"

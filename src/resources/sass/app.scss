@@ -17,8 +17,37 @@
 
 @use 'custom';
 @use 'hack';
+@use 'games-theme';
 
 .navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  background-color: var(--theme-surface);
+  box-shadow: 0 2px 4px var(--theme-shadow);
 }
+
+html, body { min-height: 100%; }
+body { background: var(--theme-bg); color: var(--theme-text); }
+a { color: var(--bs-link-color); }
+a:hover { color: var(--bs-link-hover-color); }
+
+.card, .modal-content, .dropdown-menu { background-color: var(--theme-surface); color: var(--theme-text); }
+.card-header, .modal-header, .modal-footer { background-color: var(--theme-surface-muted); border-color: var(--theme-border); }
+.table { --bs-table-bg: var(--theme-surface); --bs-table-color: var(--theme-text); --bs-table-border-color: var(--theme-border); }
+.table-striped > tbody > tr:nth-of-type(odd) > * { --bs-table-bg-type: var(--theme-surface-muted); }
+.form-control, .form-select { background-color: var(--theme-surface); color: var(--theme-text); border-color: var(--theme-border); }
+.form-control:focus, .form-select:focus { background-color: var(--theme-surface); color: var(--theme-text); }
+.navbar-laravel, .navbar[data-theme-surface], .navbar-light { background-color: var(--theme-surface) !important; color: var(--theme-text); }
+.theme-navbar { background-color: var(--theme-surface); color: var(--theme-text); }
+.theme-navbar .navbar-brand, .theme-navbar .nav-link { color: var(--theme-text); }
+.theme-navbar .navbar-brand:hover, .theme-navbar .nav-link:hover { color: var(--theme-accent-strong); }
+.btn-dark { --bs-btn-color: var(--theme-bg); --bs-btn-bg: var(--theme-text); --bs-btn-border-color: var(--theme-text); --bs-btn-hover-color: var(--theme-bg); --bs-btn-hover-bg: var(--theme-text-muted); --bs-btn-hover-border-color: var(--theme-text-muted); }
+.btn-primary { --bs-btn-color: var(--theme-bg); --bs-btn-bg: var(--theme-accent); --bs-btn-border-color: var(--theme-accent); --bs-btn-hover-color: var(--theme-bg); --bs-btn-hover-bg: var(--theme-accent-strong); --bs-btn-hover-border-color: var(--theme-accent-strong); }
+.btn-outline-primary { --bs-btn-color: var(--theme-accent-strong); --bs-btn-border-color: var(--theme-accent-strong); --bs-btn-hover-color: var(--theme-bg); --bs-btn-hover-bg: var(--theme-accent); --bs-btn-hover-border-color: var(--theme-accent); }
+.welcome-page { min-height: 100vh; margin: 0; }
+.welcome-page .full-height { min-height: 100vh; }
+.welcome-page .flex-center { display: flex; align-items: center; justify-content: center; }
+.welcome-page .position-ref { position: relative; }
+.welcome-page .top-right { position: absolute; top: 18px; right: 10px; }
+.welcome-page .content { text-align: center; }
+.welcome-page .welcome-title { font-size: clamp(2.5rem, 8vw, 5.25rem); }
+.welcome-page .links > a { padding: 0 1.5rem; font-size: .8125rem; font-weight: 600; letter-spacing: .1rem; text-decoration: none; text-transform: uppercase; }
+.welcome-page .m-b-md { margin-bottom: 1.875rem; }

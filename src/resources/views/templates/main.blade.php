@@ -9,13 +9,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
   </head>
-  <body id="gamesBody">
+  <body id="gamesBody" data-theme="aqua">
     <?php
       $route = Route::current();
       $route = $route->uri;
     ?>
     <!--Header-->
-    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <nav class="navbar navbar-dark theme-navbar fixed-top flex-md-nowrap p-0 shadow">
       @if (Auth::check())
         <a class="navbar-brand col-sm-3 col-md-2 me-0" href="/games">Your Game Lists</a>
       @else
@@ -30,7 +30,7 @@
               {{ __('Logout') }}
             </a>
           @endif
-          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+          <form id="logout-form" class="visually-hidden" action="{{ route('logout') }}" method="POST">
             @csrf
           </form>
         </li>

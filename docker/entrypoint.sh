@@ -13,7 +13,12 @@ if [ ! -L public/storage ] && [ ! -e public/storage ]; then
     php artisan storage:link
 fi
 
-php artisan config:cache
-php artisan view:cache
+if [ "${APP_ENV:-production}" = "local" ]; then
+    php artisan config:clear
+    php artisan view:clear
+else
+    php artisan config:cache
+    php artisan view:cache
+fi
 
 exec "$@"

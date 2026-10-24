@@ -6,3 +6,16 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
+    volumes:
+      - ./src/app:/var/www/html/app:ro
+      - ./src/bootstrap/app.php:/var/www/html/bootstrap/app.php:ro
+      - ./src/config:/var/www/html/config:ro
+      - ./src/database:/var/www/html/database:ro
+      - ./src/public:/var/www/html/public
+      - ./src/resources:/var/www/html/resources:ro
+      - ./src/routes:/var/www/html/routes:ro
+      - ./src/artisan:/var/www/html/artisan:ro
+      - app-bootstrap-cache:/var/www/html/bootstrap/cache
+
+volumes:
+  app-bootstrap-cache:

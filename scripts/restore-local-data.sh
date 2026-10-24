@@ -3,6 +3,11 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 DATA_DIR=${1:-"$ROOT_DIR/seed-data"}
+ENV_FILE="$ROOT_DIR/.env.docker"
+case "$DATA_DIR" in
+    /*) ;;
+    *) DATA_DIR="$(pwd)/$DATA_DIR" ;;
+esac
 
 if [ ! -d "$DATA_DIR" ]; then
     echo "Dataset folder not found: $DATA_DIR" >&2
@@ -47,19 +52,34 @@ for file do
     index=$((index + 1))
 done
 
-printf 'Source user ID in this dump [4]: '
-read source_user
-source_user=${source_user:-4}
-case "$source_user" in
-    ''|*[!0-9]*) echo "Source user ID must be a number." >&2; exit 1 ;;
-esac
-
-printf 'This replaces the demo account data with %s (source user %s). Continue? [y/N] ' "$(basename "$dataset")" "$source_user"
+printf 'This erases and replaces the entire local Docker database with %s. Continue? [y/N] ' "$(basename "$dataset")"
 read confirm
 case "$confirm" in
     y|Y|yes|YES|Yes) ;;
     *) echo "Restore cancelled."; exit 0 ;;
 esac
 
-cd "$ROOT_DIR/src"
-exec php artisan db:seed-local --dump="$dataset" --source-user="$source_user"
+if [ ! -f "$ENV_FILE" ]; then
+    echo "No local Docker environment found. Start the app first with ./scripts/start.sh." >&2
+    exit 1
+fi
+if ! command -v docker >/dev/null 2>&1 || ! docker info >/dev/null 2>&1; then
+    echo "Docker Desktop must be running. Start it and try again." >&2
+    exit 1
+fi
+
+cd "$ROOT_DIR"
+if ! docker compose --env-file "$ENV_FILE" -f compose.yaml -f compose.local.yaml ps --status running --services | grep -qx database; then
+    echo "The local database container is not running. Start it with ./scripts/start.sh." >&2
+    exit 1
+fi
+
+# The configured database name is controlled by this local Compose setup.
+docker compose --env-file "$ENV_FILE" -f compose.yaml -f compose.local.yaml exec -T database sh -c '
+    case "$MYSQL_DATABASE" in
+        ""|*[!A-Za-z0-9_]*) echo "Unsafe local database name: $MYSQL_DATABASE" >&2; exit 1 ;;
+    esac
+    mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS \`$MYSQL_DATABASE\`; CREATE DATABASE \`$MYSQL_DATABASE\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+'
+docker compose --env-file "$ENV_FILE" -f compose.yaml -f compose.local.yaml exec -T database sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' < "$dataset"
+printf 'Restored full dataset from %s into the local Docker database.\n' "$(basename "$dataset")"

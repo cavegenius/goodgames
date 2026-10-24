@@ -18,7 +18,7 @@ Good Games is a Laravel application for tracking a personal video game library.
 5. Install frontend dependencies at the repository root with `npm ci` and compile assets with `npm run build`.
 6. Start the application with `(cd src && php artisan serve)`.
 
-Laravel application code and runtime configuration live in `src/`. Development scripts, test suites, Docker configuration, and Node tooling stay at the repository root. For frontend development with Vite's hot reload server, run `npm run dev` at the root in a second terminal.
+Laravel application code and runtime configuration live in `src/`. Development scripts, test suites, Docker configuration, and Node tooling stay at the repository root. For frontend development with Vite's hot reload server, run `npm run dev` at the root in a second terminal while the Docker app is running.
 
 ## Run with Docker
 
@@ -28,9 +28,9 @@ Install and start Docker Desktop with Docker Compose v2, then run:
 ./scripts/start.sh
 ```
 
-The script creates a private `.env.docker` file with a persistent Laravel app key and generated MySQL passwords, builds the production image, starts MySQL, applies database migrations, and waits for the health check. Open [http://localhost:8080](http://localhost:8080) when it reports ready. Add the `STEAM_KEY`, `IGDB_KEY`, and `PSN_KEY` values you use to `.env.docker`, then restart with `docker compose --env-file .env.docker up -d`.
+The script creates a private `.env.docker` file with a persistent Laravel app key and generated MySQL passwords, builds the local development image, starts MySQL, applies database migrations, and waits for the health check. The local Compose setup bind-mounts Laravel source into the app container, so PHP and Blade changes appear without rebuilding or restarting Docker. Open [http://localhost:8080](http://localhost:8080) when it reports ready. Run `npm run dev` in another terminal for frontend hot reload. Add the `STEAM_KEY`, `IGDB_KEY`, and `PSN_KEY` values you use to `.env.docker`, then restart with `./scripts/start.sh`.
 
-The production image copies the Laravel app from `src/`; repository-level tests, scripts, datasets, and Node tooling stay out of the runtime image. It serves HTTP on port 8080 with Nginx and PHP-FPM. For a public deployment, set `APP_URL` and `APP_PORT` in `.env.docker` and terminate HTTPS at your load balancer or reverse proxy. The included Compose stack uses MySQL 8.4 and persistent named volumes for the database and Laravel storage. `docker compose --env-file .env.docker down` stops the stack without deleting data; avoid `down -v` unless you intend to remove the database and uploaded files.
+The production image copies the Laravel app from `src/`; repository-level tests, scripts, datasets, and Node tooling stay out of the runtime image. It serves HTTP on port 8080 with Nginx and PHP-FPM. For a public deployment, set `APP_URL` and `APP_PORT` in `.env.docker` and terminate HTTPS at your load balancer or reverse proxy. The included Compose stack uses MySQL 8.4 and persistent named volumes for the database and Laravel storage. `docker compose --env-file .env.docker -f compose.yaml down` stops the stack without deleting data; avoid `down -v` unless you intend to remove the database and uploaded files.
 
 The `/api/healthz` endpoint returns `200` only when Laravel can connect to the configured database. Docker uses it as the app container's health check.
 
@@ -87,7 +87,7 @@ Saved dumps go into the git-ignored root `seed-data/` folder. To choose one and 
 ./scripts/restore-local-data.sh
 ```
 
-The picker asks for the source user ID (defaults to `4`, used by the supplied `yourgamelists.sql`) and confirms before replacing the demo account's data. You can pass a different folder of `.sql` dumps to the restore script. The importer reads only `INSERT` rows from `games` and `filters`, remaps them to the demo account, and ignores all other dump content. Keep dumps local; they can contain real account details. The direct Artisan form is also available from `src/`: `php artisan db:seed-local --dump=/path/to/file.sql --source-user=4`.
+The picker confirms before replacing the entire local Docker database with the selected SQL dump. It restores every table and record in the dump, including users, games, and filters; it does not ask for a source user. You can pass a different folder of `.sql` dumps to the restore script. Keep dumps local; they can contain account details.
 
 ## Stack
 

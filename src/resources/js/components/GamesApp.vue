@@ -61,6 +61,8 @@ export default {
             formats,
             columns,
             list: 'all',
+            filtersOpen: false,
+            toolsOpen: false,
             sortCol: 'name',
             sortOrder: 'asc',
             filters: Object.fromEntries(Object.keys(filterOptions).map(key => [key, []])),
@@ -107,6 +109,12 @@ export default {
         },
     },
     mounted() {
+        if (window.matchMedia?.('(min-width: 1800px)').matches) {
+            this.filtersOpen = true;
+            this.toolsOpen = true;
+        } else if (window.matchMedia?.('(min-width: 1000px)').matches) {
+            this.filtersOpen = true;
+        }
         this.loadInitialData();
     },
     methods: {
@@ -213,6 +221,14 @@ export default {
         },
         toggleFilterSection(name) {
             this.filterSections[name] = !this.filterSections[name];
+        },
+        toggleFilters() {
+            this.filtersOpen = !this.filtersOpen;
+            if (this.filtersOpen && window.innerWidth < 1200) this.toolsOpen = false;
+        },
+        toggleTools() {
+            this.toolsOpen = !this.toolsOpen;
+            if (this.toolsOpen && window.innerWidth < 1200) this.filtersOpen = false;
         },
         toggleSaveFilterForm() {
             this.showFilterName = !this.showFilterName;
@@ -431,21 +447,23 @@ export default {
 </script>
 
 <template>
-    <div class="row games-page">
-            <aside id="leftSidebar" class="col-md-1 d-none d-md-block sidebar filtersBar">
+    <div class="games-page" :class="{ 'filters-open': filtersOpen, 'tools-open': toolsOpen }">
+            <button v-if="filtersOpen || toolsOpen" type="button" class="drawer-backdrop" aria-label="Close side panels" @click="filtersOpen = false; toolsOpen = false"></button>
+            <Transition name="drawer-left">
+            <aside v-show="filtersOpen" id="leftSidebar" class="sidebar-drawer sidebar-drawer-left filtersBar" aria-label="Filters">
                 <div class="sidebar-sticky">
-                    <h3>Filters</h3>
-                    <div class="filterHeader filterOpened" @click="filterSections.saved = !filterSections.saved">Saved Filters:</div>
+                    <div class="drawer-heading"><h2>Filters</h2><button type="button" class="drawer-close" aria-label="Close filters" @click="filtersOpen = false">×</button></div>
+                    <button type="button" class="filterHeader" :aria-expanded="filterSections.saved" @click="filterSections.saved = !filterSections.saved">Saved Filters:</button>
                     <ul id="filterList" class="nav flex-column mb-2" v-show="filterSections.saved !== false">
                         <li v-for="filter in savedFilters" :key="filter.id" class="nav-item savedFilterItem">
-                            <input type="radio" name="activateSavedFilter" class="savedFilterRadio" :value="filter.id" v-model="selectedSavedFilter" @change="applySavedFilter(filter)">
-                            <input v-if="String(editingFilterId) === String(filter.id)" v-model="editingFilterName" class="updateNameField" @keyup.enter="renameFilter(filter)">
+                            <input type="radio" name="activateSavedFilter" class="savedFilterRadio" :aria-label="`Select ${filter.name}`" :value="filter.id" v-model="selectedSavedFilter" @change="applySavedFilter(filter)">
+                            <input v-if="String(editingFilterId) === String(filter.id)" v-model="editingFilterName" class="updateNameField" aria-label="New filter name" @keyup.enter="renameFilter(filter)">
                             <span v-else>{{ filter.name }}</span>
                             <span class="savedFilterActionsWrapper">
-                                <i v-if="String(editingFilterId) === String(filter.id)" class="fas fa-check saveEditFilterName" @click="renameFilter(filter)"></i>
-                                <i v-else class="fas fa-edit editFilterName" @click="beginRenameFilter(filter)"></i>
-                                <i class="fas fa-wrench editFilterValues" title="Update Filter to Currently Selected Filters" @click="updateSavedFilter(filter)"></i>
-                                <i class="fas fa-trash deleteFilter" title="Delete Filter" @click="deleteFilter(filter)"></i>
+                                <button v-if="String(editingFilterId) === String(filter.id)" type="button" class="saved-filter-action fas fa-check saveEditFilterName" aria-label="Save filter name" title="Save filter name" @click="renameFilter(filter)"></button>
+                                <button v-else type="button" class="saved-filter-action fas fa-edit editFilterName" aria-label="Rename filter" title="Rename filter" @click="beginRenameFilter(filter)"></button>
+                                <button type="button" class="saved-filter-action fas fa-wrench editFilterValues" aria-label="Update saved filter from current selections" title="Update Filter to Currently Selected Filters" @click="updateSavedFilter(filter)"></button>
+                                <button type="button" class="saved-filter-action fas fa-trash deleteFilter" aria-label="Delete filter" title="Delete Filter" @click="deleteFilter(filter)"></button>
                             </span>
                         </li>
                         <li v-if="!savedFilters.length" class="text-muted">No saved filters</li>
@@ -464,7 +482,7 @@ export default {
                     <div class="nav-item mt-3">Search Your Games:</div>
                     <input type="text" id="inventorySearch" v-model="searchTerm" @input="filtersChanged">
                     <template v-for="(values, name) in filterOptions" :key="name">
-                        <div class="filterHeader filterClosed" @click="toggleFilterSection(name)">{{ filterLabel(name) }}:</div>
+                        <button type="button" class="filterHeader" :aria-expanded="filterSections[name]" @click="toggleFilterSection(name)">{{ filterLabel(name) }}:</button>
                         <ul class="nav flex-column mb-2" :class="`${name}Filters`" v-show="filterSections[name]">
                             <li v-for="value in values" :key="value" class="nav-item">
                                 <label>
@@ -477,18 +495,23 @@ export default {
                     </template>
                 </div>
             </aside>
+            </Transition>
 
-            <main role="main" id="mainDiv" class="col-md-8 ms-sm-auto px-4">
+            <main role="main" id="mainDiv" class="games-main">
                 <div v-if="message" id="messageBox" class="alert" :class="`alert-${message.type}`" role="alert">{{ message.text }}</div>
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
                     <h1 id="mainHeading" class="h2">Games</h1>
+                        <div class="btn-group me-2" role="group" aria-label="Panels">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" aria-controls="leftSidebar" :aria-expanded="filtersOpen" @click="toggleFilters">Filters</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" aria-controls="rightSidebar" :aria-expanded="toolsOpen" @click="toggleTools">Tools</button>
+                        </div>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <button v-for="item in [{value:'all',label:'All'},{value:'backlog',label:'Backlog'},{value:'wishlist',label:'Wishlist'},{value:'In Progress',label:'In Progress'}]" :key="item.value" type="button" class="btn btn-sm listType" :value="item.value" :class="list === item.value ? 'btn-outline-primary' : 'btn-outline-secondary'" @click="chooseList(item.value)">{{ item.label }}</button>
                         </div>
                     </div>
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2"><button type="button" class="btn btn-sm btn-outline-secondary addGame" @click="addGame()">Add Game</button></div>
+                        <div class="btn-group me-2"><button type="button" class="btn btn-sm btn-outline-secondary addGame" @click="addGame()">{{ list === 'backlog' ? 'Add to Backlog' : list === 'wishlist' ? 'Add to Wishlist' : 'Add Game' }}</button></div>
                         <div class="btn-group me-2" :class="{ 'hide-on-load': !hasPendingChanges }">
                             <button type="button" class="btn btn-sm btn-outline-secondary saveAll" :disabled="savingAll" @click="saveAll">Save All</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary cancelAll" @click="cancelAll">Cancel All</button>
@@ -497,32 +520,31 @@ export default {
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table id="gamesTable" class="table table-striped table-sm">
+                    <table id="gamesTable" class="table table-striped table-sm games-table" :class="{ 'is-ranked': showRank }">
+                        <colgroup><col v-for="column in visibleColumns" :key="column.key" :class="`column-${column.key}`"></colgroup>
                         <thead><tr id="gameTableHeading">
                             <th v-for="column in visibleColumns" :key="column.key" :class="{ sortableCol: column.key !== 'actions', sortedAsc: sortCol === column.key && sortOrder === 'asc', sortedDesc: sortCol === column.key && sortOrder === 'desc' }" @click="sortBy(column.key)">{{ column.label }}</th>
                         </tr></thead>
                         <tbody id="gamesTableBody">
                             <tr v-for="game in rows" :key="game.id" :data-id="game._isNew ? null : game.id" :draggable="showRank && !game._editing" @dragstart="startDrag(game)" @dragover.prevent @drop="dropOn(game)">
                                 <template v-if="game._editing">
-                                    <td><label class="favoriteIcon"><input v-model="game._draft.favorite" name="favorite" type="checkbox"><i class="far fa-heart unchecked"></i><i class="fa fa-heart checked"></i></label></td>
-                                    <td v-if="showRank"><input v-model.number="game._draft.rank" name="rank" size="2"></td>
-                                    <td v-else><input type="hidden" name="rank" v-model="game._draft.rank"></td>
+                                    <td><label class="favoriteIcon"><input v-model="game._draft.favorite" name="favorite" type="checkbox" :aria-label="`Favorite ${game.name || 'game'}`"><i class="far fa-heart unchecked" aria-hidden="true"></i><i class="fa fa-heart checked" aria-hidden="true"></i></label></td>
+                                    <td v-if="showRank"><input v-model.number="game._draft.rank" name="rank" inputmode="numeric"></td>
                                     <td><input v-model="game._draft.name" name="name" required></td>
                                     <td><select v-model="game._draft.status" name="status"><option v-for="status in statuses" :key="status">{{ status }}</option></select></td>
                                     <td class="addPlatformCol"><select v-model="game._draft.platform" name="platform"><option value="">Select platform</option><option v-for="platform in platforms" :key="platform">{{ platform }}</option></select></td>
                                     <td><select v-model="game._draft.platformType" name="platformType"><option v-for="type in platformTypes" :key="type">{{ type }}</option></select></td>
                                     <td><select v-model="game._draft.format" name="format"><option v-for="format in formats" :key="format">{{ format }}</option></select></td>
                                     <td><select v-model="game._draft.genre" name="genre"><option value="Not Set">Not Set</option><option v-for="genre in genres" :key="genre">{{ genre }}</option></select></td>
-                                    <td><label v-for="star in 5" :key="star" class="ratingStar"><input type="checkbox" name="rating" :value="star" :checked="game._draft.rating >= star" @change="game._draft.rating = star"><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label></td>
+                                    <td><label v-for="star in 5" :key="star" class="ratingStar"><input type="checkbox" name="rating" :value="star" :aria-label="`${star} star rating`" :checked="game._draft.rating >= star" @change="game._draft.rating = star"><i class="far fa-star unchecked" aria-hidden="true"></i><i class="fas fa-star checked" aria-hidden="true"></i></label></td>
                                     <td><button type="button" class="saveSingleAddGame saveSingleEditGame" @click="saveGame(game)">✓</button> <button type="button" class="cancelSingleAddGame cancelSingleEditGame" @click="cancelGame(game)">×</button></td>
                                 </template>
                                 <template v-else>
-                                    <td class="favorite"><label class="favoriteIcon"><input type="checkbox" class="favoriteBox" :checked="!!game.favorite" @change="toggleFavorite(game)"><i class="far fa-heart unchecked"></i><i class="fa fa-heart checked"></i></label></td>
+                                    <td class="favorite"><label class="favoriteIcon"><input type="checkbox" class="favoriteBox" :aria-label="`Favorite ${game.name}`" :checked="!!game.favorite" @change="toggleFavorite(game)"><i class="far fa-heart unchecked" aria-hidden="true"></i><i class="fa fa-heart checked" aria-hidden="true"></i></label></td>
                                     <td v-if="showRank" class="rank">{{ game.rank }}</td>
-                                    <td v-else><input type="hidden" class="rank" :value="game.rank"></td>
-                                    <td class="name">{{ game.name }}</td><td class="status">{{ game.status }}</td><td class="platform">{{ game.platform }}</td>
+                                    <td class="name"><button type="button" class="name-edit-button" :aria-label="`Edit ${game.name}`" title="Edit this game" @click="draftFor(game)">{{ game.name }}</button></td><td class="status">{{ game.status }}</td><td class="platform">{{ game.platform }}</td>
                                     <td class="platformType">{{ game.platformType }}</td><td class="format">{{ game.format }}</td><td class="genre">{{ game.genre }}</td>
-                                    <td class="stratingatus" :data-rating="game.rating"><label v-for="star in 5" :key="star" class="ratingStar"><input type="checkbox" class="ratingBox" :value="star" :checked="game.rating >= star" @change="setRating(game, star)"><i class="far fa-star unchecked"></i><i class="fas fa-star checked"></i></label></td>
+                                    <td class="stratingatus" :data-rating="game.rating"><label v-for="star in 5" :key="star" class="ratingStar"><input type="checkbox" class="ratingBox" :value="star" :aria-label="`${star} star rating for ${game.name}`" :checked="game.rating >= star" @change="setRating(game, star)"><i class="far fa-star unchecked" aria-hidden="true"></i><i class="fas fa-star checked" aria-hidden="true"></i></label></td>
                                     <td v-if="game._deleting"><button type="button" class="saveSingleDeleteGame" @click="deleteGame(game)">✓</button> <button type="button" class="cancelSingleDeleteGame" @click="game._deleting = false">×</button></td>
                                     <td v-else><button type="button" class="editSingleGame" @click="draftFor(game)">Edit</button> <button type="button" class="deleteSingleGame" @click="game._deleting = true">Delete</button></td>
                                 </template>
@@ -533,10 +555,12 @@ export default {
                 </div>
             </main>
 
-            <aside id="rightSidebar" class="col-md-3 d-none d-md-block sidebar-right">
-                <div class="btn-toolbar mb-2 mb-md-0 sidebarRightMenu"><div class="btn-group me-2">
-                    <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-search" @click="openPanel('search')">Search</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-import" @click="openPanel('import')">Import</button>
+            <Transition name="drawer-right">
+            <aside v-show="toolsOpen" id="rightSidebar" class="sidebar-drawer sidebar-drawer-right" aria-label="Tools">
+                <div class="drawer-heading"><h2>Tools</h2><button type="button" class="drawer-close" aria-label="Close tools" @click="toolsOpen = false">×</button></div>
+                <div class="sidebarRightMenu"><div class="btn-group" role="group" aria-label="Game tools">
+                    <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-search" :aria-pressed="rightPanel === 'search'" @click="openPanel('search')">Search</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-import" :aria-pressed="rightPanel === 'import'" @click="openPanel('import')">Import</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-export" @click="exportCsv">Export</button>
                 </div></div>
                 <section v-if="rightPanel === 'search'" class="sidebarRightContent">
@@ -545,6 +569,7 @@ export default {
                         <article v-for="(result, index) in searchResults" :key="`${result.name}-${index}`" class="searchResultRow row">
                             <div class="searchResultImage col-md-4"><img :src="result.cover" :alt="`${result.name} cover`"><br><br>
                                 <button type="button" class="addToInventory btn btn-sm btn-outline-primary" @click="addGame(result.name)">Add To Inventory</button><br><br>
+                                <button type="button" class="addToBacklog btn btn-sm btn-outline-primary" @click="addGame(result.name, 'Backlog')">Add To Backlog</button><br><br>
                                 <button type="button" class="addToWishlist btn btn-sm btn-outline-primary" @click="addGame(result.name, 'Wishlist')">Add To Wishlist</button>
                             </div>
                             <div class="searchResultDetails col-md-8"><h3>{{ result.name }}</h3><p v-if="result.summary">Summary: {{ result.summary }}</p>
@@ -560,6 +585,7 @@ export default {
                         <p v-if="steamResults.length">The Following Games have been added: {{ steamResults.join(', ') }}</p></div>
                 </section>
             </aside>
+            </Transition>
         <div v-if="loading" id="big_loader" class="loadingOverlay" role="status" aria-label="Loading"><div class="spinner-border text-primary"></div></div>
         <div v-if="feedbackOpen" class="modal fade show d-block" id="my_modal" role="dialog" aria-modal="true" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h4 class="modal-title" id="myModalLabel">Beta Feedback</h4><button type="button" class="btn-close" aria-label="Close" @click="feedbackOpen = false"></button></div>

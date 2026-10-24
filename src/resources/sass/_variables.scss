@@ -1,49 +1,77 @@
-/*
-// Gothic Architecture
-$body-bg: #212624;
-$accent: #2e303e;
-$text: #9199be;
-$activated: #54678F;
-$border: #6c6b74;
+// Sass aliases are used by legacy component rules. Runtime colors live in
+// --theme-* properties so a page can switch palettes without rebuilding Sass.
+$activated: var(--theme-accent-strong);
+$accent: var(--theme-surface);
+$body-bg: var(--theme-bg);
+$text: var(--theme-text);
+$border: var(--theme-border);
+$compliments: var(--theme-highlight);
 
-// Blue Accent
-$body-bg: #E4EBF2;
-$accent: #5A4D4C;
-$text: #328DAA;
-$activated: #8ED3F4;
-$border: #5A4D4C;
-*/
-// Aqua Greens
-//$body-bg: #02231C;
-$body-bg: #212624;
-$accent: #4DD8AD;
-$text: #55D9C0;
-$activated: #107050;
-$border: #C7F6EC;
-/*
-// Halloween
-$body-bg: #07000E;
-$accent: #EECC8D;
-$text: #F08b33;
-$activated: #D75404;
-$border: #8A2C02;
-*/
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --theme-bg: #f8fafc;
+  --theme-surface: #ffffff;
+  --theme-surface-muted: #eef2f5;
+  --theme-text: #263238;
+  --theme-text-muted: #64727a;
+  --theme-accent: #167c66;
+  --theme-accent-strong: #0e624f;
+  --theme-highlight: #d97746;
+  --theme-border: #ccd5da;
+  --theme-danger: #a32925;
+  --theme-danger-surface: #f9d6d5;
+  --theme-shadow: rgba(21, 36, 42, .12);
+  --theme-overlay: rgba(255, 255, 255, .72);
 
-$compliments: #FF8E63;
-// Typography
-$font-family-sans-serif: "Nunito", sans-serif;
-$font-size-base: 0.9rem;
-$line-height-base: 1.6;
+  // Bootstrap 5.3 consumes these variables at runtime for its components.
+  --bs-body-bg: var(--theme-bg);
+  --bs-body-color: var(--theme-text);
+  --bs-secondary-color: var(--theme-text-muted);
+  --bs-tertiary-bg: var(--theme-surface-muted);
+  --bs-border-color: var(--theme-border);
+  --bs-primary: var(--theme-accent);
+  --bs-primary-rgb: 22, 124, 102;
+  --bs-link-color: var(--theme-accent-strong);
+  --bs-link-hover-color: var(--theme-highlight);
+  --bs-card-bg: var(--theme-surface);
+  --bs-modal-bg: var(--theme-surface);
+  --bs-table-bg: var(--theme-surface);
+  --bs-table-color: var(--theme-text);
+}
 
-// Colors
-$blue: #3490dc;
-$indigo: #6574cd;
-$purple: #9561e2;
-$pink: #f66D9b;
-$red: #e3342f;
-$orange: #f6993f;
-$yellow: #ffed4a;
-$green: #38c172;
-$teal: #4dc0b5;
-$cyan: #6cb2eb;
+[data-theme="aqua"] {
+  color-scheme: dark;
+  --theme-bg: #18221f;
+  --theme-surface: #212e29;
+  --theme-surface-muted: #293a34;
+  --theme-text: #e3f3ed;
+  --theme-text-muted: #a5beb4;
+  --theme-accent: #4dd8ad;
+  --theme-accent-strong: #69e6bd;
+  --theme-highlight: #ff9a6e;
+  --theme-border: #496158;
+  --theme-danger: #ff9d94;
+  --theme-danger-surface: #542c2a;
+  --theme-shadow: rgba(0, 0, 0, .28);
+  --theme-overlay: rgba(12, 18, 16, .76);
+  --bs-primary-rgb: 77, 216, 173;
+}
 
+[data-theme="halloween"] {
+  color-scheme: dark;
+  --theme-bg: #160f1c;
+  --theme-surface: #241a2b;
+  --theme-surface-muted: #33243a;
+  --theme-text: #f4eaf7;
+  --theme-text-muted: #c2afcb;
+  --theme-accent: #eea65c;
+  --theme-accent-strong: #ffc27f;
+  --theme-highlight: #d986ff;
+  --theme-border: #5b4564;
+  --theme-danger: #ffaaa3;
+  --theme-danger-surface: #542c35;
+  --theme-shadow: rgba(0, 0, 0, .32);
+  --theme-overlay: rgba(12, 7, 16, .78);
+  --bs-primary-rgb: 238, 166, 92;
+}
