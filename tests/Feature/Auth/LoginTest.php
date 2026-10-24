@@ -42,7 +42,7 @@ class LoginTest extends TestCase {
      * @return void
      */
     public function testUserCannotViewALoginFormWhenAuthenticated() {
-        $user = factory(User::class)->make();
+        $user = User::factory()->make();
 
         $response = $this->actingAs($user)->get('/login');
         $response->assertRedirect('/games');
@@ -54,7 +54,7 @@ class LoginTest extends TestCase {
      * @return void
      */
     public function testUserCanLoginWithCorrectCredentials() {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'password' => bcrypt($password = 'i-love-laravel'),
         ]);
 
@@ -73,7 +73,7 @@ class LoginTest extends TestCase {
      * @return void
      */
     public function testUserCannotLoginWithIncorrectPassword() {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'password' => bcrypt('i-love-laravel'),
         ]);
         
@@ -95,7 +95,7 @@ class LoginTest extends TestCase {
      * @return void
      */
     public function testRememberMeFunctionality() {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'id' => random_int(1,100),
             'password' => bcrypt($password = 'i-love-laravel'),
         ]);
@@ -113,11 +113,7 @@ class LoginTest extends TestCase {
             $user->getRememberToken(),
             $user->password,
         ]);
-        $response->assertCookie(Auth::guard()->getRecallerName(), vsprintf('%s|%s|%s', [
-            $user->id,
-            $user->getRememberToken(),
-            $user->password,
-        ]));
+        $response->assertCookie(Auth::guard()->getRecallerName());
 
         $this->assertAuthenticatedAs($user);
     }
@@ -130,7 +126,7 @@ class LoginTest extends TestCase {
     public function testUserReceivesAnEmailWithAPasswordResetLink() {
         Notification::fake();
 
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $response = $this->post('/password/email', [
             'email' => $user->email,

@@ -2,51 +2,45 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-//use \GuzzleHttp\Client;
-use \GuzzleHttp\Exception\RequestException;
-use \GuzzleHttp\Psr7\Request;
 use PlayStation\Client;
 
-class Psn extends Model {
-
-    public function firstLogin($uuid,$token) {
-        // Full directions at https://tusticles.com/psn-php/first_login.html
+class Psn
+{
+    /**
+     * Exchange an NPSSO token for a refresh token.
+     */
+    public function firstLogin(string $accountId, string $npsso): ?string
+    {
         $client = new Client();
+        $client->loginWithNpsso($npsso);
 
-        $client->login($uuid, $token);
-
-        $refreshToken = $client->refreshToken();
-        return $refreshToken;
+        return $client->getRefreshToken()?->getToken();
     }
 
-    public function login() {
+    public function login(): Client
+    {
         $client = new Client();
+        $client->loginWithNpsso((string) config('keys.psnKey'));
 
-        $client->login( config('keys.psnKey') );
-
-        // May need the following in the future to check if token has changed
-        //$refreshToken = $client->refreshToken();
         return $client;
     }
-    
-    public function import( $user ) {
-        $client = $this->login( );
-        
-        $games = $client->user( $user )->games();
-        $gamesList =[];
 
-        foreach ($games as $game) {
-            if ($game->hasTrophies()) {
-                $trophyGroups = $game->trophyGroups();
-        
-                foreach ($trophyGroups as $trophyGroup) {
-                    $gamesList[] = $trophyGroup->name(); 
-                }
+    public function import(string $accountId): array
+    {
+        $titles = $this->login()
+            ->users()
+            ->find($accountId)
+            ->trophyTitles()
+            ->hasTrophyGroups();
+
+        $games = [];
+
+        foreach ($titles as $title) {
+            foreach ($title->trophyGroups() as $group) {
+                $games[] = $group->name();
             }
         }
 
-        return $gamesList;
+        return $games;
     }
-    
 }

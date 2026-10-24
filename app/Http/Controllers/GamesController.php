@@ -83,10 +83,9 @@ class GamesController extends Controller {
         return $response;
     }
 
-    public function search(Request $request) {
-        $name = $request->get('name'); // This will get all the request data.
+    public function search(Request $request, Igdb $game) {
+        $name = $request->input('name');
 
-        $game = new Igdb;
         $games = $game->search($name);
 
         foreach($games as $key => $oneGame) {

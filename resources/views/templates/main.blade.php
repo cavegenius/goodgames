@@ -3,9 +3,11 @@
 <html lang="en">
   <head>
     <title>Your Game Lists</title>
-    <link rel="stylesheet" href="/css/app.css" />
-    <script src="/js/app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
   </head>
   <body id="gamesBody">
     <?php
@@ -15,9 +17,9 @@
     <!--Header-->
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
       @if (Auth::check())
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/games">Your Game Lists</a>
+        <a class="navbar-brand col-sm-3 col-md-2 me-0" href="/games">Your Game Lists</a>
       @else
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Your Game Lists</a>
+        <a class="navbar-brand col-sm-3 col-md-2 me-0" href="/">Your Game Lists</a>
       @endif
       <div id="messageBox"></div>
       <ul class="navbar-nav px-3">
@@ -47,7 +49,7 @@
           </div>
         </div>
 
-        <main role="main" id="mainDiv" class="col-md-8 ml-sm-auto px-4">
+        <main role="main" id="mainDiv" class="col-md-8 ms-sm-auto px-4">
           @yield('content')
         </main>
         
@@ -55,7 +57,7 @@
           <div class="sidebar-sticky">
             <?php if($route == 'games') { ?>
               <div class="btn-toolbar mb-2 mb-md-0 sidebarRightMenu">
-                <div class="btn-group mr-2">
+                <div class="btn-group me-2">
                   <button type="button" class="btn btn-sm btn-outline-secondary btn-search right-menu-item">Search</button>
                   <button type="button" class="btn btn-sm btn-outline-secondary btn-import right-menu-item">Import</button>
                   <button type="button" class="btn btn-sm btn-outline-secondary right-menu-item btn-export">Export</button>
@@ -75,7 +77,7 @@
 
     <div class="hide-on-load" id="response">
       <div class="alert alert-info">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           <span class="response_message">Save</span>
       </div>
     </div>
@@ -86,12 +88,12 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title" id="myModalLabel"></h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body clearfix">
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-outline-secondary" data-dismiss="modal" value="Close" />
+                        <input type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" value="Close" />
                         <!--<input type="button" class="btn btn-primary" value="Save" />-->
                     </div>
                 </div>

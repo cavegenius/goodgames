@@ -1,15 +1,22 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use App\Game;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Game::class, function (Faker $faker) {
-    return [
-        'userId' => 1,
-        'name' => $faker->name,
-        'platformType' => 'Console',
-        'format' => 'Physical'
-    ];
-});
+class GameFactory extends Factory
+{
+    protected $model = Game::class;
+
+    public function definition(): array
+    {
+        return [
+            'userId' => 1,
+            'name' => $this->faker->name(),
+            'platform' => 'PlayStation 4',
+            'platformType' => 'Console',
+            'format' => 'Physical',
+        ];
+    }
+}

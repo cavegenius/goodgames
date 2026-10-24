@@ -6,14 +6,14 @@
     </li>
     <ul id='filterList' class="nav flex-column mb-2 savedFilterList"></ul>
     <!--Buttons-->
-    <div class="btn-group mr-2 filterActions">
+    <div class="btn-group me-2 filterActions">
         <button type="button" value="" class="btn btn-sm btn-outline-secondary saveFilter">Save Filter</button>
         <button type="button" value="" class="btn btn-sm btn-outline-secondary clearFilters">Clear Filters</button>
     </div>
     <div class="filterNameDiv hide-on-load">
         <input type="text" id="filterName" name="filterName" placeholder="Filter Name" value="" class="" />
     </div>
-    <div class="btn-group mr-2 saveFilterButtons hide-on-load">
+    <div class="btn-group me-2 saveFilterButtons hide-on-load">
         <button type="button" value="" class="btn btn-sm btn-outline-secondary saveFilterSubmit">Submit</button>
         <button type="button" value="" class="btn btn-sm btn-outline-secondary saveFilterCancel">Cancel</button>
     </div>

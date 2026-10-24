@@ -15,7 +15,7 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
 
     public function createUserAndLogin() {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'password' => bcrypt($password = 'i-love-laravel'),
         ]);
 
@@ -28,7 +28,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     public function addGameForUser($user) {
-        $game = factory(Game::class)->create([
+        $game = Game::factory()->create([
             'userId' => $user->id
         ]);
 

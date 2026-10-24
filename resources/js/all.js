@@ -1,5 +1,8 @@
-const Handlebars = require("handlebars");
-var bootbox = require('bootbox');
+import Handlebars from 'handlebars';
+import bootbox from 'bootbox';
+
+window.Handlebars = Handlebars;
+window.bootbox = bootbox;
 
 // Document ready Actions
     $(document).ready( function() {

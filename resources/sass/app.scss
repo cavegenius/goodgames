@@ -1,23 +1,24 @@
+@use 'bootstrap/scss/bootstrap' with (
+  $body-bg: #f8fafc,
+  $font-family-sans-serif: ('Nunito', sans-serif),
+  $font-size-base: 0.9rem,
+  $line-height-base: 1.6,
+  $blue: #3490dc,
+  $indigo: #6574cd,
+  $purple: #9561e2,
+  $pink: #f66d9b,
+  $red: #e3342f,
+  $orange: #f6993f,
+  $yellow: #ffed4a,
+  $green: #38c172,
+  $teal: #4dc0b5,
+  $cyan: #6cb2eb
+);
 
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
-
-// Variables
-@import 'variables';
-
-// Bootstrap
-@import '~bootstrap/scss/bootstrap';
+@use 'custom';
+@use 'hack';
 
 .navbar-laravel {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
-
-@import 'custom';
-@import 'hack';
-
-// Fontawesome
-@import '~@fortawesome/fontawesome-free/scss/fontawesome';
-@import '~@fortawesome/fontawesome-free/scss/regular';
-@import '~@fortawesome/fontawesome-free/scss/solid';
-@import '~@fortawesome/fontawesome-free/scss/brands';

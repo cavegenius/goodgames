@@ -6,11 +6,21 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use App\Http\Controllers\Game;
 use Illuminate\Support\Str;
+use App\Igdb;
+use Mockery;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 
 class GameTest extends TestCase {
     use RefreshDatabase;
 
     public function testSearchTest() {
+        $client = Mockery::mock(ClientInterface::class);
+        $client->shouldReceive('post')->once()->andReturn(new Response(200, [], '[{"id":3,"name":"Horizon Zero Dawn"}]'));
+        $igdb = new Igdb;
+        $igdb->setHttpClient($client);
+        $this->instance(Igdb::class, $igdb);
+
         $this->json('POST', '/games/search', ['name' => 'horizon zero dawn'])
              ->assertJsonStructure([
                 // Verify all elements have an id and name
@@ -29,7 +39,7 @@ class GameTest extends TestCase {
             'rank' => 0,
             'name' => 'horizon zero dawn',
             'status' => 'None',
-            'platform' => 'Playstation 4',
+            'platform' => 'PlayStation 4',
             'platformType' => 'Console',
             'favorite' => false,
             'rating' => '0',
@@ -46,7 +56,7 @@ class GameTest extends TestCase {
 
         $data = [
             'name' => 'horizon zero dawn',
-            'platform' => 'Playstation 4',
+            'platform' => 'PlayStation 4',
             'platformType' => 'Console',
             'format' => 'Physical',
             'rank' => 0

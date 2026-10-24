@@ -2,17 +2,26 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use \GuzzleHttp\Client;
-use \GuzzleHttp\Exception\RequestException;
-use \GuzzleHttp\Psr7\Request;
+use GuzzleHttp\ClientInterface;
 
-class Igdb extends Model {
+class Igdb {
 
     private $api_url = 'https://api-v3.igdb.com/';
+    private ?ClientInterface $httpClient = null;
+
+    public function setHttpClient(ClientInterface $client): void
+    {
+        $this->httpClient = $client;
+    }
+
+    private function client(): ClientInterface
+    {
+        return $this->httpClient ??= new Client();
+    }
 
     public function search( $search ) {
-        $client = new \GuzzleHttp\Client();
+        $client = $this->client();
 
         $data = 'fields name,cover,genres,platforms,release_dates,summary,url; search "'.$search.'"; limit 50;';
         $header = ['user-key' => config('keys.igdbKey') , 'Content-Type'=>'text/plain'];
@@ -22,7 +31,7 @@ class Igdb extends Model {
     }
 
     public function getCover( $id ) {
-        $client = new \GuzzleHttp\Client();
+        $client = $this->client();
 
         //$data = 'fields image_id; filter[id][eq] "'.$id.'"; limit 50;';
         $header = ['user-key' => config('keys.igdbKey') , 'Content-Type'=>'text/plain'];
@@ -32,7 +41,7 @@ class Igdb extends Model {
     }
 
     public function getGenre( $id ) {
-        $client = new \GuzzleHttp\Client();
+        $client = $this->client();
 
         //$data = 'fields name; filter[id][eq] "'.$id.'"; limit 50;';
         $header = ['user-key' => config('keys.igdbKey') , 'Content-Type'=>'text/plain'];
@@ -42,7 +51,7 @@ class Igdb extends Model {
     }
 
     public function getPlatform( $id ) {
-        $client = new \GuzzleHttp\Client();
+        $client = $this->client();
 
         //$data = 'fields name; filter[id][eq] "'.$id.'"; limit 50;';
         $header = ['user-key' => config('keys.igdbKey') , 'Content-Type'=>'text/plain'];

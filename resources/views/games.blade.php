@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
         <h1 id="mainHeading" class="h2">Games</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group mr-2">
+            <div class="btn-group me-2">
                 <button type="button" value="all" class="btn btn-sm btn-outline-primary listType">All</button>
                 <button type="button"  value="backlog"class="btn btn-sm btn-outline-secondary listType">Backlog</button>
                 <button type="button" value="wishlist" class="btn btn-sm btn-outline-secondary listType">Wishlist</button>
@@ -15,10 +15,10 @@
             </div>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group mr-2">
+            <div class="btn-group me-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary addGame">Add Game</button>
             </div>
-            <div class="btn-group mr-2 add-edit-options hide-on-load">
+            <div class="btn-group me-2 add-edit-options hide-on-load">
                 <button type="button" class="btn btn-sm btn-outline-secondary saveAll">Save All</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary cancelAll">Cancel All</button>
             </div>

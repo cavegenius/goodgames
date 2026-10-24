@@ -1,33 +1,29 @@
 {
-    "private": true,
-    "scripts": {
-        "dev": "npm run development",
-        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch": "npm run development -- --watch",
-        "watch-poll": "npm run watch -- --watch-poll",
-        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
-    },
-    "devDependencies": {
-        "axios": "^0.21",
-        "bootstrap": "^4.4.1",
-        "cross-env": "^5.2.1",
-        "jquery": "^3.5.0",
-        "laravel-mix": "^4.1.4",
-        "lodash": "^4.17.19",
-        "popper.js": "^1.16.1",
-        "resolve-url-loader": "^2.3.1",
-        "sass": "^1.26.2",
-        "sass-loader": "^7.3.1",
-        "vue": "^2.6.11",
-        "vue-template-compiler": "^2.6.11"
-    },
-    "dependencies": {
-        "@fortawesome/fontawesome-free": "^5.12.1",
-        "bootbox": "^5.4.0",
-        "font-awesome": "^4.7.0",
-        "handlebars": "^4.7.6",
-        "jquery-ui": "^1.12.1"
-    }
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.12.0 || >=24.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "watch": "vite build --watch"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.1.0",
+    "axios": "^1.13.2",
+    "bootstrap": "^5.3.8",
+    "bootbox": "^6.0.4",
+    "handlebars": "^4.7.8",
+    "jquery": "^3.7.1",
+    "jquery-ui": "^1.14.1",
+    "lodash": "^4.17.21",
+    "vue": "^3.5.44"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.10",
+    "laravel-vite-plugin": "^3.2.0",
+    "sass": "^1.94.2",
+    "vite": "^8.3.5"
+  }
 }
