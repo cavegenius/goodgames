@@ -112,6 +112,18 @@ test('Vue game library preserves the list, editing, filtering, and utility workf
         assert.equal(page.querySelectorAll('#gamesTableBody .favoriteBox:checked').length, 1);
         assert.equal(page.querySelectorAll('#gamesTableBody .ratingBox:checked').length, 5);
         assert.ok(page.querySelector('.filterItem[value="ZX Spectrum"]'));
+
+        const themeSelect = page.querySelector('#themeSelect');
+        assert.deepEqual([...themeSelect.options].map(option => option.value), ['light', 'dark', 'aqua']);
+        themeSelect.value = 'dark';
+        themeSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+        await flush();
+        assert.equal(page.body.dataset.theme, 'dark');
+        assert.equal(dom.window.localStorage.getItem('goodgames-theme'), 'dark');
+        themeSelect.value = 'light';
+        themeSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+        await flush();
+        assert.equal(page.body.dataset.theme, 'light');
     });
 
     await t.test('switches lists, sorts, and searches for catalog games', async () => {

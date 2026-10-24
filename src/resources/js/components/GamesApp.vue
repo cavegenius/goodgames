@@ -88,6 +88,7 @@ export default {
             loading: false,
             savingAll: false,
             draggedId: null,
+            theme: 'dark',
             filterSections: { saved: true, favorite: false, status: false, platform: false, platformType: false, format: false, genre: false, rating: false },
         };
     },
@@ -109,10 +110,14 @@ export default {
         },
     },
     mounted() {
+        let savedTheme = null;
+        try { savedTheme = window.localStorage?.getItem('goodgames-theme'); } catch (_) { /* Theme storage is optional. */ }
+        if (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'aqua') this.theme = savedTheme;
+        document.body.dataset.theme = this.theme;
         if (window.matchMedia?.('(min-width: 1800px)').matches) {
             this.filtersOpen = true;
             this.toolsOpen = true;
-        } else if (window.matchMedia?.('(min-width: 1000px)').matches) {
+        } else if (window.matchMedia?.('(min-width: 1200px)').matches) {
             this.filtersOpen = true;
         }
         this.loadInitialData();
@@ -224,11 +229,17 @@ export default {
         },
         toggleFilters() {
             this.filtersOpen = !this.filtersOpen;
-            if (this.filtersOpen && window.innerWidth < 1200) this.toolsOpen = false;
+            if (this.filtersOpen) this.toolsOpen = false;
         },
         toggleTools() {
             this.toolsOpen = !this.toolsOpen;
-            if (this.toolsOpen && window.innerWidth < 1200) this.filtersOpen = false;
+            if (this.toolsOpen) this.filtersOpen = false;
+        },
+        setTheme(theme) {
+            if (!['light', 'dark', 'aqua'].includes(theme)) return;
+            this.theme = theme;
+            document.body.dataset.theme = this.theme;
+            try { window.localStorage?.setItem('goodgames-theme', this.theme); } catch (_) { /* Keep the active theme for this session. */ }
         },
         toggleSaveFilterForm() {
             this.showFilterName = !this.showFilterName;
@@ -363,11 +374,21 @@ export default {
                 if (game._deleting) return this.post('/games/delete', { id: game.id });
                 return this.post(game._isNew ? '/games/add' : '/games/update', this.gamePayload(game));
             }));
-            const failures = results.filter(result => result.status === 'rejected' || result.value?.Status !== 'Success');
-            this.notify(failures.length ? 'danger' : 'success', failures.length ? 'There was an error saving one or more changes.' : 'All changes Saved Successfully');
-            this.pendingAdds = [];
+            const failedChanges = changes.filter((game, index) => {
+                const result = results[index];
+                return result.status === 'rejected' || result.value?.Status !== 'Success';
+            });
+            const hasFailures = failedChanges.length > 0;
+            const failedExistingIds = new Set(failedChanges.filter(game => !game._isNew).map(game => String(game.id)));
+            const failedExisting = failedChanges.filter(game => !game._isNew);
+            this.pendingAdds = failedChanges.filter(game => game._isNew);
             this.savingAll = false;
             await this.loadGames();
+            this.games = [
+                ...this.games.filter(game => !failedExistingIds.has(String(game.id))),
+                ...failedExisting,
+            ];
+            this.notify(hasFailures ? 'danger' : 'success', hasFailures ? 'There was an error saving one or more changes.' : 'All changes Saved Successfully');
         },
         cancelAll() {
             this.pendingAdds = [];
@@ -383,7 +404,11 @@ export default {
             rows.splice(to, 0, moved);
             this.games = rows.map((game, index) => ({ ...game, rank: index + 1 }));
             try {
-                const response = await this.post('/games/update', { id: moved.id, rank: rows.indexOf(moved) + 1, status: this.list });
+                const response = await this.post('/games/update', {
+                    id: moved.id,
+                    rank: rows.indexOf(moved) + 1,
+                    status: this.list === 'wishlist' ? 'Wishlist' : 'Backlog',
+                });
                 if (response.Status !== 'Success') this.notify('danger', response.Message);
                 await this.loadGames();
             } catch (error) { this.showError(error); }
@@ -499,31 +524,46 @@ export default {
 
             <main role="main" id="mainDiv" class="games-main">
                 <div v-if="message" id="messageBox" class="alert" :class="`alert-${message.type}`" role="alert">{{ message.text }}</div>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                    <h1 id="mainHeading" class="h2">Games</h1>
-                        <div class="btn-group me-2" role="group" aria-label="Panels">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" aria-controls="leftSidebar" :aria-expanded="filtersOpen" @click="toggleFilters">Filters</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" aria-controls="rightSidebar" :aria-expanded="toolsOpen" @click="toggleTools">Tools</button>
+                <header class="library-header">
+                    <div class="library-heading">
+                        <div class="eyebrow">YOUR COLLECTION</div>
+                        <h1 id="mainHeading">Games</h1>
+                        <p>Keep your library organized and find your next favorite.</p>
+                    </div>
+                    <div class="library-tools">
+                        <div class="panel-toggles" role="group" aria-label="Library panels">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" aria-controls="leftSidebar" :aria-expanded="filtersOpen" @click="toggleFilters"><i class="fas fa-sliders-h" aria-hidden="true"></i><span>Filters</span></button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" aria-controls="rightSidebar" :aria-expanded="toolsOpen" @click="toggleTools"><i class="fas fa-toolbox" aria-hidden="true"></i><span>Tools</span></button>
+                            <label class="visually-hidden" for="themeSelect">Color theme</label>
+                            <select id="themeSelect" class="theme-picker" :value="theme" @change="setTheme($event.target.value)">
+                                <option value="light">Light theme</option>
+                                <option value="dark">Dark theme</option>
+                                <option value="aqua">Aqua theme</option>
+                            </select>
                         </div>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button v-for="item in [{value:'all',label:'All'},{value:'backlog',label:'Backlog'},{value:'wishlist',label:'Wishlist'},{value:'In Progress',label:'In Progress'}]" :key="item.value" type="button" class="btn btn-sm listType" :value="item.value" :class="list === item.value ? 'btn-outline-primary' : 'btn-outline-secondary'" @click="chooseList(item.value)">{{ item.label }}</button>
+                        <div class="primary-actions">
+                            <div class="btn-group pending-actions" :class="{ 'hide-on-load': !hasPendingChanges }">
+                                <button type="button" class="btn btn-sm btn-outline-secondary cancelAll" @click="cancelAll">Cancel</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary saveAll" :disabled="savingAll" @click="saveAll">{{ savingAll ? 'Saving…' : 'Save changes' }}</button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-feedback" @click="feedbackOpen = true">Feedback</button>
+                            <button type="button" class="btn btn-sm btn-primary addGame" @click="addGame()"><i class="fas fa-plus" aria-hidden="true"></i><span>{{ list === 'backlog' ? 'Add to Backlog' : list === 'wishlist' ? 'Add to Wishlist' : 'Add a game' }}</span></button>
                         </div>
                     </div>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2"><button type="button" class="btn btn-sm btn-outline-secondary addGame" @click="addGame()">{{ list === 'backlog' ? 'Add to Backlog' : list === 'wishlist' ? 'Add to Wishlist' : 'Add Game' }}</button></div>
-                        <div class="btn-group me-2" :class="{ 'hide-on-load': !hasPendingChanges }">
-                            <button type="button" class="btn btn-sm btn-outline-secondary saveAll" :disabled="savingAll" @click="saveAll">Save All</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary cancelAll" @click="cancelAll">Cancel All</button>
+                    <div class="library-subnav">
+                        <div class="view-switcher" role="group" aria-label="Game list">
+                            <button v-for="item in [{value:'all',label:'All games'},{value:'backlog',label:'Backlog'},{value:'wishlist',label:'Wishlist'},{value:'In Progress',label:'In progress'}]" :key="item.value" type="button" class="listType" :value="item.value" :aria-pressed="list === item.value" @click="chooseList(item.value)">{{ item.label }}</button>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary btn-feedback" @click="feedbackOpen = true">Beta Feedback</button>
+                        <span class="collection-count">{{ rows.length }} {{ rows.length === 1 ? 'title' : 'titles' }}</span>
                     </div>
-                </div>
+                </header>
                 <div class="table-responsive">
                     <table id="gamesTable" class="table table-striped table-sm games-table" :class="{ 'is-ranked': showRank }">
                         <colgroup><col v-for="column in visibleColumns" :key="column.key" :class="`column-${column.key}`"></colgroup>
                         <thead><tr id="gameTableHeading">
-                            <th v-for="column in visibleColumns" :key="column.key" :class="{ sortableCol: column.key !== 'actions', sortedAsc: sortCol === column.key && sortOrder === 'asc', sortedDesc: sortCol === column.key && sortOrder === 'desc' }" @click="sortBy(column.key)">{{ column.label }}</th>
+                            <th v-for="column in visibleColumns" :key="column.key" :aria-sort="column.key !== 'actions' && sortCol === column.key ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'" :class="{ sortableCol: column.key !== 'actions', sortedAsc: sortCol === column.key && sortOrder === 'asc', sortedDesc: sortCol === column.key && sortOrder === 'desc' }" @click="sortBy(column.key)">
+                                <button v-if="column.key !== 'actions'" type="button" class="sort-button" @click.stop="sortBy(column.key)">{{ column.label }}</button><span v-else>{{ column.label }}</span>
+                            </th>
                         </tr></thead>
                         <tbody id="gamesTableBody">
                             <tr v-for="game in rows" :key="game.id" :data-id="game._isNew ? null : game.id" :draggable="showRank && !game._editing" @dragstart="startDrag(game)" @dragover.prevent @drop="dropOn(game)">
@@ -545,8 +585,8 @@ export default {
                                     <td class="name"><button type="button" class="name-edit-button" :aria-label="`Edit ${game.name}`" title="Edit this game" @click="draftFor(game)">{{ game.name }}</button></td><td class="status">{{ game.status }}</td><td class="platform">{{ game.platform }}</td>
                                     <td class="platformType">{{ game.platformType }}</td><td class="format">{{ game.format }}</td><td class="genre">{{ game.genre }}</td>
                                     <td class="stratingatus" :data-rating="game.rating"><label v-for="star in 5" :key="star" class="ratingStar"><input type="checkbox" class="ratingBox" :value="star" :aria-label="`${star} star rating for ${game.name}`" :checked="game.rating >= star" @change="setRating(game, star)"><i class="far fa-star unchecked" aria-hidden="true"></i><i class="fas fa-star checked" aria-hidden="true"></i></label></td>
-                                    <td v-if="game._deleting"><button type="button" class="saveSingleDeleteGame" @click="deleteGame(game)">✓</button> <button type="button" class="cancelSingleDeleteGame" @click="game._deleting = false">×</button></td>
-                                    <td v-else><button type="button" class="editSingleGame" @click="draftFor(game)">Edit</button> <button type="button" class="deleteSingleGame" @click="game._deleting = true">Delete</button></td>
+                                    <td v-if="game._deleting" class="row-actions"><div class="row-action-group"><button type="button" class="saveSingleDeleteGame" @click="deleteGame(game)">Confirm</button><button type="button" class="cancelSingleDeleteGame" @click="game._deleting = false">Cancel</button></div></td>
+                                    <td v-else class="row-actions"><div class="row-action-group"><button type="button" class="editSingleGame" @click="draftFor(game)">Edit</button><button type="button" class="deleteSingleGame" @click="game._deleting = true">Delete</button></div></td>
                                 </template>
                             </tr>
                             <tr v-if="!rows.length && !loading"><td :colspan="visibleColumns.length" class="text-center">{{ message?.text || 'No Games Found' }}</td></tr>

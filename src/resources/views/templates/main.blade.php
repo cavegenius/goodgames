@@ -9,7 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
   </head>
-  <body id="gamesBody" data-theme="aqua">
+  <body id="gamesBody" data-theme="dark">
     <?php
       $route = Route::current();
       $route = $route->uri;
