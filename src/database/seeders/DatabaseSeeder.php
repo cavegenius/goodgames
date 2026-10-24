@@ -8,6 +8,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Seed the application's database here.
+        $this->call(LocalDevelopmentSeeder::class);
     }
 }

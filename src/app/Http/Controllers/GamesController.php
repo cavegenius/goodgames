@@ -344,7 +344,8 @@ class GamesController extends Controller {
                     $value = 0;
                 }
 
-                $game->$key  = $value;
+                $attribute = $key === 'platformtype' ? 'platformType' : $key;
+                $game->$attribute = $value;
             }
             $game->save();
         }
@@ -491,7 +492,7 @@ class GamesController extends Controller {
         $user = Auth::id();
 
         $steamId = $request->get('steamId');
-        $steam = new Steam;
+        $steam = app(Steam::class);
         $games = $steam->import($steamId);
 
         // Take each game and loop through them using the save function?
@@ -509,7 +510,7 @@ class GamesController extends Controller {
             $game->name = $gameName;
             $game->status = 'None';
             $game->platform = 'Steam';
-            $game->platformtype = 'PC';
+            $game->platformType = 'PC';
             $game->format = 'Digital';
             $game->favorite = 0;
             $game->rating = '0';

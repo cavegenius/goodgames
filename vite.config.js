@@ -3,6 +3,7 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
+    root: 'src',
     css: {
         preprocessorOptions: {
             scss: { quietDeps: true },
@@ -11,6 +12,8 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/sass/app.scss', 'resources/js/app.js'],
+            publicDirectory: 'public',
+            buildDirectory: 'build',
             refresh: true,
         }),
         vue(),
