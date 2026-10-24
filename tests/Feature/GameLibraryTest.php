@@ -149,9 +149,9 @@ class GameLibraryTest extends TestCase
     {
         $user = User::factory()->create();
         $this->actingAs($user)->postJson('/games/get_platform_list')
-            ->assertJsonPath('Status', 'Success')->assertJsonStructure(['Platforms' => ['*']]);
+            ->assertJsonPath('Status', 'Success')->assertJsonPath('Platforms.0', '32X');
         $this->postJson('/games/get_genre_list')
-            ->assertJsonPath('Status', 'Success')->assertJsonStructure(['Genres' => ['*']]);
+            ->assertJsonPath('Status', 'Success')->assertJsonPath('Genres.0', 'Not Set');
     }
 
     public function test_csv_import_and_export_preserve_user_library_data(): void

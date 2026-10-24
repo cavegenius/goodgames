@@ -45,3 +45,19 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
 
 ENTRYPOINT ["/usr/local/bin/container-entrypoint"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+
+# Local-only image used by start.sh. Tests and dev dependencies are added to
+# the active local app container without changing the production runtime image.
+FROM runtime AS local-dev
+
+RUN apk add --no-cache --virtual .sqlite-build-deps $PHPIZE_DEPS sqlite-dev \
+    && docker-php-ext-install -j"$(nproc)" pdo_sqlite \
+    && apk del .sqlite-build-deps
+
+RUN ln -s /var/www/html /var/www/src
+COPY tests/ /var/www/tests/
+COPY phpunit.local.xml /var/www/html/phpunit.local.xml
+RUN composer install --prefer-dist --no-interaction --no-progress
+
+# Keep the default `docker build` target production-only.
+FROM runtime AS production

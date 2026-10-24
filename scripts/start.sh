@@ -43,5 +43,5 @@ EOF
     echo "Created $ENV_FILE with generated app and database secrets. Keep it private."
 fi
 
-docker compose --env-file "$ENV_FILE" up --build -d --wait --wait-timeout 180
+docker compose --env-file "$ENV_FILE" -f compose.yaml -f compose.local.yaml up --build -d --wait --wait-timeout 180
 echo "Good Games is ready at http://localhost:$(sed -n 's/^APP_PORT=//p' "$ENV_FILE" | tail -n 1)"

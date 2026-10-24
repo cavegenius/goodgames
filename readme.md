@@ -44,17 +44,26 @@ The container runs migrations on startup by default. Set `RUN_MIGRATIONS=false` 
 
 ## Tests
 
-The test suite can run against an in-memory SQLite database:
+Start the local app container, then run the PHP suite in that same active container:
 
 ```sh
-(cd src && DB_CONNECTION=sqlite DB_DATABASE=:memory: vendor/bin/phpunit --configuration=../phpunit.xml)
+./scripts/start.sh
+./scripts/run-tests-local.sh
 ```
 
-Run the frontend template and route wiring tests with:
+The runner executes PHPUnit in the app container and accepts normal PHPUnit options, for example:
+
+```sh
+./scripts/run-tests-local.sh --filter GameLibraryTest
+```
+
+`start.sh` builds a local-only app image with PHPUnit and SQLite enabled; the production image remains the default Docker build target. PHPUnit uses in-memory SQLite. Run the frontend template and DOM interaction tests from the host with:
 
 ```sh
 npm test
 ```
+
+The JavaScript suite renders the real Handlebars templates in jsdom, triggers the jQuery UI handlers, and checks the resulting DOM and AJAX route/payload contracts. AJAX responses and browser-only plugins are stubbed; use the container PHPUnit suite for backend behavior.
 
 ## Local development data
 

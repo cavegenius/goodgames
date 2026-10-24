@@ -1,0 +1,8 @@
+services:
+  app:
+    build:
+      target: local-dev
+    image: goodgames:local
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"

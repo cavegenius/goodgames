@@ -16,7 +16,7 @@ class HttpSurfaceTest extends TestCase
 
     public function test_public_auth_pages_and_health_endpoint_are_available(): void
     {
-        $this->get('/')->assertRedirect('/login');
+        $this->get('/')->assertOk()->assertViewIs('auth.login');
         $this->get('/login')->assertOk()->assertViewIs('auth.login');
         $this->get('/register')->assertOk()->assertViewIs('auth.register');
         $this->get('/password/reset')->assertOk();
@@ -49,8 +49,10 @@ class HttpSurfaceTest extends TestCase
             'email' => $user->email, 'password' => 'wrong-password',
         ])->assertRedirect('/login')->assertSessionHasErrors('email');
         $this->post('/login', ['email' => $user->email, 'password' => 'correct-password'])
-            ->assertRedirect('/games')->assertAuthenticatedAs($user);
-        $this->post('/logout')->assertRedirect('/')->assertGuest();
+            ->assertRedirect('/games');
+        $this->assertAuthenticatedAs($user);
+        $this->post('/logout')->assertRedirect('/');
+        $this->assertGuest();
 
         $this->post('/password/email', ['email' => $user->email])->assertSessionHas('status');
         \Illuminate\Support\Facades\Notification::assertSentTo(
@@ -72,7 +74,7 @@ class HttpSurfaceTest extends TestCase
         $igdb->setHttpClient($client);
         $this->app->instance(Igdb::class, $igdb);
 
-        $this->postJson('/games/search', ['name' => 'Test Game'])
+        $this->actingAs(User::factory()->create())->postJson('/games/search', ['name' => 'Test Game'])
             ->assertJsonPath('Status', 'Success')
             ->assertJsonPath('Games.0.cover', 'https://images.igdb.com/igdb/image/upload/t_thumb/cover-id.jpg')
             ->assertJsonPath('Games.0.platforms.0', 'PC')

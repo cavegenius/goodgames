@@ -20,6 +20,7 @@ class GameTest extends TestCase {
         $igdb = new Igdb;
         $igdb->setHttpClient($client);
         $this->instance(Igdb::class, $igdb);
+        $this->actingAs(\App\User::factory()->create());
 
         $this->json('POST', '/games/search', ['name' => 'horizon zero dawn'])
              ->assertJsonStructure([
@@ -144,7 +145,7 @@ class GameTest extends TestCase {
         ];
         $response = $this->actingAs($user)->post('/games/update', $data, []);
         $response->assertJson(['Status' => 'Success', 'Message' => 'Game Updated Successfully']);
-        $this->markTestIncomplete('Add assertion to check the game has the new data.');
+        $this->assertDatabaseHas('games', ['id' => $id, 'userId' => $user->id, 'name' => 'new name']);
     }
 
     public function testUpdateGameInavalidUserTest() {
@@ -162,7 +163,7 @@ class GameTest extends TestCase {
 
     public function testImportCSVSuccessfulTest() {
         $user = $this->createUserAndLogin();
-        $stub = __DIR__.'/files/importFile.csv';
+        $stub = __DIR__.'/Files/importFile.csv';
         $name = Str::random(8).'.csv';
         $path = sys_get_temp_dir().'/'.$name;
 
