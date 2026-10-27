@@ -2,7 +2,8 @@
 set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-cd "$ROOT_DIR"
+COMPOSE_DIR=${GOODGAMES_PRODUCTION_SOURCE_DIR:-$ROOT_DIR}
+cd "$COMPOSE_DIR"
 
 if [ -z "${GOODGAMES_PRODUCTION_ENV_FILE:-}" ]; then
     if [ -z "${HOME:-}" ]; then
@@ -37,15 +38,17 @@ fi
 
 docker compose \
     --project-name goodgames-production \
+    --project-directory "$COMPOSE_DIR" \
     --env-file "$GOODGAMES_PRODUCTION_ENV_FILE" \
-    --file compose.production.yaml \
+    --file "$COMPOSE_DIR/compose.production.yaml" \
     exec -T database sh -c 'exec mysqldump --single-transaction --routines --triggers -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' \
     > "$TEMP_DIR/database.sql"
 
 docker compose \
     --project-name goodgames-production \
+    --project-directory "$COMPOSE_DIR" \
     --env-file "$GOODGAMES_PRODUCTION_ENV_FILE" \
-    --file compose.production.yaml \
+    --file "$COMPOSE_DIR/compose.production.yaml" \
     exec -T app tar -czf - -C /var/www/html/storage . \
     > "$TEMP_DIR/storage.tar.gz"
 

@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Check out the pushed revision
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Deploy production containers
         run: ./scripts/deploy-production.sh
-      - name: Import first-deploy production dataset
-        run: ./scripts/seed-production.sh

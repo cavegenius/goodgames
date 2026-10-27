@@ -42,7 +42,7 @@ Production is served at `https://yourgamelists.com` on your home network through
 
 ### Prepare the home host
 
-Use an always-on computer on your home network with Docker Engine and Docker Compose v2. A small Linux machine is a good fit; the computer used for development can also run production if it stays on and Docker remains available. Reserve a stable LAN address for the host in your router.
+This Mac can host both development and production. Keep Docker/OrbStack running and reserve this computer's LAN address in your router so the private URL remains stable. Production uses its own Compose project, image tags, MySQL volume, and app-storage volume; the local development stack keeps its existing volumes.
 
 The public A record can remain pointed at your public IP. Configure a local DNS override in your router so `yourgamelists.com` resolves to the server's reserved LAN IP for devices at home. If the router has no local DNS overrides, use a local DNS resolver such as Pi-hole or add a hosts-file entry on each device. **Do not forward ports 80, 443, or 8081 from the router.** The public DNS record alone does not make the site reachable from outside; the router must not forward requests to the server. With local DNS, devices at home use the domain and connect directly to the private LAN address.
 
@@ -60,13 +60,13 @@ The app requires email verification for library access. Configure `MAIL_MAILER`,
 
 Add a host firewall rule allowing TCP port 443 only from your trusted home subnet (for example, `192.168.1.0/24`). Port 8081 is bound to localhost, so only the host itself can access the app directly. Other devices on that Wi-Fi/subnet can reach the login page; the app's verified-account login protects game-management pages.
 
-To seed production from your existing local dump, copy `seed-data/yourgamelists.sql` to `$HOME/.config/goodgames/yourgamelists.sql` on the runner host before the first `master` deployment. Keep it outside the repository because it contains personal data. After deploying, the workflow makes a backup, replaces the empty migration-created database with this dump, and writes a marker into persistent app storage. Later pushes skip the import. If the seed file is absent, the workflow logs that it skipped seeding. The seed step is destructive to the current production database and is intended for the initial deployment.
+To seed production from your existing local dump, manual runs use `seed-data/yourgamelists.sql` from this checkout. For GitHub-triggered deployment, copy the dump to `$HOME/.config/goodgames/yourgamelists.sql` on this computer before the first `master` deployment. Keep it outside the repository because it contains personal data. The seed step verifies the production users, games, and filters tables are empty, makes a backup, imports the dump, and writes a marker into persistent app storage. It refuses to replace nonempty production data; later pushes skip an already-completed import. If the seed file is absent, the seed step logs that it skipped.
 
 ### Configure automatic deployment
 
-In the GitHub repository, add a self-hosted Actions runner on the production host and give it the custom label `goodgames-home`. Run the runner as a service under the same account that owns the environment file and has permission to use Docker. Limit repository write access to people you trust: code pushed to `master` will execute on this host. The workflow checks out the pushed revision, then `scripts/deploy-production.sh` builds the production image and applies database migrations. You can also deploy the current `master` revision manually from the workflow's **Run workflow** action.
+In the GitHub repository, add a self-hosted Actions runner on this computer and give it the custom label `goodgames-home`. Run the runner as a service under the same account that owns the environment file and has permission to use Docker. Limit repository write access to people you trust: code pushed to `master` will execute on this host. The workflow checks out the pushed revision, then `scripts/deploy-production.sh` fetches a clean snapshot of `origin/master`, builds the production image, and applies database migrations. The same script can be run manually from this development checkout; it still deploys a clean snapshot of `origin/master`, never the current development files.
 
-For the first deployment, check out the repository on the host, create the production environment file, optionally copy the seed SQL as described above, and run:
+For the first deployment, create the production environment file on this computer, then run the script from this repository:
 
 ```sh
 ./scripts/deploy-production.sh
@@ -74,7 +74,7 @@ For the first deployment, check out the repository on the host, create the produ
 
 Open `https://yourgamelists.com` from a device on your home network. Production uses a separate Compose project and named volumes, so starting or resetting the local development stack does not reset production data.
 
-Back up both the database and app storage to a different disk or backup service. Mount that destination on the home host, then run:
+The script fetches `origin/master` into a temporary source directory before building, even when launched from `develop`. So working-tree edits and the local development image cannot enter production. Back up both the production database and app storage to a different disk or backup service. Mount that destination on this computer, then run:
 
 ```sh
 GOODGAMES_BACKUP_DIR=/path/to/backup-disk/goodgames ./scripts/backup-production.sh
