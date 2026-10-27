@@ -1,11 +1,5 @@
-{
-	email {$ACME_EMAIL}
-}
-
 {$DOMAIN} {
-	tls {
-		dns godaddy {env.GODADDY_API_TOKEN}
-	}
+	tls internal
 
 	reverse_proxy app:8080
 }

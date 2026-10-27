@@ -38,7 +38,7 @@ The `/api/healthz` endpoint returns `200` only when Laravel can connect to the c
 
 The development stack (`compose.yaml` plus `compose.local.yaml`) is separate from the production stack (`compose.production.yaml`). Production has its own MySQL database and persistent storage volumes. A push to `master` triggers `.github/workflows/deploy-production.yml`, which builds and deploys on a GitHub Actions self-hosted runner in your home network. The runner connects outbound to GitHub, so this setup does not require router port forwarding.
 
-Production is served at `https://yourgamelists.com` on your home network through a Caddy reverse proxy. The app container listens only on localhost for direct host access; Caddy listens on the server's LAN IP. The Caddy image includes the GoDaddy DNS provider module so it can obtain and renew a trusted certificate with DNS-01 validation.
+Production is served at `https://yourgamelists.com` on your home network through a Caddy reverse proxy. The app container listens only on localhost for direct host access; Caddy listens on the server's LAN IP and uses its own private certificate authority. This needs no DNS-provider API credential or inbound internet access. Each device that opens the site must trust Caddy's local root certificate to avoid a browser warning.
 
 ### Prepare the home host
 
@@ -54,11 +54,13 @@ cp .env.production.example "$HOME/.config/goodgames/.env.production"
 chmod 600 "$HOME/.config/goodgames/.env.production"
 ```
 
-Edit that file. Set `APP_BIND_ADDRESS` to the host's reserved LAN IP and keep `APP_LOCAL_BIND_ADDRESS=127.0.0.1`. Set `APP_URL` and `DOMAIN` to `https://yourgamelists.com` and `yourgamelists.com`, respectively. Replace `APP_KEY` with `base64:` followed by the output of `openssl rand -base64 32`; set both MySQL passwords to separate values from `openssl rand -hex 32`. Create a GoDaddy API key and secret for DNS updates, set `GODADDY_API_TOKEN` to `key:secret`, and set `ACME_EMAIL` to your email. The key and secret let Caddy create and remove DNS TXT records for certificate validation; keep them private in this file, outside the repository. Keep the file readable only by the account running the GitHub runner. `SESSION_SECURE_COOKIE=true` is required because the site uses HTTPS.
+Edit that file. Set `APP_BIND_ADDRESS` to the host's reserved LAN IP and keep `APP_LOCAL_BIND_ADDRESS=127.0.0.1`. Set `APP_URL` and `DOMAIN` to `https://yourgamelists.com` and `yourgamelists.com`, respectively. Replace `APP_KEY` with `base64:` followed by the output of `openssl rand -base64 32`; set both MySQL passwords to separate values from `openssl rand -hex 32`. Keep the file readable only by the account running production. `SESSION_SECURE_COOKIE=true` is required because the site uses HTTPS.
 
 The app requires email verification for library access. Configure `MAIL_MAILER`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, and `MAIL_ENCRYPTION` with a working SMTP account before creating your production account. The example's `MAIL_MAILER=log` is only useful for diagnosis and does not deliver verification messages.
 
-Add a host firewall rule allowing TCP port 443 only from your trusted home subnet (for example, `192.168.1.0/24`). Port 8081 is bound to localhost, so only the host itself can access the app directly. Other devices on that Wi-Fi/subnet can reach the login page; the app's verified-account login protects game-management pages.
+Add a host firewall rule allowing TCP port 443 only from your trusted home subnet (for example, `192.168.1.0/24`). Port 8081 is bound to localhost, so only the host itself can access the app directly. Keep router port forwarding disabled. Other devices on that Wi-Fi/subnet can reach the login page; the app's verified-account login protects game-management pages.
+
+After deployment, export Caddy's local root certificate with `./scripts/export-production-ca.sh`, then trust it on each device that uses the site. On macOS, open the exported `caddy-root.crt` in Keychain Access and set the certificate to Always Trust. Until a device trusts that certificate, its browser will warn that the HTTPS connection is untrusted. Caddy's local HTTPS uses no ACME/DNS validation, so no GoDaddy API access or DNS changes are needed for certificate issuance.
 
 To seed production from your existing local dump, manual runs use `seed-data/yourgamelists.sql` from this checkout. For GitHub-triggered deployment, copy the dump to `$HOME/.config/goodgames/yourgamelists.sql` on this computer before the first `master` deployment. Keep it outside the repository because it contains personal data. The seed step verifies the production users, games, and filters tables are empty, makes a backup, imports the dump, and writes a marker into persistent app storage. It refuses to replace nonempty production data; later pushes skip an already-completed import. If the seed file is absent, the seed step logs that it skipped.
 
