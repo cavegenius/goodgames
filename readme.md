@@ -72,7 +72,7 @@ For the first deployment, check out the repository on the host, create the produ
 ./scripts/deploy-production.sh
 ```
 
-Open `http://<LAN-IP>:8081` from a device on your home network. Production uses a separate Compose project and named volumes, so starting or resetting the local development stack does not reset production data.
+Open `https://yourgamelists.com` from a device on your home network. Production uses a separate Compose project and named volumes, so starting or resetting the local development stack does not reset production data.
 
 Back up both the database and app storage to a different disk or backup service. Mount that destination on the home host, then run:
 
