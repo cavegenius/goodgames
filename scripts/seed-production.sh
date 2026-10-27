@@ -71,7 +71,7 @@ GOODGAMES_PRODUCTION_SOURCE_DIR="$COMPOSE_DIR" \
 
 # The dump contains CREATE TABLE statements. Replace the migration-created
 # empty schema first, then import the dump and leave the app's migrations table intact.
-"$@" exec -T app touch /var/www/html/storage/app/.production-seed-in-progress
+"$@" exec -T app sh -c 'mkdir -p /var/www/html/storage/app && touch /var/www/html/storage/app/.production-seed-in-progress'
 "$@" exec -T database sh -c '
     case "$MYSQL_DATABASE" in
         ""|*[!A-Za-z0-9_]*) echo "Unsafe production database name: $MYSQL_DATABASE" >&2; exit 1 ;;
