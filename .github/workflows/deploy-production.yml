@@ -1,0 +1,27 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: goodgames-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Configure this self-hosted runner on the always-on home server and add
+    # the `goodgames-home` custom runner label.
+    runs-on: [self-hosted, goodgames-home]
+    steps:
+      - name: Check out the pushed revision
+        uses: actions/checkout@v4
+      - name: Deploy production containers
+        run: ./scripts/deploy-production.sh
+      - name: Import first-deploy production dataset
+        run: ./scripts/seed-production.sh

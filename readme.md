@@ -34,6 +34,54 @@ The production image copies the Laravel app from `src/`; repository-level tests,
 
 The `/api/healthz` endpoint returns `200` only when Laravel can connect to the configured database. Docker uses it as the app container's health check.
 
+## Private home production deployment
+
+The development stack (`compose.yaml` plus `compose.local.yaml`) is separate from the production stack (`compose.production.yaml`). Production has its own MySQL database and persistent storage volumes. A push to `master` triggers `.github/workflows/deploy-production.yml`, which builds and deploys on a GitHub Actions self-hosted runner in your home network. The runner connects outbound to GitHub, so this setup does not require router port forwarding.
+
+Production is served at `https://yourgamelists.com` on your home network through a Caddy reverse proxy. The app container listens only on localhost for direct host access; Caddy listens on the server's LAN IP. The Caddy image includes the GoDaddy DNS provider module so it can obtain and renew a trusted certificate with DNS-01 validation.
+
+### Prepare the home host
+
+Use an always-on computer on your home network with Docker Engine and Docker Compose v2. A small Linux machine is a good fit; the computer used for development can also run production if it stays on and Docker remains available. Reserve a stable LAN address for the host in your router.
+
+The public A record can remain pointed at your public IP. Configure a local DNS override in your router so `yourgamelists.com` resolves to the server's reserved LAN IP for devices at home. If the router has no local DNS overrides, use a local DNS resolver such as Pi-hole or add a hosts-file entry on each device. **Do not forward ports 80, 443, or 8081 from the router.** The public DNS record alone does not make the site reachable from outside; the router must not forward requests to the server. With local DNS, devices at home use the domain and connect directly to the private LAN address.
+
+On the production host, make a private environment file outside the repository:
+
+```sh
+mkdir -p "$HOME/.config/goodgames"
+cp .env.production.example "$HOME/.config/goodgames/.env.production"
+chmod 600 "$HOME/.config/goodgames/.env.production"
+```
+
+Edit that file. Set `APP_BIND_ADDRESS` to the host's reserved LAN IP and keep `APP_LOCAL_BIND_ADDRESS=127.0.0.1`. Set `APP_URL` and `DOMAIN` to `https://yourgamelists.com` and `yourgamelists.com`, respectively. Replace `APP_KEY` with `base64:` followed by the output of `openssl rand -base64 32`; set both MySQL passwords to separate values from `openssl rand -hex 32`. Create a GoDaddy API key and secret for DNS updates, set `GODADDY_API_TOKEN` to `key:secret`, and set `ACME_EMAIL` to your email. The key and secret let Caddy create and remove DNS TXT records for certificate validation; keep them private in this file, outside the repository. Keep the file readable only by the account running the GitHub runner. `SESSION_SECURE_COOKIE=true` is required because the site uses HTTPS.
+
+The app requires email verification for library access. Configure `MAIL_MAILER`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, and `MAIL_ENCRYPTION` with a working SMTP account before creating your production account. The example's `MAIL_MAILER=log` is only useful for diagnosis and does not deliver verification messages.
+
+Add a host firewall rule allowing TCP port 443 only from your trusted home subnet (for example, `192.168.1.0/24`). Port 8081 is bound to localhost, so only the host itself can access the app directly. Other devices on that Wi-Fi/subnet can reach the login page; the app's verified-account login protects game-management pages.
+
+To seed production from your existing local dump, copy `seed-data/yourgamelists.sql` to `$HOME/.config/goodgames/yourgamelists.sql` on the runner host before the first `master` deployment. Keep it outside the repository because it contains personal data. After deploying, the workflow makes a backup, replaces the empty migration-created database with this dump, and writes a marker into persistent app storage. Later pushes skip the import. If the seed file is absent, the workflow logs that it skipped seeding. The seed step is destructive to the current production database and is intended for the initial deployment.
+
+### Configure automatic deployment
+
+In the GitHub repository, add a self-hosted Actions runner on the production host and give it the custom label `goodgames-home`. Run the runner as a service under the same account that owns the environment file and has permission to use Docker. Limit repository write access to people you trust: code pushed to `master` will execute on this host. The workflow checks out the pushed revision, then `scripts/deploy-production.sh` builds the production image and applies database migrations. You can also deploy the current `master` revision manually from the workflow's **Run workflow** action.
+
+For the first deployment, check out the repository on the host, create the production environment file, optionally copy the seed SQL as described above, and run:
+
+```sh
+./scripts/deploy-production.sh
+```
+
+Open `http://<LAN-IP>:8081` from a device on your home network. Production uses a separate Compose project and named volumes, so starting or resetting the local development stack does not reset production data.
+
+Back up both the database and app storage to a different disk or backup service. Mount that destination on the home host, then run:
+
+```sh
+GOODGAMES_BACKUP_DIR=/path/to/backup-disk/goodgames ./scripts/backup-production.sh
+```
+
+The script creates a timestamped archive. Schedule it daily with your host's scheduler and keep an additional copy off the host; the Docker volumes themselves are not backups. Try restoring a backup before relying on it.
+
 To build the app image separately for a registry:
 
 ```sh

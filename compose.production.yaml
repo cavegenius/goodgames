@@ -1,0 +1,94 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: goodgames:production
+    restart: unless-stopped
+    environment:
+      APP_NAME: ${APP_NAME:-Good Games}
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY:?Set APP_KEY in the production environment file}
+      APP_URL: ${APP_URL:?Set APP_URL in the production environment file}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: mysql
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_DATABASE: ${MYSQL_DATABASE:-goodgames}
+      DB_USERNAME: ${MYSQL_USER:-goodgames}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in the production environment file}
+      CACHE_STORE: file
+      SESSION_DRIVER: file
+      SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-true}
+      QUEUE_CONNECTION: sync
+      FILESYSTEM_DRIVER: local
+      MAIL_MAILER: ${MAIL_MAILER:-log}
+      MAIL_HOST: ${MAIL_HOST:-127.0.0.1}
+      MAIL_PORT: ${MAIL_PORT:-2525}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-noreply@example.com}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Good Games}
+      STEAM_KEY: ${STEAM_KEY:-}
+      IGDB_KEY: ${IGDB_KEY:-}
+      PSN_KEY: ${PSN_KEY:-}
+      XBOX_KEY: ${XBOX_KEY:-}
+      RUN_MIGRATIONS: "true"
+    ports:
+      - "${APP_LOCAL_BIND_ADDRESS:-127.0.0.1}:${APP_PORT:-8081}:8080"
+    volumes:
+      - production-storage:/var/www/html/storage
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/api/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 45s
+      retries: 3
+
+  proxy:
+    build:
+      context: .
+      dockerfile: docker/Caddyfile.Dockerfile
+    image: goodgames-proxy:production
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in the production environment file}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in the production environment file}
+      GODADDY_API_TOKEN: ${GODADDY_API_TOKEN:?Set GODADDY_API_TOKEN in the production environment file}
+    ports:
+      - "${APP_BIND_ADDRESS:-127.0.0.1}:${HTTPS_PORT:-443}:443"
+    volumes:
+      - production-proxy-data:/data
+      - production-proxy-config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+
+  database:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-goodgames}
+      MYSQL_USER: ${MYSQL_USER:-goodgames}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in the production environment file}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in the production environment file}
+    volumes:
+      - production-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+volumes:
+  production-mysql-data:
+  production-storage:
+  production-proxy-data:
+  production-proxy-config:
